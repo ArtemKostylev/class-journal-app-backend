@@ -1,0 +1,10 @@
+""" 
+
+ """
+
+"""   updateNote(data: NoteInput): Note
+  deleteNote(id: Int): Boolean
+  updateReplacements(data: [ReplacementInput]): [Replacement]
+  deleteReplacements(ids: [Int]): Boolean """
+
+  """    """

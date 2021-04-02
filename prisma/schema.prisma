@@ -1,0 +1,134 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id       Int      @default(autoincrement()) @id
+  login    String   @unique
+  password String
+  role     Role     @relation(fields: [roleId], references: [id])
+  roleId   Int
+  teacher  Teacher?
+}
+
+model Role {
+  id    Int    @default(autoincrement()) @id
+  name  String
+  users User[]
+}
+
+model Teacher {
+  id        Int                      @default(autoincrement()) @id
+  name      String?
+  surname   String?
+  user      User?                    @relation(fields: [userId], references: [id])
+  userId    Int?
+  relations Teacher_Course_Student[]
+  Note      Note[]
+}
+
+model Course {
+  id        Int                      @default(autoincrement()) @id
+  name      String?
+  group     Boolean                  @default(false)
+  Note      Note[]
+  relations Teacher_Course_Student[]
+}
+
+model Student {
+  id        Int                      @default(autoincrement()) @id
+  name      String?
+  surname   String?
+  class     Int?
+  program   Program?
+  relations Teacher_Course_Student[]
+}
+
+model Teacher_Course_Student {
+  id           Int            @default(autoincrement()) @id
+  teacher      Teacher        @relation(fields: [teacherId], references: [id])
+  teacherId    Int
+  student      Student        @relation(fields: [studentId], references: [id])
+  studentId    Int
+  course       Course         @relation(fields: [courseId], references: [id])
+  courseId     Int
+  subgroup     Int?
+  consult      Consult[]
+  journalEntry JournalEntry[]
+  quaterMark   QuaterMark[]
+}
+
+model JournalEntry {
+  id          Int                    @default(autoincrement()) @id
+  mark        String
+  date        DateTime
+  relation    Teacher_Course_Student @relation(fields: [relationId], references: [id])
+  relationId  Int
+  replacement Replacement?
+}
+
+model QuaterMark {
+  id         Int                    @default(autoincrement()) @id
+  mark       String
+  period     Period
+  relation   Teacher_Course_Student @relation(fields: [relationId], references: [id])
+  relationId Int
+}
+
+model Replacement {
+  id           Int          @default(autoincrement()) @id
+  date         DateTime
+  journalEntry JournalEntry @relation(fields: [entryId], references: [id])
+  entryId      Int
+}
+
+model Consult {
+  id         Int                    @default(autoincrement()) @id
+  date       DateTime
+  period     Period
+  year       Int
+  relation   Teacher_Course_Student @relation(fields: [relationId], references: [id])
+  relationId Int
+
+}
+
+model Note {
+  id        Int     @default(autoincrement()) @id
+  text      String
+  period    Period
+  year      Int
+  teacher   Teacher @relation(fields: [teacherId], references: [id])
+  teacherId Int
+  course    Course  @relation(fields: [courseId], references: [id])
+  courseId  Int
+}
+
+model Load {
+  id      Int     @default(autoincrement()) @id
+  course  Int
+  class   Int
+  program Program
+  hours   Int
+}
+
+enum Period {
+  first
+  second
+  third
+  fourth
+  year
+}
+
+enum Program {
+  PP_5
+  PP_8
+  OP
+}

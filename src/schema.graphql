@@ -1,0 +1,227 @@
+scalar Date
+
+type Query {
+  fetchJournal(
+    teacherId: Int!
+    courseId: Int!
+    date_gte: Date!
+    date_lte: Date!
+  ): [Teacher_Course_Student!]!
+  fetchTeachers: [Teacher!]!
+  fetchStudents: [Student!]!
+  fetchCourses: [Course!]!
+  fetchQuaterMarks(teacherId: Int, courseId: Int): [Teacher_Course_Student]
+  fetchNotes(teacherId: Int, courseId: Int, period: String, year: Int): Note
+  fetchReplacements(
+    teacherId: Int
+    courseId: Int
+    date_gte: Date!
+    date_lte: Date!
+  ): [Teacher_Course_Student]
+
+  fetchConsults(
+    teacherId: Int
+    courseId: Int
+    period: String
+    year: Int
+  ): [Teacher_Course_Student]
+
+  fetchSubgroups(courseId: Int, teacherId: Int): [Group]
+}
+
+type Mutation {
+  addStudent(
+    name: String!
+    surname: String!
+    courseId: Int!
+    teacherId: Int!
+  ): Student!
+  signup(login: String!, password: String!, roleId: Int!): AuthPayload
+  signin(login: String!, password: String!): AuthPayload
+  updateJournal(data: [JournalEntryInput!]!): [JournalEntry!]!
+  clearJournal(ids: [Int!]!): Int
+  updateTeacher(data: TeacherInput): Teacher
+  deleteTeacher(id: Int): Boolean
+  updateStudent(data: StudentInput): Student
+  deleteStudent(id: Int): Boolean
+  updateCourse(data: CourseInput): Course
+  deleteCourse(id: Int): Boolean
+  updateQuaterMarks(data: [QuaterMarkInput]): [QuaterMark]
+  clearQuaterMarks(ids: [Int]): Boolean
+  updateNote(data: NoteInput): Note
+  deleteNote(id: Int): Boolean
+  updateReplacements(data: [ReplacementInput]): [Replacement]
+  deleteReplacements(ids: [Int]): Boolean
+  updateConsults(data: [ConsultInput]): [Consult]
+  deleteConsults(ids: [Int]): Boolean
+  updateSubgroups(data: [SubgroupInput]): [Subgroup]
+}
+
+type User {
+  id: Int!
+  roleId: Int!
+  email: String!
+  teacher: Teacher
+}
+
+type Teacher {
+  id: Int!
+  name: String
+  surname: String
+  userId: Int
+  relations: [Teacher_Course_Student]
+}
+
+type Course {
+  id: Int!
+  name: String!
+  relations: [Teacher_Course_Student]
+  group: Boolean
+}
+
+type Student {
+  id: Int!
+  name: String
+  surname: String
+  class: Int
+  program: String
+  load: Int
+  relations: [Teacher_Course_Student]
+  subgroup: [Subgroup]
+}
+
+type Teacher_Course_Student {
+  id: Int!
+  teacher: Teacher!
+  course: Course!
+  student: Student!
+  subgroup: Int
+  journalEntry: [JournalEntry]
+  quaterMark: [QuaterMark]
+  consult: [Consult]
+}
+
+type JournalEntry {
+  id: Int!
+  mark: String!
+  date: Date!
+  relation: Teacher_Course_Student
+  replacement: Replacement
+}
+
+type QuaterMark {
+  id: Int!
+  mark: String!
+  period: String!
+  relation: Teacher_Course_Student
+}
+
+type Consult {
+  id: Int!
+  date: Date!
+  period: String!
+  year: Int!
+  relation: Teacher_Course_Student
+}
+
+type Replacement {
+  id: Int!
+  date: Date!
+  journalEntry: JournalEntry
+}
+
+type Note {
+  id: Int!
+  text: String!
+  period: String!
+  year: Int!
+  teacher: Teacher
+  course: Course
+}
+
+type Subgroup {
+  course: Course!
+  student: Student!
+  subgroup: Int
+}
+
+type Group {
+  class: Int
+  program: String
+  students: [Student]
+}
+
+input TeacherInput {
+  id: Int
+  name: String
+  surname: String
+}
+
+input CourseInput {
+  id: Int
+  name: String
+  group: Boolean
+}
+
+input StudentInput {
+  id: Int
+  name: String
+  surname: String
+  class: Int
+  program: String
+}
+
+input Teacher_Course_StudentInput {
+  id: Int
+  teacherId: Int
+  courseId: Int
+  studentId: Int
+}
+
+input SubgroupInput {
+  courseId: Int!
+  studentId: Int!
+  subgroup: Int
+}
+
+input ConsultInput {
+  id: Int!
+  date: String!
+  period: String!
+  year: Int!
+  relationId: Int!
+}
+
+input NoteInput {
+  id: Int!
+  text: String
+  period: String
+  year: Int
+  teacherId: Int
+  courseId: Int
+}
+
+input ReplacementInput {
+  id: Int
+  date: Date
+  entryId: Int!
+}
+
+input JournalEntryInput {
+  id: Int
+  mark: String!
+  date: Date!
+  relationId: Int!
+}
+
+input QuaterMarkInput {
+  id: Int
+  mark: String!
+  period: String!
+  relationId: Int!
+}
+
+type AuthPayload {
+  token: String
+  user: User
+}
