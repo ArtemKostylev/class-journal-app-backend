@@ -302,19 +302,12 @@ const deleteConsults = async (parent, args, context, info) => {
 
 const updateSubgroups = async (parent, args, context, info) => {
   return (updatedEntries = args.data.map((subgroup) => {
-    return context.prisma.subgroup.upsert({
+    return context.prisma.teacher_Course_Student.update({
       where: {
-        courseId_studentId: {
-          studentId: subgroup.studentId,
-          courseId: subgroup.courseId,
-        },
-      },
-      update: {
-        subgroup: subgroup.subgroup,
-      },
-      create: {
         studentId: subgroup.studentId,
         courseId: subgroup.courseId,
+      },
+      data: {
         subgroup: subgroup.subgroup,
       },
     });
