@@ -158,7 +158,7 @@ const fetchSubgroups = async (parent, args, context) => {
         item.student.class === group.class &&
         item.student.program === group.program
     );
-    groups[index].students.push(student);
+    groups[index].students.push(item);
   });
 
   groups.forEach((group) => {
