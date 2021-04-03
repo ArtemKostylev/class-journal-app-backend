@@ -118,17 +118,13 @@ const fetchConsults = async (parent, args, context) => {
 
 const fetchSubgroups = async (parent, args, context) => {
   const { userId } = context;
-  let students = await context.prisma.student.findMany({
+  let students = await context.prisma.teacher_Course_Student.findMany({
     where: {
       teachers: { some: { id: args.teacherId } },
       courses: { some: { id: args.courseId } },
     },
     include: {
-      subgroup: {
-        where: {
-          courseId: args.courseId,
-        },
-      },
+      student: true,
     },
   });
 
