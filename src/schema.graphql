@@ -179,7 +179,7 @@ input Teacher_Course_StudentInput {
 }
 
 input SubgroupInput {
-  id
+  id: Int!
   subgroup: Int
 }
 
