@@ -148,7 +148,7 @@ type Subgroup {
 type Group {
   class: Int
   program: String
-  students: [Student]
+  relations: [Teacher_Course_Student]
 }
 
 input TeacherInput {

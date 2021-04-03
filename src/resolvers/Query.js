@@ -147,7 +147,7 @@ const fetchSubgroups = async (parent, args, context) => {
       groups.push({
         class: num,
         program: program,
-        students: [],
+        relations: [],
       });
     });
   });
@@ -158,11 +158,11 @@ const fetchSubgroups = async (parent, args, context) => {
         item.student.class === group.class &&
         item.student.program === group.program
     );
-    groups[index].students.push(item);
+    groups[index].relations.push(item);
   });
 
   groups.forEach((group) => {
-    if (group.students.length > 0) groupedData.push(group);
+    if (group.relations.length > 0) groupedData.push(group);
   });
 
   return groupedData;
