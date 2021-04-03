@@ -54,7 +54,7 @@ type Mutation {
   deleteReplacements(ids: [Int]): Boolean
   updateConsults(data: [ConsultInput]): [Consult]
   deleteConsults(ids: [Int]): Boolean
-  updateSubgroups(data: [SubgroupInput]): [Subgroup]
+  updateSubgroups(data: [SubgroupInput]): [Teacher_Course_Student]
 }
 
 type User {
@@ -179,8 +179,7 @@ input Teacher_Course_StudentInput {
 }
 
 input SubgroupInput {
-  courseId: Int!
-  studentId: Int!
+  id
   subgroup: Int
 }
 
