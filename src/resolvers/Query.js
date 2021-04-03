@@ -120,8 +120,8 @@ const fetchSubgroups = async (parent, args, context) => {
   const { userId } = context;
   let students = await context.prisma.teacher_Course_Student.findMany({
     where: {
-      teachers: { some: { id: args.teacherId } },
-      courses: { some: { id: args.courseId } },
+      teacherId: args.teacherId,
+      courseId: args.courseId,
     },
     include: {
       student: true,
@@ -155,7 +155,8 @@ const fetchSubgroups = async (parent, args, context) => {
   students.forEach((item) => {
     let index = groups.findIndex(
       (group) =>
-      item.student.class === group.class && item.student.program === group.program
+        item.student.class === group.class &&
+        item.student.program === group.program
     );
     groups[index].students.push(student);
   });
