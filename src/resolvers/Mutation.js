@@ -304,8 +304,7 @@ const updateSubgroups = async (parent, args, context, info) => {
   return (updatedEntries = args.data.map((subgroup) => {
     return context.prisma.teacher_Course_Student.update({
       where: {
-        studentId: subgroup.studentId,
-        courseId: subgroup.courseId,
+        id: subgroup.id,
       },
       data: {
         subgroup: subgroup.subgroup,
