@@ -38,16 +38,16 @@ type Mutation {
   ): Student!
   signup(login: String!, password: String!, roleId: Int!): AuthPayload
   signin(login: String!, password: String!): AuthPayload
-  updateJournal(data: [JournalEntryInput!]!): [JournalEntry!]!
-  clearJournal(ids: [Int!]!): Int
+  """TODO"""
+  updateJournal(data: JournalUpdateInput): Boolean
+  """TODO"""
   updateTeacher(data: TeacherInput): Teacher
   deleteTeacher(id: Int): Boolean
   updateStudent(data: StudentInput): Student
   deleteStudent(id: Int): Boolean
   updateCourse(data: CourseInput): Course
   deleteCourse(id: Int): Boolean
-  updateQuaterMarks(data: [QuaterMarkInput]): [QuaterMark]
-  clearQuaterMarks(ids: [Int]): Boolean
+
   updateNote(data: NoteInput): Note
   deleteNote(id: Int): Boolean
   updateReplacements(data: [ReplacementInput]): [Replacement]
@@ -218,6 +218,13 @@ input QuaterMarkInput {
   mark: String!
   period: String!
   relationId: Int!
+}
+
+input JournalUpdateInput {
+  updateCasual: [JournalEntryInput],
+  updatePeriod: [QuaterMarkInput],
+  deleteCasual: [Int],
+  deletePeriod: [Int],
 }
 
 type AuthPayload {

@@ -64,7 +64,9 @@ const signin = async (parent, args, context, info) => {
 
 const updateJournal = async (parent, args, context, info) => {
   const { userId } = context;
-  return (updatedEntries = args.data.map(async (entry) => {
+  const { updateCasual, updatePeriod, deleteCasual, deletePeriod } = args.data;
+
+  const updatedEntries = updateCasual.map(async (entry) => {
     return await context.prisma.journalEntry.upsert({
       where: {
         id: entry.id,
@@ -78,14 +80,9 @@ const updateJournal = async (parent, args, context, info) => {
         relationId: entry.relationId,
       },
     });
-  }));
-};
+  });
 
-const clearJournal = async (parent, args, context, info) => {
-  const { userId } = context;
-
-  let ids = args.ids.map((id) => parseInt(id));
-  console.log(ids);
+  let ids = deleteCasual.map((id) => parseInt(id));
 
   const deleteRepl = context.prisma.replacement.deleteMany({
     where: {
@@ -106,11 +103,8 @@ const clearJournal = async (parent, args, context, info) => {
     deleteRepl,
     deleteMark,
   ]);
-};
 
-const updateQuaterMarks = async (parent, args, context, info) => {
-  const { userId } = context;
-  return (updatedEntries = args.data.map((mark) => {
+  const updatedQuaters = updatePeriod.map((mark) => {
     return context.prisma.quaterMark.upsert({
       where: {
         id: mark.id,
@@ -124,21 +118,18 @@ const updateQuaterMarks = async (parent, args, context, info) => {
         relationId: mark.relationId,
       },
     });
-  }));
-};
+  });
 
-const clearQuaterMarks = async (parent, args, context, info) => {
-  const { userId } = context;
-
-  let ids = args.ids.map((id) => parseInt(id));
+  let qids = deletePeriod.map((id) => parseInt(id));
 
   let res = await context.prisma.quaterMark.deleteMany({
     where: {
       id: {
-        in: ids,
+        in: qids,
       },
     },
   });
+
 };
 
 const updateTeacher = async (parent, args, context, info) => {
@@ -318,15 +309,12 @@ module.exports = {
   signin,
   signup,
   updateJournal,
-  clearJournal,
   updateTeacher,
   deleteTeacher,
   updateCourse,
   deleteCourse,
   updateStudent,
   deleteStudent,
-  updateQuaterMarks,
-  clearQuaterMarks,
   updateNote,
   deleteNote,
   updateReplacements,
