@@ -104,8 +104,8 @@ const updateJournal = async (parent, args, context, info) => {
     deleteMark,
   ]);
 
-  const updatedQuaters = updatePeriod.map((mark) => {
-    return context.prisma.quaterMark.upsert({
+  const updatedQuaters = updatePeriod.map(async (mark) => {
+    return await context.prisma.quaterMark.upsert({
       where: {
         id: mark.id,
       },

@@ -27,6 +27,7 @@ type Query {
   ): [Teacher_Course_Student]
 
   fetchSubgroups(courseId: Int, teacherId: Int): [Group]
+  fetchFullInfo(): FullInfo! 
 }
 
 type Mutation {
@@ -230,4 +231,11 @@ input JournalUpdateInput {
 type AuthPayload {
   token: String
   user: User
+}
+
+type FullInfo {
+  teachers: [Teacher]
+  students: [Student]
+  courses: [Course]
+  relations: [Teacher_Course_Student]
 }

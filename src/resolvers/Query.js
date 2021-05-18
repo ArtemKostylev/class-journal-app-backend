@@ -168,6 +168,20 @@ const fetchSubgroups = async (parent, args, context) => {
   return groupedData;
 };
 
+const fetchFullInfo = async (parent, args, context) => {
+  const {userId} = context;
+  const teachers = await context.prisma.teacher.findMany() 
+  const students = await context.prisma.student.findMany();
+  const courses = await context.prisma.course.findMany();
+  const relations = await context.prisma.teacher_Course_Student.findMany();
+  return {
+    teachers,
+    students,
+    courses,
+    relations,
+  }
+}
+
 module.exports = {
   fetchJournal,
   fetchTeachers,
