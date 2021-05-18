@@ -27,7 +27,7 @@ type Query {
   ): [Teacher_Course_Student]
 
   fetchSubgroups(courseId: Int, teacherId: Int): [Group]
-  fetchFullInfo(): FullInfo! 
+  fetchFullInfo: FullInfo! 
 }
 
 type Mutation {
