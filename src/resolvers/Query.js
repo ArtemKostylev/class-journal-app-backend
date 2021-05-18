@@ -173,7 +173,14 @@ const fetchFullInfo = async (parent, args, context) => {
   const teachers = await context.prisma.teacher.findMany();
   const students = await context.prisma.student.findMany();
   const courses = await context.prisma.course.findMany();
-  const relations = await context.prisma.teacher_Course_Student.findMany();
+  const relations = await context.prisma.teacher_Course_Student.findMany({
+    include: {
+      teacher: true,
+      student: true,
+      course: true,
+    }
+  }
+  );
   return {
     teachers,
     students,
