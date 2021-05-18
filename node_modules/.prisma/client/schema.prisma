@@ -56,8 +56,8 @@ model Teacher_Course_Student {
   id           Int            @default(autoincrement()) @id
   teacher      Teacher        @relation(fields: [teacherId], references: [id])
   teacherId    Int
-  student      Student        @relation(fields: [studentId], references: [id])
-  studentId    Int
+  student      Student?       @relation(fields: [studentId], references: [id])
+  studentId    Int?
   course       Course         @relation(fields: [courseId], references: [id])
   courseId     Int
   subgroup     Int?

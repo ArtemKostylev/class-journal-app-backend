@@ -95,7 +95,7 @@ type Teacher_Course_Student {
   id: Int!
   teacher: Teacher!
   course: Course!
-  student: Student!
+  student: Student
   subgroup: Int
   journalEntry: [JournalEntry]
   quaterMark: [QuaterMark]
