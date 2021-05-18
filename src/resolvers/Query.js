@@ -169,8 +169,8 @@ const fetchSubgroups = async (parent, args, context) => {
 };
 
 const fetchFullInfo = async (parent, args, context) => {
-  const {userId} = context;
-  const teachers = await context.prisma.teacher.findMany() 
+  const { userId } = context;
+  const teachers = await context.prisma.teacher.findMany();
   const students = await context.prisma.student.findMany();
   const courses = await context.prisma.course.findMany();
   const relations = await context.prisma.teacher_Course_Student.findMany();
@@ -191,4 +191,5 @@ module.exports = {
   fetchReplacements,
   fetchConsults,
   fetchSubgroups,
+  fetchFullInfo,
 };
