@@ -48,6 +48,9 @@ type Mutation {
   deleteStudent(id: Int): Boolean
   updateCourse(data: CourseInput): Course
   deleteCourse(id: Int): Boolean
+  createTeacher(data: TeacherInput): Teacher
+  createStudent(data: StudentInput): Student
+  createCourse(data: CourseInput): Course
 
   updateNote(data: NoteInput): Note
   deleteNote(id: Int): Boolean
@@ -56,6 +59,7 @@ type Mutation {
   updateConsults(data: [ConsultInput]): [Consult]
   deleteConsults(ids: [Int]): Boolean
   updateSubgroups(data: [SubgroupInput]): [Teacher_Course_Student]
+
 }
 
 type User {

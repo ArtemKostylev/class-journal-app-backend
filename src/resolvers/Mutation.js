@@ -129,7 +129,6 @@ const updateJournal = async (parent, args, context, info) => {
       },
     },
   });
-
 };
 
 const updateTeacher = async (parent, args, context, info) => {
@@ -159,6 +158,24 @@ const createStudent = async (parent, args, context, info) => {
       surname: args.data.surname,
       class: args.data.class,
       program: args.data.program,
+    },
+  });
+};
+
+const createTeacher = async (parent, args, context, info) => {
+  await context.prisma.teacher.create({
+    data: {
+      name: args.data.name,
+      surname: args.data.surname,
+    },
+  });
+};
+
+const createCourse = async (parent, args, context, info) => {
+  await context.prisma.course.create({
+    data: {
+      name: args.data.name,
+      group: args.data.group,
     },
   });
 };
@@ -322,4 +339,7 @@ module.exports = {
   updateConsults,
   deleteConsults,
   updateSubgroups,
+  createTeacher,
+  createCourse,
+  createStudent,
 };
