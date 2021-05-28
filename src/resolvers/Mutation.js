@@ -156,7 +156,7 @@ const createStudent = async (parent, args, context, info) => {
     data: {
       name: args.data.name,
       surname: args.data.surname,
-      class: args.data.class,
+      class: parseInt(args.data.class),
       program: args.data.program,
     },
   });
