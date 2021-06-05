@@ -64,10 +64,7 @@ type Mutation {
   deleteConsults(ids: [Int]): Boolean
   updateSubgroups(data: [SubgroupInput]): [Teacher_Course_Student]
 
-  updateCourseRelations(
-    teacher: Int
-    courses: [CourseRelationInput]
-  ): [Teacher_Course_Student]
+  updateCourseRelations(teacher: Int, courses: [CourseRelationInput]): [Boolean]
   updateStudentRelations(
     teacher: Int
     course: Int
@@ -247,7 +244,7 @@ input JournalUpdateInput {
 }
 
 input CourseRelationInput {
-  id: Int
+  courseId: Int
   archived: Boolean
 }
 

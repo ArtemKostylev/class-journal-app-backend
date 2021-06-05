@@ -326,18 +326,18 @@ const updateSubgroups = async (parent, args, context, info) => {
 const updateCourseRelations = async (parent, args, context, info) => {
   //techerID, [{courseId, archived}]
 
-  const newCourses = args.courses.filter((el) => el.courseId === 0);
+  const archived = args.courses.filter((el) => el.archived);
 
-  const pendingUpdates = args.courses.filter((el) => el.courseId !== 0);
-
-  const archived = pendingUpdates.filter((el) => el.archived);
-
-  const pendingEntries = await context.prisma.teacher_course_student.findMany({
+  const pendingEntries = await context.prisma.teacher_Course_Student.findMany({
     where: {
       teacherId: args.teacher,
-      courseId: { in: pendingUpdates.map((item) => item.course) },
+      courseId: { in: args.courses.map((item) => item.courseId) },
     },
   });
+
+  const newCourses = args.courses.filter(
+    (el) => !!pendingEntries.find((entry) => el.courseId === entry.id)
+  );
 
   const createdEntries = newCourses.map(
     async (item) =>
@@ -347,13 +347,15 @@ const updateCourseRelations = async (parent, args, context, info) => {
       })
   );
 
-  const updatedEntries = pendingEntries.map((etry) => {
-    return context.prisma.teacher_Course_Student.update({
+  console.log(archived);
+
+  const updatedEntries = pendingEntries.map(async (entry) => {
+    return await context.prisma.teacher_Course_Student.update({
       where: {
-        id: etry.id,
+        id: entry.id,
       },
       data: {
-        archived: !archived.find((el) => el === entry.courseId),
+        archived: !!archived.find((el) => el.courseId === entry.courseId),
       },
     });
   });
