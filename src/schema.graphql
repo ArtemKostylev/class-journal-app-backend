@@ -27,7 +27,7 @@ type Query {
   ): [Teacher_Course_Student]
 
   fetchSubgroups(courseId: Int, teacherId: Int): [Group]
-  fetchFullInfo: FullInfo! 
+  fetchFullInfo: FullInfo!
 }
 
 type Mutation {
@@ -39,9 +39,13 @@ type Mutation {
   ): Student!
   signup(login: String!, password: String!, roleId: Int!): AuthPayload
   signin(login: String!, password: String!): AuthPayload
-  """TODO"""
+  """
+  TODO
+  """
   updateJournal(data: JournalUpdateInput): Boolean
-  """TODO"""
+  """
+  TODO
+  """
   updateTeacher(data: TeacherInput): Teacher
   deleteTeacher(id: Int): Boolean
   updateStudent(data: StudentInput): Student
@@ -60,6 +64,15 @@ type Mutation {
   deleteConsults(ids: [Int]): Boolean
   updateSubgroups(data: [SubgroupInput]): [Teacher_Course_Student]
 
+  updateCourseRelations(
+    teacher: Int
+    courses: [CourseRelationInput]
+  ): [Teacher_Course_Student]
+  updateStudentRelations(
+    teacher: Int
+    course: Int
+    students: [StudentRelationInput]
+  ): [Teacher_Course_Student]
 }
 
 type User {
@@ -104,6 +117,7 @@ type Teacher_Course_Student {
   journalEntry: [JournalEntry]
   quaterMark: [QuaterMark]
   consult: [Consult]
+  archived: Boolean
 }
 
 type JournalEntry {
@@ -226,10 +240,20 @@ input QuaterMarkInput {
 }
 
 input JournalUpdateInput {
-  updateCasual: [JournalEntryInput],
-  updatePeriod: [QuaterMarkInput],
-  deleteCasual: [Int],
-  deletePeriod: [Int],
+  updateCasual: [JournalEntryInput]
+  updatePeriod: [QuaterMarkInput]
+  deleteCasual: [Int]
+  deletePeriod: [Int]
+}
+
+input CourseRelationInput {
+  id: Int
+  archived: Boolean
+}
+
+input StudentRelationInput {
+  id: Int
+  archived: Boolean
 }
 
 type AuthPayload {

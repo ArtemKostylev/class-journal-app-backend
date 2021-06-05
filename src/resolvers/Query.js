@@ -178,16 +178,15 @@ const fetchFullInfo = async (parent, args, context) => {
       teacher: true,
       student: true,
       course: true,
-    }
-  }
-  );
+    },
+  });
   return {
     teachers,
     students,
     courses,
     relations,
-  }
-}
+  };
+};
 
 module.exports = {
   fetchJournal,

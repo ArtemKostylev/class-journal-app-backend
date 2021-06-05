@@ -1,4 +1,6 @@
 const bcrypt = require("bcryptjs");
+const { countReset } = require("console");
+const { ENETUNREACH } = require("constants");
 const jwt = require("jsonwebtoken");
 const { APP_SECRET, getUserId } = require("../utils");
 
@@ -321,6 +323,44 @@ const updateSubgroups = async (parent, args, context, info) => {
   }));
 };
 
+const updateCourseRelations = async (parent, args, context, info) => {
+  //techerID, [{courseId, archived}]
+
+  const newCourses = args.courses.filter((el) => el.courseId === 0);
+
+  const pendingUpdates = args.courses.filter((el) => el.courseId !== 0);
+
+  const archived = pendingUpdates.filter((el) => el.archived);
+
+  const pendingEntries = await context.prisma.teacher_course_student.findMany({
+    where: {
+      teacherId: args.teacher,
+      courseId: { in: pendingUpdates.map((item) => item.course) },
+    },
+  });
+
+  const createdEntries = newCourses.map(
+    async (item) =>
+      await context.prisma.teacher_Course_Student.create({
+        teacherId: args.teacher,
+        courseId: item.courseId,
+      })
+  );
+
+  const updatedEntries = pendingEntries.map((etry) => {
+    return context.prisma.teacher_Course_Student.update({
+      where: {
+        id: etry.id,
+      },
+      data: {
+        archived: !archived.find((el) => el === entry.courseId),
+      },
+    });
+  });
+};
+
+const updateStudentRelations = async (parent, args, context, info) => {};
+
 module.exports = {
   addStudent,
   signin,
@@ -342,4 +382,6 @@ module.exports = {
   createTeacher,
   createCourse,
   createStudent,
+  updateCourseRelations,
+  updateStudentRelations,
 };
