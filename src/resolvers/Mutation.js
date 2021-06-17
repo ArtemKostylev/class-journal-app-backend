@@ -324,26 +324,71 @@ const updateSubgroups = async (parent, args, context, info) => {
 };
 
 const updateCourseRelations = async (parent, args, context, info) => {
-  //techerID, [{courseId, archived}]
+  //teacherID, [{courseId, archived}]
+
+  console.log("input", args.courses);
 
   const archived = args.courses.filter((el) => el.archived);
 
   const pendingEntries = await context.prisma.teacher_Course_Student.findMany({
     where: {
       teacherId: args.teacher,
-      courseId: { in: args.courses.map((item) => item.courseId) },
+      courseId: { in: args.courses.map((item) => item.id) },
     },
   });
+  console.log("pending", pendingEntries);
 
   const newCourses = args.courses.filter(
-    (el) => !!pendingEntries.find((entry) => el.courseId === entry.id)
+    (el) => 0 > pendingEntries.findIndex((entry) => el.id !== entry.CourseId)
   );
+
+  console.log("new", newCourses);
 
   const createdEntries = newCourses.map(
     async (item) =>
       await context.prisma.teacher_Course_Student.create({
+        data: {
+          teacherId: args.teacher,
+          courseId: item.id,
+        },
+      })
+  );
+
+  console.log("archived", archived);
+
+  const updatedEntries = pendingEntries.map(async (entry) => {
+    return await context.prisma.teacher_Course_Student.update({
+      where: {
+        id: entry.id,
+      },
+      data: {
+        archived: !!archived.find((el) => el.id === entry.courseId),
+      },
+    });
+  });
+};
+
+const updateStudentRelations = async (parent, args, context, info) => {
+  const archived = args.students.filter((el) => el.archived);
+
+  const pendingEntries = await context.prisma.teacher_Course_Student.findMany({
+    where: {
+      teacherId: args.teacher,
+      courseId: args.course,
+      studentId: { in: args.students.map((item) => item.id) },
+    },
+  });
+
+  const newStudents = args.students.filter(
+    (el) => !!pendingEntries.find((entry) => el.id === entry.id)
+  );
+
+  const createdEntries = newStudents.map(
+    async (item) =>
+      await context.prisma.teacher_Course_Student.create({
         teacherId: args.teacher,
         courseId: item.courseId,
+        studentId: item.id,
       })
   );
 
@@ -355,13 +400,11 @@ const updateCourseRelations = async (parent, args, context, info) => {
         id: entry.id,
       },
       data: {
-        archived: !!archived.find((el) => el.courseId === entry.courseId),
+        archived: !!archived.find((el) => el.id === entry.studentId),
       },
     });
   });
 };
-
-const updateStudentRelations = async (parent, args, context, info) => {};
 
 module.exports = {
   addStudent,

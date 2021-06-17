@@ -69,7 +69,7 @@ type Mutation {
     teacher: Int
     course: Int
     students: [StudentRelationInput]
-  ): [Teacher_Course_Student]
+  ): [Boolean]
 }
 
 type User {
@@ -244,7 +244,7 @@ input JournalUpdateInput {
 }
 
 input CourseRelationInput {
-  courseId: Int
+  id: Int
   archived: Boolean
 }
 
