@@ -425,7 +425,7 @@ const updateStudentRelations = async (parent, args, context, info) => {
       await context.prisma.teacher_Course_Student.create({
         data: {
           teacherId: args.teacher,
-          courseId: item.courseId,
+          courseId: item.course,
           studentId: item.id,
         },
       })
