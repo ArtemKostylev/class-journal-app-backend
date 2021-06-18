@@ -369,21 +369,22 @@ const updateCourseRelations = async (parent, args, context, info) => {
 };
 
 const updateStudentRelations = async (parent, args, context, info) => {
-
   console.log("input", args.students);
 
   const archived = args.students.filter((el) => el.archived);
 
   console.log("archived", archived);
 
-  const newEmptyRelation = await context.prisma.teacher_Course_Student.findMany({
-    where: {
-      teacherId: args.teacher,
-      courseId: args.course,
-      studentId: null,
-      archived: false,
+  const newEmptyRelation = await context.prisma.teacher_Course_Student.findMany(
+    {
+      where: {
+        teacherId: args.teacher,
+        courseId: args.course,
+        studentId: null,
+        archived: false,
+      },
     }
-  });
+  );
 
   console.log("empty", newEmptyRelation);
 
@@ -403,7 +404,7 @@ const updateStudentRelations = async (parent, args, context, info) => {
 
   console.log("new", newStudents);
 
-  if (newEmptyRelation.length !== 0){
+  if (newEmptyRelation.length !== 0) {
     //we should add first n new students to empty relations. Actually, there should be no more than one empty relation.
     //so, we only update the studentId value of a relation, and discard this student from new students.
     await context.prisma.teacher_Course_Student.update({
@@ -411,25 +412,24 @@ const updateStudentRelations = async (parent, args, context, info) => {
         id: newEmptyRelation[0].id,
       },
       data: {
-        studentId: newStudents[0].id
+        studentId: newStudents[0].id,
       },
     });
     newStudents.splice(0, 1);
   }
 
   console.log("new after fill", newStudents);
-  
 
   const createdEntries = newStudents.map(
     async (item) =>
       await context.prisma.teacher_Course_Student.create({
-        teacherId: args.teacher,
-        courseId: item.courseId,
-        studentId: item.id,
+        data: {
+          teacherId: args.teacher,
+          courseId: item.courseId,
+          studentId: item.id,
+        },
       })
   );
-
-
 
   const updatedEntries = pendingEntries.map(async (entry) => {
     return await context.prisma.teacher_Course_Student.update({
