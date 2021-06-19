@@ -446,11 +446,12 @@ const updateStudentRelations = async (parent, args, context, info) => {
 const uploadFromFile = async (oarent, args, context, info) => {
   const { createReadStream, filetype, mimetype, encoding } = await args.file;
 
-  const chunks = createReadStream();
+  const chunks = []; 
+const stream = createReadStream();
 
   stream.on("data", chunk => chunks.push(chunk));
 
-  const content;
+  let content;
 
   stream.on("end", () => {
     content = chunks.join("");
