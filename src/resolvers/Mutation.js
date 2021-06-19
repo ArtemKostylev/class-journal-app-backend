@@ -443,6 +443,25 @@ const updateStudentRelations = async (parent, args, context, info) => {
   });
 };
 
+const uploadFromFile = async (oarent, args, context, info) => {
+  const { stream, filetype, mimetype, encoding } = await args.file;
+
+  const chunks = [];
+
+  stream.on("readable", () => {
+    let chunk;
+    while (null !== (cunk = stream.read())) {
+      chunks.push(chunks);
+    }
+  });
+
+  stream.on("end", () => {
+    const conent = chunks.join("");
+  });
+
+  console.log(conent);
+};
+
 module.exports = {
   addStudent,
   signin,
@@ -466,4 +485,5 @@ module.exports = {
   createStudent,
   updateCourseRelations,
   updateStudentRelations,
+  uploadFromFile,
 };
