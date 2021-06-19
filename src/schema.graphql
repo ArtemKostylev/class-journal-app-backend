@@ -1,5 +1,7 @@
 scalar Date
 
+scalar Upload
+
 type Query {
   fetchJournal(
     teacherId: Int!
