@@ -459,7 +459,7 @@ const uploadFromFile = async (oarent, args, context, info) => {
     const conent = chunks.join("");
   });
 
-  console.log(conent);
+  console.log(content);
 };
 
 module.exports = {
