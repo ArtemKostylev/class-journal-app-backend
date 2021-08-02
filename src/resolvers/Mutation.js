@@ -3,6 +3,7 @@ const { countReset } = require("console");
 const { ENETUNREACH } = require("constants");
 const jwt = require("jsonwebtoken");
 const { APP_SECRET, getUserId } = require("../utils");
+const readline = require("readline");
 
 const addStudent = async (parent, args, context, info) => {
   const newStudent = await context.prisma.student.create({
@@ -75,6 +76,7 @@ const updateJournal = async (parent, args, context, info) => {
       },
       update: {
         mark: entry.mark,
+        date: entry.date,
       },
       create: {
         mark: entry.mark,
@@ -233,7 +235,6 @@ const updateNote = async (parent, args, context, info) => {
       text: args.data.text,
     },
     create: {
-      period: args.data.period,
       text: args.data.text,
       year: args.data.year,
       teacherId: args.data.teacherId,
@@ -287,10 +288,11 @@ const updateConsults = async (parent, args, context, info) => {
       },
       update: {
         date: consult.date,
+        hours: consult.hours,
       },
       create: {
         date: consult.date,
-        period: consult.period,
+        hours: consult.hours,
         relationId: consult.relationId,
         year: consult.year,
       },
@@ -302,6 +304,45 @@ const deleteConsults = async (parent, args, context, info) => {
   let ids = args.ids.map((id) => parseInt(id));
 
   let res = await context.prisma.consult.deleteMany({
+    where: {
+      id: {
+        in: ids,
+      },
+    },
+  });
+};
+
+const updateGroupConsults = async (parent, args, context, info) => {
+  return (updatedEntries = args.data.map((group) => {
+    group.consults.map(async (consult) => {
+      console.log(consult);
+      return await context.prisma.groupConsult.upsert({
+        where: {
+          id: consult.id,
+        },
+        update: {
+          date: consult.date,
+          hours: consult.hours,
+        },
+        create: {
+          date: consult.date,
+          year: consult.year,
+          teacherId: args.teacher,
+          courseId: args.course,
+          hours: consult.hours,
+          program: group.program,
+          subgroup: group.subgroup,
+          class: group.class,
+        },
+      });
+    });
+  }));
+};
+
+const deleteGroupConsults = async (parent, args, context, info) => {
+  let ids = args.ids.map((id) => parseInt(id));
+
+  let res = await context.prisma.groupConsult.deleteMany({
     where: {
       id: {
         in: ids,
@@ -381,7 +422,6 @@ const updateStudentRelations = async (parent, args, context, info) => {
         teacherId: args.teacher,
         courseId: args.course,
         studentId: null,
-        archived: false,
       },
     }
   );
@@ -399,7 +439,8 @@ const updateStudentRelations = async (parent, args, context, info) => {
   console.log("pending", pendingEntries);
 
   const newStudents = args.students.filter(
-    (el) => 0 > pendingEntries.findIndex((entry) => el.id !== entry.studentId)
+    (el) =>
+      -1 === pendingEntries.findIndex((entry) => el.id === entry.studentId)
   );
 
   console.log("new", newStudents);
@@ -413,6 +454,7 @@ const updateStudentRelations = async (parent, args, context, info) => {
       },
       data: {
         studentId: newStudents[0].id,
+        archived: false,
       },
     });
     newStudents.splice(0, 1);
@@ -443,21 +485,118 @@ const updateStudentRelations = async (parent, args, context, info) => {
   });
 };
 
-const uploadFromFile = async (oarent, args, context, info) => {
+const uploadTeachersFromFile = async (oarent, args, context, info) => {
   const { createReadStream, filetype, mimetype, encoding } = await args.file;
 
-  const chunks = []; 
-const stream = createReadStream();
+  const stream = createReadStream();
 
-  stream.on("data", chunk => chunks.push(chunk));
-
-  let content;
-
-  stream.on("end", () => {
-    content = chunks.join("");
+  const rl = readline.createInterface({
+    input: stream,
+    crlfDelay: Infinity,
   });
 
-  console.log(content);
+  let lines = [];
+
+  for await (const line of rl) {
+    const data = line.split(" ");
+    if (data.length !== 2) throw new Error("Invalid file format");
+    lines.push(data);
+  }
+
+  const currentEntries = await context.prisma.teacher.findMany();
+
+  const created = lines.map(async (entry) => {
+    if (
+      -1 ===
+      currentEntries.findIndex(
+        (item) => item.name === entry[0] && item.surname === entry[1]
+      )
+    ) {
+      await context.prisma.teacher.create({
+        data: {
+          name: entry[0],
+          surname: entry[1],
+        },
+      });
+    }
+  });
+
+  return true;
+};
+
+const uploadCoursesFromFile = async (oarent, args, context, info) => {
+  const { createReadStream, filetype, mimetype, encoding } = await args.file;
+
+  const stream = createReadStream();
+
+  const rl = readline.createInterface({
+    input: stream,
+    crlfDelay: Infinity,
+  });
+
+  let lines = [];
+
+  for await (const line of rl) {
+    const data = line.split(" ");
+    if (data.length !== 2) throw new Error("Invalid file format");
+    lines.push(data);
+  }
+
+  const currentEntries = await context.prisma.course.findMany();
+
+  const created = lines.map(async (entry) => {
+    if (-1 === currentEntries.findIndex((item) => item.name === entry[0])) {
+      await context.prisma.course.create({
+        data: {
+          name: entry[0],
+          group: entry[1] === "+" ? true : false,
+        },
+      });
+    }
+  });
+
+  return true;
+};
+
+const uploadStudentsFromFile = async (oarent, args, context, info) => {
+  const { createReadStream, filetype, mimetype, encoding } = await args.file;
+
+  const stream = createReadStream();
+
+  const rl = readline.createInterface({
+    input: stream,
+    crlfDelay: Infinity,
+  });
+
+  let lines = [];
+
+  for await (const line of rl) {
+    const data = line.split(" ");
+    if (data.length !== 4) throw new Error("Invalid file format");
+    lines.push(data);
+  }
+
+  const currentEntries = await context.prisma.student.findMany();
+
+  const created = lines.map(async (entry) => {
+    if (
+      -1 ===
+      currentEntries.findIndex(
+        (item) => item.name === entry[0] && item.surname === entry[1]
+      )
+    ) {
+      await context.prisma.student.create({
+        data: {
+          name: entry[0],
+          surname: entry[1],
+          class: entry[2],
+          program: entry[3],
+        },
+      });
+    }
+  });
+
+  return true;
 };
 
 module.exports = {
@@ -483,5 +622,9 @@ module.exports = {
   createStudent,
   updateCourseRelations,
   updateStudentRelations,
-  uploadFromFile,
+  uploadTeachersFromFile,
+  uploadCoursesFromFile,
+  uploadStudentsFromFile,
+  updateGroupConsults,
+  deleteGroupConsults,
 };

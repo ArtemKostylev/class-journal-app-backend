@@ -1,5 +1,11 @@
+const docx = require("docx");
+const fs = require("fs");
+
 const fetchJournal = async (parent, args, context) => {
   const { userId } = context;
+
+  const dateGte = args.date_gte || `${args.year}-09-01T00:00:00.000Z`;
+  const dateLte = args.date_lte || `${args.year + 1}-05-31T00:00:00.000Z`;
 
   const students = await context.prisma.teacher_Course_Student.findMany({
     where: {
@@ -13,8 +19,8 @@ const fetchJournal = async (parent, args, context) => {
         },
         where: {
           date: {
-            gte: args.date_gte,
-            lte: args.date_lte,
+            gte: dateGte,
+            lte: dateLte,
           },
         },
       },
@@ -22,8 +28,31 @@ const fetchJournal = async (parent, args, context) => {
       student: true,
     },
   });
+  console.log("year", args.year);
 
-  return students;
+  const hours = await context.prisma.teacher_Course_Student.findMany({
+    where: {
+      teacherId: args.teacherId,
+      courseId: args.courseId,
+    },
+    select: {
+      journalEntry: {
+        where: {
+          date: {
+            gte: `${args.year}-09-01T00:00:00.000Z`,
+            lte: `${args.year + 1}-05-31T00:00:00.000Z`,
+          },
+        },
+      },
+    },
+  });
+
+  console.log("hours", [...hours]);
+
+  return students.map((student, index) => ({
+    ...student,
+    hours: hours[index].journalEntry.length,
+  }));
 };
 
 const fetchTeachers = async (parent, args, context) => {
@@ -57,7 +86,6 @@ const fetchNotes = async (parent, args, context) => {
       courseId: args.courseId,
       teacherId: args.teacherId,
       year: args.year,
-      period: args.period,
     },
   });
 };
@@ -105,9 +133,6 @@ const fetchConsults = async (parent, args, context) => {
           date: "asc",
         },
         where: {
-          period: {
-            in: args.period,
-          },
           year: args.year,
         },
       },
@@ -170,6 +195,7 @@ const fetchSubgroups = async (parent, args, context) => {
 
 const fetchFullInfo = async (parent, args, context) => {
   const { userId } = context;
+  //TODO create empty tag for teacher;
   const teachers = await context.prisma.teacher.findMany();
   const students = await context.prisma.student.findMany();
   const courses = await context.prisma.course.findMany();
@@ -188,6 +214,94 @@ const fetchFullInfo = async (parent, args, context) => {
   };
 };
 
+const fetchGroupConsults = async (parent, args, context) => {
+  const { userId } = context;
+
+  let availableGroups = await context.prisma.teacher_Course_Student.findMany({
+    where: {
+      teacherId: args.teacherId,
+      courseId: args.courseId,
+      archived: false,
+    },
+    select: {
+      subgroup: true,
+      student: {
+        select: {
+          class: true,
+          program: true,
+        },
+      },
+    },
+  });
+
+  availableGroups = availableGroups.map(
+    (item) =>
+      `${item.student.class} ${item.student.program} ${item.subgroup || "..."}`
+  );
+
+  const consultsAll = await context.prisma.groupConsult.findMany({
+    where: {
+      teacherId: args.teacherId,
+      courseId: args.courseId,
+      year: args.year,
+    },
+  });
+
+  let consultsByGroups = new Map();
+
+  consultsAll.forEach((item) => {
+    const key = `${item.class} ${item.program} ${item.subgroup || "..."}`;
+
+    const value = {
+      id: item.id,
+      date: item.date,
+      hours: item.hours,
+    };
+
+    if (consultsByGroups.has(key))
+      consultsByGroups.set(key, consultsByGroups.get(key).push(value));
+    consultsByGroups.set(key, [value]);
+  });
+
+  return availableGroups.map((group) => {
+    if (consultsByGroups.has(group))
+      return { group, consults: consultsByGroups.get(group) };
+    return { group, consults: [] };
+  });
+};
+
+const fetchAnnualReport = async (parent, args, context) => {
+  const FILE_LOCATION = "";
+  const dateGte = `${args.year}-09-01T00:00:00.000Z`;
+  const dateLte = `${args.year + 1}-05-31T00:00:00.000Z`;
+
+  const data = await context.prisma.teacher_Course_Student.findMany({
+    where: {
+      archived: false,
+    },
+    select: {
+      quaterMark: {
+        where: {
+          year: args.year,
+        },
+      },
+      quaterMark: true,
+      student: {
+        inlude: {
+          specialization: true,
+        },
+      },
+      course: true,
+    },
+  });
+
+  //TODO sort the data first
+  console.log("data unsorted", data);
+
+  //const doc = new docx.Document({});
+  return FILE_LOCATION;
+};
+
 module.exports = {
   fetchJournal,
   fetchTeachers,
@@ -198,4 +312,6 @@ module.exports = {
   fetchConsults,
   fetchSubgroups,
   fetchFullInfo,
+  fetchGroupConsults,
+  fetchAnnualReport,
 };
