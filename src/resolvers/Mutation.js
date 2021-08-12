@@ -499,9 +499,9 @@ const uploadTeachersFromFile = async (oarent, args, context, info) => {
 
   for await (const line of rl) {
     const data = line.split(" ");
-    if (data.length !== 2) throw new Error("Invalid file format");
+    if (data.length !== 3) throw new Error("Invalid file format");
     lines.push(data);
-	  console.log(data);
+    console.log(data);
   }
 
   const currentEntries = await context.prisma.teacher.findMany();
@@ -510,13 +510,17 @@ const uploadTeachersFromFile = async (oarent, args, context, info) => {
     if (
       -1 ===
       currentEntries.findIndex(
-        (item) => item.name === entry[0] && item.surname === entry[1]
+        (item) =>
+          item.name === entry[0] &&
+          item.surname === entry[1] &&
+          item.parent === entry[2]
       )
     ) {
       await context.prisma.teacher.create({
         data: {
-          name: entry[0],
-          surname: entry[1],
+          name: entry[1],
+          surname: entry[0],
+          parent: entry[2] || "",
         },
       });
     }
@@ -541,7 +545,7 @@ const uploadCoursesFromFile = async (oarent, args, context, info) => {
     const data = line.split(" ");
     if (data.length !== 2) throw new Error("Invalid file format");
     lines.push(data);
-	  console.log(data);
+    console.log(data);
   }
 
   const currentEntries = await context.prisma.course.findMany();
@@ -589,8 +593,8 @@ const uploadStudentsFromFile = async (oarent, args, context, info) => {
     ) {
       await context.prisma.student.create({
         data: {
-          name: entry[0],
-          surname: entry[1],
+          name: entry[1],
+          surname: entry[0],
           class: parseInt(entry[2]),
           program: entry[3],
         },
