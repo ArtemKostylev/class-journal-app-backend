@@ -143,6 +143,7 @@ const updateTeacher = async (parent, args, context, info) => {
     data: {
       name: args.data.name,
       surname: args.data.surname,
+      parentL: args.data.parent,
     },
   });
 };
