@@ -30,6 +30,7 @@ model Teacher {
   id           Int                      @id @default(autoincrement())
   name         String?
   surname      String?
+  parent       String?
   user         User?                    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId       Int?
   relations    Teacher_Course_Student[]
@@ -53,7 +54,7 @@ model Student {
   class            Int?
   program          Program?
   relations        Teacher_Course_Student[]
-  specialization   Specialization?           @relation(fields: [specializationId], references: [id])
+  specialization   Specialization?          @relation(fields: [specializationId], references: [id])
   specializationId Int?
 }
 
