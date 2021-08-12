@@ -501,6 +501,7 @@ const uploadTeachersFromFile = async (oarent, args, context, info) => {
     const data = line.split(" ");
     if (data.length !== 2) throw new Error("Invalid file format");
     lines.push(data);
+	  console.log(data);
   }
 
   const currentEntries = await context.prisma.teacher.findMany();
@@ -540,6 +541,7 @@ const uploadCoursesFromFile = async (oarent, args, context, info) => {
     const data = line.split(" ");
     if (data.length !== 2) throw new Error("Invalid file format");
     lines.push(data);
+	  console.log(data);
   }
 
   const currentEntries = await context.prisma.course.findMany();
@@ -589,7 +591,7 @@ const uploadStudentsFromFile = async (oarent, args, context, info) => {
         data: {
           name: entry[0],
           surname: entry[1],
-          class: entry[2],
+          class: parseInt(entry[2]),
           program: entry[3],
         },
       });

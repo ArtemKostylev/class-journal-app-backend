@@ -19,17 +19,23 @@
   },
   "dependencies": {
     "@prisma/client": "^2.27.0-dev.57",
-    "apollo-server": "^2.19.2",
+    "apollo-server-express": "^3.1.2",
     "bcryptjs": "^2.4.3",
     "docx": "^6.0.3",
+    "express": "^4.17.1",
+    "forever": "^4.0.1",
+    "fs-capacitor": "^6.2.0",
+    "graphql": "^15.5.1",
     "graphql-iso-date": "^3.6.1",
+    "graphql-upload": "^11.0.0",
     "http-server": "^0.12.3",
     "jsonwebtoken": "^8.5.1",
+    "latest": "^0.2.0",
     "nodemon": "^2.0.7",
     "prisma": "^2.27.0-dev.57"
   },
   "resolutions": {
-    "fs-capacitor": "^6.2.0",
-    "graphql-upload": "^11.0.0"
+    "apollo-server/apollo-server-core/graphql-upload/fs-capacitor": "^6.2.0",
+    "apollo-server/apollo-server-core/graphql-upload": "^11.0.0"
   }
 }

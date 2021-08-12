@@ -53,8 +53,8 @@ model Student {
   class            Int?
   program          Program?
   relations        Teacher_Course_Student[]
-  specialization   Specialization           @relation(fields: [specializationId], references: [id])
-  specializationId Int
+  specialization   Specialization?           @relation(fields: [specializationId], references: [id])
+  specializationId Int?
 }
 
 model Teacher_Course_Student {
