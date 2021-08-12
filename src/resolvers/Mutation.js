@@ -172,6 +172,7 @@ const createTeacher = async (parent, args, context, info) => {
     data: {
       name: args.data.name,
       surname: args.data.surname,
+      parent: args.parent,
     },
   });
 };
