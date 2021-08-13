@@ -1,0 +1,1 @@
+This is a backend for art school digital document management. It automates waork with class journal, annual reports, individual student programs, work hours tracking, etc. Made with Apollo, Graphql and Prisma.
