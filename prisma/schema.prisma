@@ -36,6 +36,7 @@ model Teacher {
   relations    Teacher_Course_Student[]
   Note         Note[]
   GroupConsult GroupConsult[]
+  courseHours      CourseHours[]
 }
 
 model Course {
@@ -45,6 +46,27 @@ model Course {
   Note         Note[]
   relations    Teacher_Course_Student[]
   GroupConsult GroupConsult[]
+  excludeFromReport Boolean? @default(false)
+  onlyGroups Boolean? @default(false)
+  onlyHours Boolean? @default(false)
+  parent Course? @relation("Reference course",fields: [parentId] ,references: [id])
+  parentId Int?
+  child Course? @relation("Reference course")
+  courseHours      CourseHours[]
+}
+
+// This model keeps hours pasted by sup to students
+model CourseHours {
+  id Int @id @default(autoincrement())
+  course Course? @relation(fields: [courseId], references: [id])
+  courseId Int?
+  teacher Teacher? @relation(fields: [teacherId], references: [id])
+  teacherId Int?
+  class Int?
+  program Program?
+  subgroup Int?
+  date DateTime
+  hours Float
 }
 
 model Student {

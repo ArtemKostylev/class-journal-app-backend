@@ -34,6 +34,7 @@ type Query {
   ): [GroupConsultOutput]
   fetchSubgroups(courseId: Int, teacherId: Int): [Group]
   fetchFullInfo: FullInfo!
+  fetchGroupCompany(teacherId: Int, courseId: Int): [CourseHoursOutput]
   fetchAnnualReport(year: Int): String
 }
 
@@ -80,6 +81,8 @@ type Mutation {
   uploadTeachersFromFile(file: Upload!): Boolean
   uploadCoursesFromFile(file: Upload!): Boolean
   uploadStudentsFromFile(file: Upload!): Boolean
+  updateGroupCompany(data: [CourseHoursInput]): Boolean
+  deleteGroupCompany(ids: [Int]): Boolean
 }
 
 type User {
@@ -103,6 +106,10 @@ type Course {
   name: String!
   relations: [Teacher_Course_Student]
   group: Boolean
+  excludeFromReport: Boolean
+  onlyGroups: Boolean
+  onlyHours: Boolean
+  parentId: Int
 }
 
 type Student {
@@ -191,6 +198,17 @@ type Group {
   relations: [Teacher_Course_Student]
 }
 
+type CourseHours {
+  id: Int
+  course: Course
+  teacher: Teacher
+  class: Int
+  program: String
+  subgroup: Int
+  date: Date
+  hours: Float
+}
+
 input TeacherInput {
   id: Int
   name: String
@@ -202,6 +220,10 @@ input CourseInput {
   id: Int
   name: String
   group: Boolean
+  excludeFromReport: Boolean
+  onlyGroups: Boolean
+  onlyHours: Boolean
+  parentId: Int
 }
 
 input StudentInput {
@@ -291,6 +313,17 @@ input StudentRelationInput {
   archived: Boolean
 }
 
+input CourseHoursInput {
+  id: Int
+  courseId: Int
+  teacherId: Int
+  class: Int
+  program: String
+  subgroup: Int
+  date: Date
+  hours: Float
+}
+
 type AuthPayload {
   token: String
   user: User
@@ -312,4 +345,15 @@ type GroupConsultShort {
 type GroupConsultOutput {
   group: String
   consults: [GroupConsultShort]
+}
+
+type CourseHoursShort {
+  id: Int
+  date: Date
+  hours: Float
+}
+
+type CourseHoursOutput {
+  group: String
+  hours: CourseHoursShort
 }
