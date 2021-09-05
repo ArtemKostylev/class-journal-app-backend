@@ -284,7 +284,7 @@ const fetchGroupCompany = async (parent, args, context) => {
   // 2. Get all relations of corresponding course
   const relations = await context.prisma.teacher_Course_Student.findMany({
     where: {
-      courseId: course,
+      courseId: course.parentId,
     },
     select: {
       student: {
