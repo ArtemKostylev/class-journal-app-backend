@@ -1,0 +1,3 @@
+uploadTeachersFromFile(file: Upload!): Boolean
+uploadCoursesFromFile(file: Upload!): Boolean
+uploadStudentsFromFile(file: Upload!): Boolean

@@ -1,29 +1,30 @@
 const jwt = require("jsonwebtoken");
+const { NotAuthenticatedError } = require("./errors/authErrors");
+const { RequestFailureError } = require("./errors/sharedErrors");
+
 const APP_SECRET = "dev-secret-1488"; //TODO change secret on prod
 
-function getTokenPayload(token) {
-  return jwt.verify(token, APP_SECRET);
-}
-
-function getUserId(req, authToken) {
-  if (req) {
-    const authHeader = req.headers.authorization;
-    if (authHeader) {
-      const token = authHeader.replace("Bearer ", "");
-      if (!token) {
-        throw new Error("No token found");
-      }
-
-      const { userId } = getTokenPayload(token);
-      return { userId };
-    }
-  } else if (authToken) {
-    const { userId } = getTokenPayload(authToken);
-    return userId;
+const getUserId = (req) => {
+  if (!req) {
+    throw new RequestFailureError("auth");
   }
 
-  throw new Error("Not authenticated");
-}
+  const header = req.headers.authorization;
+
+  if (!header) {
+    return null;
+  }
+
+  const token = header.replace("Bearer ", "");
+
+  const { userId } = jwt.verify(token, APP_SECRET);
+
+  if (!userId) {
+    throw new NotAuthenticatedError();
+  }
+
+  return userId;
+};
 
 module.exports = {
   APP_SECRET,
