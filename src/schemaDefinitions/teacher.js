@@ -28,7 +28,7 @@ const typeDef = gql`
   }
 `;
 
-const updateTeacher = async (parent, args, context, info) => {
+const updateTeacher = async (_, args, context, info) => {
   return await context.prisma.teacher.update({
     where: {
       id: args.data.id,
@@ -41,7 +41,7 @@ const updateTeacher = async (parent, args, context, info) => {
   });
 };
 
-const deleteTeacher = async (parent, args, context, info) => {
+const deleteTeacher = async (_, args, context, info) => {
   await context.prisma.teacher.delete({
     where: {
       id: args.id,
@@ -49,7 +49,7 @@ const deleteTeacher = async (parent, args, context, info) => {
   });
 };
 
-const createTeacher = async (parent, args, context, info) => {
+const createTeacher = async (_, args, context, info) => {
   await context.prisma.teacher.create({
     data: {
       name: args.data.name,
@@ -59,7 +59,7 @@ const createTeacher = async (parent, args, context, info) => {
   });
 };
 
-const fetchTeachers = async (parent, args, context) => {
+const fetchTeachers = async (_, args, context) => {
   const { userId } = context;
   return await context.prisma.teacher.findMany({
     include: {

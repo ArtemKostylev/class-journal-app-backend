@@ -8,7 +8,7 @@ const typeDef = gql`
   }
 `;
 
-const uploadTeachersFromFile = async (oarent, args, context, info) => {
+const uploadTeachersFromFile = async (_, args, context, info) => {
   const { createReadStream, filetype, mimetype, encoding } = await args.file;
 
   const stream = createReadStream();
@@ -52,7 +52,7 @@ const uploadTeachersFromFile = async (oarent, args, context, info) => {
   return true;
 };
 
-const uploadCoursesFromFile = async (oarent, args, context, info) => {
+const uploadCoursesFromFile = async (_, args, context, info) => {
   const { createReadStream, filetype, mimetype, encoding } = await args.file;
 
   const stream = createReadStream();
@@ -87,7 +87,7 @@ const uploadCoursesFromFile = async (oarent, args, context, info) => {
   return true;
 };
 
-const uploadStudentsFromFile = async (oarent, args, context, info) => {
+const uploadStudentsFromFile = async (_, args, context, info) => {
   const { createReadStream, filetype, mimetype, encoding } = await args.file;
 
   const stream = createReadStream();

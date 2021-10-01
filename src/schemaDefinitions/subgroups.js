@@ -1,10 +1,17 @@
 const gql = require("graphql-tag");
+const { buildGroups } = require("../utils");
 
 const typeDef = gql`
+  type SubgroupOutput {
+    group: String!
+    relations: [Group!]!
+  }
+
   type Group {
-    class: Int
-    program: String
-    relations: [Teacher_Course_Student]
+    relation: Int
+    name: String
+    surname: String
+    subgroup: Int
   }
 
   extend type Query {
@@ -22,68 +29,44 @@ const typeDef = gql`
 `;
 
 const updateSubgroups = async (parent, args, context, info) => {
-  return (updatedEntries = args.data.map((subgroup) => {
-    return context.prisma.teacher_Course_Student.update({
-      where: {
-        id: subgroup.id,
-      },
-      data: {
-        subgroup: subgroup.subgroup,
-      },
-    });
-  }));
+  Promise.all(
+    args.data.map((subgroup) =>
+      context.prisma.teacher_Course_Student.update({
+        where: {
+          id: subgroup.id,
+        },
+        data: {
+          subgroup: subgroup.subgroup,
+        },
+      })
+    )
+  );
 };
 
 const fetchSubgroups = async (parent, args, context) => {
-  const { userId } = context;
   let students = await context.prisma.teacher_Course_Student.findMany({
     where: {
       teacherId: args.teacherId,
       courseId: args.courseId,
     },
-    include: {
+    select: {
+      id: true,
       student: true,
+      subgroup: true,
     },
   });
 
-  let groups = [];
-  let classes = [];
-  let programs = [];
-  let subgroups = [];
-  let groupedData = [];
-
-  students.forEach((item) => {
-    classes.push(item.student.class);
-    programs.push(item.student.program);
-  });
-
-  classes = [...new Set(classes)];
-  programs = [...new Set(programs)];
-
-  classes.forEach((num) => {
-    programs.forEach((program) => {
-      groups.push({
-        class: num,
-        program: program,
-        relations: [],
-      });
-    });
-  });
-
-  students.forEach((item) => {
-    let index = groups.findIndex(
-      (group) =>
-        item.student.class === group.class &&
-        item.student.program === group.program
-    );
-    groups[index].relations.push(item);
-  });
-
-  groups.forEach((group) => {
-    if (group.relations.length > 0) groupedData.push(group);
-  });
-
-  return groupedData;
+  return buildGroups(
+    students,
+    (item) => `${item.student.class} ${item.student.program}`,
+    (item) => ({
+      relation: item.id,
+      name: item.student.name,
+      surname: item.student.surname,
+      subgroup: item.subgroup,
+    }),
+    "relations"
+  );
 };
 
 module.exports(typeDef);

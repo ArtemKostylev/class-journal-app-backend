@@ -37,10 +37,6 @@ const typeDef = gql`
 `;
 
 const updateCourseRelations = async (parent, args, context, info) => {
-  //teacherID, [{courseId, archived}]
-
-  console.log("input", args.courses);
-
   const archived = args.courses.filter((el) => el.archived);
 
   const pendingEntries = await context.prisma.teacher_Course_Student.findMany({
@@ -49,44 +45,38 @@ const updateCourseRelations = async (parent, args, context, info) => {
       courseId: { in: args.courses.map((item) => item.id) },
     },
   });
-  console.log("pending", pendingEntries);
 
   const newCourses = args.courses.filter(
-    (el) => 0 > pendingEntries.findIndex((entry) => el.id !== entry.CourseId)
+    (el) => pendingEntries.find((entry) => el.id !== entry.CourseId) //exceeding calls
   );
 
-  console.log("new", newCourses);
-
-  const createdEntries = newCourses.map(
-    async (item) =>
-      await context.prisma.teacher_Course_Student.create({
+  await Promise.all(
+    newCourses.map((item) =>
+      context.prisma.teacher_Course_Student.create({
         data: {
           teacherId: args.teacher,
           courseId: item.id,
         },
       })
+    )
   );
 
-  console.log("archived", archived);
-
-  const updatedEntries = pendingEntries.map(async (entry) => {
-    return await context.prisma.teacher_Course_Student.update({
-      where: {
-        id: entry.id,
-      },
-      data: {
-        archived: !!archived.find((el) => el.id === entry.courseId),
-      },
-    });
-  });
+  await Promise.all(
+    pendingEntries.map((entry) => {
+      return context.prisma.teacher_Course_Student.update({
+        where: {
+          id: entry.id,
+        },
+        data: {
+          archived: !!archived.find((el) => el.id === entry.courseId),
+        },
+      });
+    })
+  );
 };
 
 const updateStudentRelations = async (parent, args, context, info) => {
-  console.log("input", args.students);
-
   const archived = args.students.filter((el) => el.archived);
-
-  console.log("archived", archived);
 
   const newEmptyRelation = await context.prisma.teacher_Course_Student.findMany(
     {
@@ -98,8 +88,6 @@ const updateStudentRelations = async (parent, args, context, info) => {
     }
   );
 
-  console.log("empty", newEmptyRelation);
-
   const pendingEntries = await context.prisma.teacher_Course_Student.findMany({
     where: {
       teacherId: args.teacher,
@@ -108,18 +96,12 @@ const updateStudentRelations = async (parent, args, context, info) => {
     },
   });
 
-  console.log("pending", pendingEntries);
-
   const newStudents = args.students.filter(
     (el) =>
       -1 === pendingEntries.findIndex((entry) => el.id === entry.studentId)
   );
 
-  console.log("new", newStudents);
-
   if (newEmptyRelation.length !== 0) {
-    //we should add first n new students to empty relations. Actually, there should be no more than one empty relation.
-    //so, we only update the studentId value of a relation, and discard this student from new students.
     await context.prisma.teacher_Course_Student.update({
       where: {
         id: newEmptyRelation[0].id,
@@ -131,8 +113,6 @@ const updateStudentRelations = async (parent, args, context, info) => {
     });
     newStudents.splice(0, 1);
   }
-
-  console.log("new after fill", newStudents);
 
   const createdEntries = newStudents.map(
     async (item) =>

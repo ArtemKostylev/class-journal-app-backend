@@ -1,4 +1,5 @@
 const gql = require("graphql-tag");
+const { buildGroups } = require("../utils");
 
 const typeDef = gql`
   type Teacher_Course_Student {
@@ -37,18 +38,25 @@ const typeDef = gql`
       year: Int!
       date_gte: Date
       date_lte: Date
+      type: String!
     ): [Teacher_Course_Student]
   }
 
   extend type Mutation {
-    updateJournal(data: JournalUpdateInput): Boolean
-  }
-
-  input JournalEntryInput {
-    id: Int
-    mark: String!
-    date: Date!
-    relationId: Int!
+    updateDailyEntry(
+      id: Int!
+      date: String!
+      relationId: Int!
+      mark: String!
+    ): Boolean
+    updateQuarterEntry(
+      id: Int!
+      period: String!
+      relationId: Int!
+      mark: String!
+      year: Int!
+    ): Boolean
+    deleteEntry(type: MarkTypes!, id: Int!): Boolean
   }
 
   input Teacher_Course_StudentInput {
@@ -57,104 +65,105 @@ const typeDef = gql`
     courseId: Int
     studentId: Int
   }
-  input QuarterMarkInput {
-    id: Int
-    mark: String!
-    period: String!
-    relationId: Int!
-    year: Int
-  }
-
-  input JournalUpdateInput {
-    updateCasual: [JournalEntryInput]
-    updatePeriod: [QuarterMarkInput]
-    deleteCasual: [Int]
-    deletePeriod: [Int]
-  }
 `;
 
-const updateJournal = async (parent, args, context, info) => {
-  const { userId } = context;
-  const { updateCasual, updatePeriod, deleteCasual, deletePeriod } = args.data;
+const MARK_TYPES = {
+  DAILY_MARK: "daily",
+  QUARTER_MARK: "quarter",
+};
 
-  const updatedEntries = updateCasual.map(async (entry) => {
-    return await context.prisma.journalEntry.upsert({
-      where: {
-        id: entry.id,
-      },
-      update: {
-        mark: entry.mark,
-        date: entry.date,
-      },
-      create: {
-        mark: entry.mark,
-        date: entry.date,
-        relationId: entry.relationId,
-      },
-    });
-  });
+const QUERY_TYPES = {
+  INDIVIDUAL: "individual",
+  GROUP: "group",
+};
 
-  let ids = deleteCasual.map((id) => parseInt(id));
-
-  const deleteRepl = context.prisma.replacement.deleteMany({
+const updateDailyEntry = async (parent, args, context, info) => {
+  await context.prisma.journalEntry.upsert({
     where: {
-      entryId: {
-        in: ids,
-      },
+      id: args.id,
     },
-  });
-  const deleteMark = context.prisma.journalEntry.deleteMany({
-    where: {
-      id: {
-        in: ids,
-      },
+    update: {
+      mark: args.mark,
+      date: args.date,
     },
-  });
-
-  const transaction = await context.prisma.$transaction([
-    deleteRepl,
-    deleteMark,
-  ]);
-
-  const updatedQuaters = updatePeriod.map(async (mark) => {
-    return await context.prisma.quaterMark.upsert({
-      where: {
-        id: mark.id,
-      },
-      update: {
-        mark: mark.mark,
-      },
-      create: {
-        mark: mark.mark,
-        period: mark.period,
-        relationId: mark.relationId,
-      },
-    });
-  });
-
-  let qids = deletePeriod.map((id) => parseInt(id));
-
-  let res = await context.prisma.quaterMark.deleteMany({
-    where: {
-      id: {
-        in: qids,
-      },
+    create: {
+      mark: args.mark,
+      date: args.date,
+      relationId: args.relationId,
     },
   });
 };
 
-const fetchJournal = async (parent, args, context) => {
-  const { userId } = context;
+const updateQuarterEntry = async (parent, args, context, info) => {
+  await context.prisma.quarterMark.upsert({
+    where: {
+      id: args.id,
+    },
+    update: {
+      mark: args.mark,
+    },
+    create: {
+      mark: args.mark,
+      period: args.date,
+      year: args.year,
+      relationId: args.relationId,
+    },
+  });
+};
 
+const deleteEntry = async (parent, args, context, info) => {
+  const model =
+    args.type === MARK_TYPES.DAILY_MARK
+      ? context.prisma.journalEntry
+      : context.prisma.quarterMark;
+
+  await model.delete({
+    where: {
+      id: args.id,
+    },
+  });
+
+  if (args.type === MARK_TYPES.DAILY_MARK) {
+    await context.prisma.replacement.delete({
+      where: {
+        entryId: args.id,
+      },
+    });
+  }
+};
+
+const groupJournalBuilder = (data) => {
+  const groupedData = buildGroups(
+    data,
+    (item) =>
+      `${item.student.class} ${item.student.program} ${item.subgroup || "..."}`,
+    (item) => ({
+      id: item.id,
+      student: item.student,
+      journalEntry: item.journalEntry,
+      quarterMark: item.quarterMark,
+      archived: item.archived,
+    }),
+    "students"
+  );
+
+  const dates = buildDatesByGroup(groupedData);
+
+  return [dates, groupedData];
+
+};
+
+const fetchJournal = async (parent, args, context) => {
   const dateGte = args.date_gte || `${args.year}-09-01T00:00:00.000Z`;
   const dateLte = args.date_lte || `${args.year + 1}-05-31T00:00:00.000Z`;
 
-  const students = await context.prisma.teacher_Course_Student.findMany({
+  const rawData = await context.prisma.teacher_Course_Student.findMany({
     where: {
       teacherId: args.teacherId,
       courseId: args.courseId,
     },
-    include: {
+    select: {
+      id: true,
       journalEntry: {
         orderBy: {
           date: "asc",
@@ -166,35 +175,33 @@ const fetchJournal = async (parent, args, context) => {
           },
         },
       },
-      quaterMark: true,
-      student: true,
-    },
-  });
-  console.log("year", args.year);
-
-  const hours = await context.prisma.teacher_Course_Student.findMany({
-    where: {
-      teacherId: args.teacherId,
-      courseId: args.courseId,
-    },
-    select: {
-      journalEntry: {
+      quarterMark: {
         where: {
-          date: {
-            gte: `${args.year}-09-01T00:00:00.000Z`,
-            lte: `${args.year + 1}-05-31T00:00:00.000Z`,
-          },
+          year: args.year,
         },
       },
+      student: true,
+      subgroup: true,
+      archived: true,
     },
   });
 
-  console.log("hours", [...hours]);
+  if (args.type === QUERY_TYPES.GROUP) {
+    return groupJournalBuilder(rawData)
+  }
+  // prepare data for frontend strait forward display
 
-  return students.map((student, index) => ({
-    ...student,
-    hours: hours[index].journalEntry.length,
-  }));
+  // we have grouped data if course type is group
+  // we have grouped single data if type is not group
+
+  // also we have empty dates which need to be filled.
+
+  // currently we send one request on load. and then moving through data on front.
+  // seems like we can move all this logic to backend, and prepare the data here for smaller period of time
+  // this will be already some sort of pagination implemented
+  // also we can lazy load data what is not in user viewport right now
+
+  // also add sorting where needed
 };
 
 module.exports(typeDef);
