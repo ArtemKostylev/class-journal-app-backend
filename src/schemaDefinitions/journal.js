@@ -23,6 +23,16 @@ const typeDef = gql`
     replacement: Replacement
   }
 
+  type DatesByGroup {
+    group: String!
+    students: [Date!]!
+  }
+
+  type ClassJournal {
+    dates: [DatesByGroup]
+    students: [Teacher_Course_Student]
+  }
+
   type QuarterMark {
     id: Int!
     mark: String!
@@ -39,7 +49,7 @@ const typeDef = gql`
       date_gte: Date
       date_lte: Date
       type: String!
-    ): [Teacher_Course_Student]
+    ): [ClassJournal]
   }
 
   extend type Mutation {
@@ -132,27 +142,6 @@ const deleteEntry = async (parent, args, context, info) => {
   }
 };
 
-const groupJournalBuilder = (data) => {
-  const groupedData = buildGroups(
-    data,
-    (item) =>
-      `${item.student.class} ${item.student.program} ${item.subgroup || "..."}`,
-    (item) => ({
-      id: item.id,
-      student: item.student,
-      journalEntry: item.journalEntry,
-      quarterMark: item.quarterMark,
-      archived: item.archived,
-    }),
-    "students"
-  );
-
-  const dates = buildDatesByGroup(groupedData);
-
-  return [dates, groupedData];
-
-};
-
 const fetchJournal = async (parent, args, context) => {
   const dateGte = args.date_gte || `${args.year}-09-01T00:00:00.000Z`;
   const dateLte = args.date_lte || `${args.year + 1}-05-31T00:00:00.000Z`;
@@ -187,21 +176,31 @@ const fetchJournal = async (parent, args, context) => {
   });
 
   if (args.type === QUERY_TYPES.GROUP) {
-    return groupJournalBuilder(rawData)
+    return groupJournalBuilder(rawData);
   }
-  // prepare data for frontend strait forward display
 
-  // we have grouped data if course type is group
-  // we have grouped single data if type is not group
-
-  // also we have empty dates which need to be filled.
-
-  // currently we send one request on load. and then moving through data on front.
-  // seems like we can move all this logic to backend, and prepare the data here for smaller period of time
-  // this will be already some sort of pagination implemented
-  // also we can lazy load data what is not in user viewport right now
-
+  return { dates: null, students: rawData };
   // also add sorting where needed
+};
+
+const groupJournalBuilder = (data) => {
+  const groupedData = buildGroups(
+    data,
+    (item) =>
+      `${item.student.class} ${item.student.program} ${item.subgroup || "..."}`,
+    (item) => ({
+      id: item.id,
+      student: item.student,
+      journalEntry: item.journalEntry,
+      quarterMark: item.quarterMark,
+      archived: item.archived,
+    }),
+    "students"
+  );
+
+  const dates = buildDatesByGroup(groupedData);
+
+  return [dates, groupedData];
 };
 
 module.exports(typeDef);
