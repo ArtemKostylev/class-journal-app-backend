@@ -7,13 +7,13 @@ const { graphqlUploadExpress } = require("graphql-upload");
 const {
   ApolloServerPluginLandingPageGraphQLPlayground,
 } = require("apollo-server-core");
+import { makeExecutableSchema } from "@graphql-tools/schema";
 
 async function startApolloServer() {
   const prisma = new PrismaClient();
 
   const server = new ApolloServer({
-    typeDefs,
-    resolvers,
+    schema: makeExecutableSchema(typeDefs, resolvers),
     cacheControl: {
       calculateHttpHeaders: false,
     },

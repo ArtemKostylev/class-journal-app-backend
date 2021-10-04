@@ -28,49 +28,48 @@ const typeDef = gql`
   }
 `;
 
-const updateTeacher = async (_, args, context, info) => {
-  return await context.prisma.teacher.update({
-    where: {
-      id: args.data.id,
-    },
-    data: {
-      name: args.data.name,
-      surname: args.data.surname,
-      parent: args.data.parent,
-    },
-  });
-};
-
-const deleteTeacher = async (_, args, context, info) => {
-  await context.prisma.teacher.delete({
-    where: {
-      id: args.id,
-    },
-  });
-};
-
-const createTeacher = async (_, args, context, info) => {
-  await context.prisma.teacher.create({
-    data: {
-      name: args.data.name,
-      surname: args.data.surname,
-      parent: args.parent,
-    },
-  });
-};
-
-const fetchTeachers = async (_, args, context) => {
-  const { userId } = context;
-  return await context.prisma.teacher.findMany({
-    include: {
-      relations: {
-        distinct: ["courseId"],
-        select: {
-          course: true,
+const resolvers = {
+  updateTeacher: async (_, args, context, info) => {
+    return await context.prisma.teacher.update({
+      where: {
+        id: args.data.id,
+      },
+      data: {
+        name: args.data.name,
+        surname: args.data.surname,
+        parent: args.data.parent,
+      },
+    });
+  },
+  deleteTeacher: async (_, args, context, info) => {
+    await context.prisma.teacher.delete({
+      where: {
+        id: args.id,
+      },
+    });
+  },
+  createTeacher: async (_, args, context, info) => {
+    await context.prisma.teacher.create({
+      data: {
+        name: args.data.name,
+        surname: args.data.surname,
+        parent: args.parent,
+      },
+    });
+  },
+  fetchTeachers: async (_, args, context) => {
+    const { userId } = context;
+    return await context.prisma.teacher.findMany({
+      include: {
+        relations: {
+          distinct: ["courseId"],
+          select: {
+            course: true,
+          },
         },
       },
-    },
-  });
+    });
+  },
 };
 
-module.exports(typeDef);
+module.exports(typeDef, resolvers);

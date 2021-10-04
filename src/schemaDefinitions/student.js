@@ -31,42 +31,41 @@ const typeDef = gql`
   }
 `;
 
-const updateStudent = async (parent, args, context, info) => {
-  return await context.prisma.student.update({
-    where: {
-      id: args.data.id,
-    },
-    data: {
-      name: args.data.name,
-      surname: args.data.surname,
-      class: args.data.class,
-      program: args.data.program,
-    },
-  });
+const resolvers = {
+  updateStudent: async (parent, args, context, info) => {
+    return await context.prisma.student.update({
+      where: {
+        id: args.data.id,
+      },
+      data: {
+        name: args.data.name,
+        surname: args.data.surname,
+        class: args.data.class,
+        program: args.data.program,
+      },
+    });
+  },
+  deleteStudent: async (parent, args, context, info) => {
+    await context.prisma.student.delete({
+      where: {
+        id: args.id,
+      },
+    });
+  },
+  createStudent: async (parent, args, context, info) => {
+    await context.prisma.student.create({
+      data: {
+        name: args.data.name,
+        surname: args.data.surname,
+        class: parseInt(args.data.class),
+        program: args.data.program,
+      },
+    });
+  },
+  fetchStudents: async (parent, args, context) => {
+    const { userId } = context;
+    return await context.prisma.student.findMany();
+  },
 };
 
-const deleteStudent = async (parent, args, context, info) => {
-  await context.prisma.student.delete({
-    where: {
-      id: args.id,
-    },
-  });
-};
-
-const createStudent = async (parent, args, context, info) => {
-  await context.prisma.student.create({
-    data: {
-      name: args.data.name,
-      surname: args.data.surname,
-      class: parseInt(args.data.class),
-      program: args.data.program,
-    },
-  });
-};
-
-const fetchStudents = async (parent, args, context) => {
-  const { userId } = context;
-  return await context.prisma.student.findMany();
-};
-
-module.exports(typeDef);
+module.exports(typeDef, resolvers);

@@ -87,100 +87,99 @@ const QUERY_TYPES = {
   GROUP: "group",
 };
 
-const updateDailyEntry = async (parent, args, context, info) => {
-  await context.prisma.journalEntry.upsert({
-    where: {
-      id: args.id,
-    },
-    update: {
-      mark: args.mark,
-      date: args.date,
-    },
-    create: {
-      mark: args.mark,
-      date: args.date,
-      relationId: args.relationId,
-    },
-  });
-};
-
-const updateQuarterEntry = async (parent, args, context, info) => {
-  await context.prisma.quarterMark.upsert({
-    where: {
-      id: args.id,
-    },
-    update: {
-      mark: args.mark,
-    },
-    create: {
-      mark: args.mark,
-      period: args.date,
-      year: args.year,
-      relationId: args.relationId,
-    },
-  });
-};
-
-const deleteEntry = async (parent, args, context, info) => {
-  const model =
-    args.type === MARK_TYPES.DAILY_MARK
-      ? context.prisma.journalEntry
-      : context.prisma.quarterMark;
-
-  await model.delete({
-    where: {
-      id: args.id,
-    },
-  });
-
-  if (args.type === MARK_TYPES.DAILY_MARK) {
-    await context.prisma.replacement.delete({
+const resolvers = {
+  updateDailyEntry: async (parent, args, context, info) => {
+    await context.prisma.journalEntry.upsert({
       where: {
-        entryId: args.id,
+        id: args.id,
+      },
+      update: {
+        mark: args.mark,
+        date: args.date,
+      },
+      create: {
+        mark: args.mark,
+        date: args.date,
+        relationId: args.relationId,
       },
     });
-  }
-};
+  },
+  updateQuarterEntry: async (parent, args, context, info) => {
+    await context.prisma.quarterMark.upsert({
+      where: {
+        id: args.id,
+      },
+      update: {
+        mark: args.mark,
+      },
+      create: {
+        mark: args.mark,
+        period: args.date,
+        year: args.year,
+        relationId: args.relationId,
+      },
+    });
+  },
+  deleteEntry: async (parent, args, context, info) => {
+    const model =
+      args.type === MARK_TYPES.DAILY_MARK
+        ? context.prisma.journalEntry
+        : context.prisma.quarterMark;
 
-const fetchJournal = async (parent, args, context) => {
-  const dateGte = args.date_gte || `${args.year}-09-01T00:00:00.000Z`;
-  const dateLte = args.date_lte || `${args.year + 1}-05-31T00:00:00.000Z`;
+    await model.delete({
+      where: {
+        id: args.id,
+      },
+    });
 
-  const rawData = await context.prisma.teacher_Course_Student.findMany({
-    where: {
-      teacherId: args.teacherId,
-      courseId: args.courseId,
-    },
-    select: {
-      id: true,
-      journalEntry: {
-        orderBy: {
-          date: "asc",
-        },
+    if (args.type === MARK_TYPES.DAILY_MARK) {
+      await context.prisma.replacement.delete({
         where: {
-          date: {
-            gte: dateGte,
-            lte: dateLte,
+          entryId: args.id,
+        },
+      });
+    }
+  },
+  fetchJournal: async (parent, args, context) => {
+    const dateGte = args.date_gte || `${args.year}-09-01T00:00:00.000Z`;
+    const dateLte = args.date_lte || `${args.year + 1}-05-31T00:00:00.000Z`;
+
+    const rawData = await context.prisma.teacher_Course_Student.findMany({
+      where: {
+        teacherId: args.teacherId,
+        courseId: args.courseId,
+      },
+      select: {
+        id: true,
+        journalEntry: {
+          orderBy: {
+            date: "asc",
+          },
+          where: {
+            date: {
+              gte: dateGte,
+              lte: dateLte,
+            },
           },
         },
-      },
-      quarterMark: {
-        where: {
-          year: args.year,
+        quarterMark: {
+          where: {
+            year: args.year,
+          },
         },
+        student: true,
+        subgroup: true,
+        archived: true,
       },
-      student: true,
-      subgroup: true,
-      archived: true,
-    },
-  });
+    });
 
-  if (args.type === QUERY_TYPES.GROUP) {
-    return groupJournalBuilder(rawData);
-  }
+    if (args.type === QUERY_TYPES.GROUP) {
+      return groupJournalBuilder(rawData);
+    }
 
-  return { dates: null, students: rawData };
-  // also add sorting where needed
+    return { dates: null, students: rawData };
+    // also add sorting where needed
+  },
 };
 
 const groupJournalBuilder = (data) => {
@@ -203,4 +202,4 @@ const groupJournalBuilder = (data) => {
   return [dates, groupedData];
 };
 
-module.exports(typeDef);
+module.exports(typeDef, resolvers);

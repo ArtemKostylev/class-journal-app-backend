@@ -33,46 +33,45 @@ const typeDef = gql`
   }
 `;
 
-const updateCourse = async (parent, args, context, info) => {
-  return await context.prisma.course.update({
-    where: {
-      id: args.data.id,
-    },
-    data: {
-      name: args.data.name,
-      group: args.data.group,
-      excludeFromReport: args.data.excludeFromReport,
-      onlyHours: args.data.onlyHours,
-      onlyGroups: args.data.onlyGroups,
-      parentId: args.data.parentId,
-    },
-  });
+const resolvers = {
+  updateCourse: async (parent, args, context, info) => {
+    return await context.prisma.course.update({
+      where: {
+        id: args.data.id,
+      },
+      data: {
+        name: args.data.name,
+        group: args.data.group,
+        excludeFromReport: args.data.excludeFromReport,
+        onlyHours: args.data.onlyHours,
+        onlyGroups: args.data.onlyGroups,
+        parentId: args.data.parentId,
+      },
+    });
+  },
+  deleteCourse: async (parent, args, context, info) => {
+    await context.prisma.course.delete({
+      where: {
+        id: args.id,
+      },
+    });
+  },
+  createCourse: async (parent, args, context, info) => {
+    await context.prisma.course.create({
+      data: {
+        name: args.data.name,
+        group: args.data.group,
+        excludeFromReport: args.data.excludeFromReport,
+        onlyHours: args.data.onlyHours,
+        onlyGroups: args.data.onlyGroups,
+        parentId: args.data.parentId,
+      },
+    });
+  },
+  fetchCourses: async (parent, args, context) => {
+    const { userId } = context;
+    return await context.prisma.course.findMany();
+  },
 };
 
-const deleteCourse = async (parent, args, context, info) => {
-  await context.prisma.course.delete({
-    where: {
-      id: args.id,
-    },
-  });
-};
-
-const createCourse = async (parent, args, context, info) => {
-  await context.prisma.course.create({
-    data: {
-      name: args.data.name,
-      group: args.data.group,
-      excludeFromReport: args.data.excludeFromReport,
-      onlyHours: args.data.onlyHours,
-      onlyGroups: args.data.onlyGroups,
-      parentId: args.data.parentId,
-    },
-  });
-};
-
-const fetchCourses = async (parent, args, context) => {
-  const { userId } = context;
-  return await context.prisma.course.findMany();
-};
-
-module.exports(typeDef);
+module.exports(typeDef, resolvers);

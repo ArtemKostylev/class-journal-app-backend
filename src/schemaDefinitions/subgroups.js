@@ -28,45 +28,46 @@ const typeDef = gql`
   }
 `;
 
-const updateSubgroups = async (parent, args, context, info) => {
-  Promise.all(
-    args.data.map((subgroup) =>
-      context.prisma.teacher_Course_Student.update({
-        where: {
-          id: subgroup.id,
-        },
-        data: {
-          subgroup: subgroup.subgroup,
-        },
-      })
-    )
-  );
+const resolvers = {
+  updateSubgroups: async (parent, args, context, info) => {
+    Promise.all(
+      args.data.map((subgroup) =>
+        context.prisma.teacher_Course_Student.update({
+          where: {
+            id: subgroup.id,
+          },
+          data: {
+            subgroup: subgroup.subgroup,
+          },
+        })
+      )
+    );
+  },
+  fetchSubgroups: async (parent, args, context) => {
+    let students = await context.prisma.teacher_Course_Student.findMany({
+      where: {
+        teacherId: args.teacherId,
+        courseId: args.courseId,
+      },
+      select: {
+        id: true,
+        student: true,
+        subgroup: true,
+      },
+    });
+
+    return buildGroups(
+      students,
+      (item) => `${item.student.class} ${item.student.program}`,
+      (item) => ({
+        relation: item.id,
+        name: item.student.name,
+        surname: item.student.surname,
+        subgroup: item.subgroup,
+      }),
+      "relations"
+    );
+  },
 };
 
-const fetchSubgroups = async (parent, args, context) => {
-  let students = await context.prisma.teacher_Course_Student.findMany({
-    where: {
-      teacherId: args.teacherId,
-      courseId: args.courseId,
-    },
-    select: {
-      id: true,
-      student: true,
-      subgroup: true,
-    },
-  });
-
-  return buildGroups(
-    students,
-    (item) => `${item.student.class} ${item.student.program}`,
-    (item) => ({
-      relation: item.id,
-      name: item.student.name,
-      surname: item.student.surname,
-      subgroup: item.subgroup,
-    }),
-    "relations"
-  );
-};
-
-module.exports(typeDef);
+module.exports(typeDef, resolvers);
