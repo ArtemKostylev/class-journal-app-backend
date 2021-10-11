@@ -1,19 +1,20 @@
 const express = require("express");
 const { ApolloServer } = require("apollo-server-express");
-const { resolvers, typeDefs } = require("./createApolloServerProps");
+const { createApolloServerProps } = require("./createApolloServerProps");
 const { PrismaClient } = require("@prisma/client");
 const { getUserId } = require("./utils");
 const { graphqlUploadExpress } = require("graphql-upload");
 const {
   ApolloServerPluginLandingPageGraphQLPlayground,
 } = require("apollo-server-core");
-import { makeExecutableSchema } from "@graphql-tools/schema";
+const { makeExecutableSchema } = require("@graphql-tools/schema");
 
 async function startApolloServer() {
   const prisma = new PrismaClient();
 
+  const { typeDefs, resolvers } = createApolloServerProps();
   const server = new ApolloServer({
-    schema: makeExecutableSchema(typeDefs, resolvers),
+    schema: makeExecutableSchema({ typeDefs, resolvers }),
     cacheControl: {
       calculateHttpHeaders: false,
     },

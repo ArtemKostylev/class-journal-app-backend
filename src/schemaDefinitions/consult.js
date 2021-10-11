@@ -1,6 +1,4 @@
-const gql = require("graphql-tag");
-
-const typeDef = gql`
+const typeDef = `
   type Consult {
     id: Int!
     date: Date!
@@ -80,154 +78,160 @@ const typeDef = gql`
   }
 `;
 
-const updateConsults = async (parent, args, context, info) => {
-  return (updatedEntries = args.data.map((consult) => {
-    return context.prisma.consult.upsert({
-      where: {
-        id: consult.id,
-      },
-      update: {
-        date: consult.date,
-        hours: consult.hours,
-      },
-      create: {
-        date: consult.date,
-        hours: consult.hours,
-        relationId: consult.relationId,
-        year: consult.year,
-      },
-    });
-  }));
-};
-
-const deleteConsults = async (parent, args, context, info) => {
-  let ids = args.ids.map((id) => parseInt(id));
-
-  let res = await context.prisma.consult.deleteMany({
-    where: {
-      id: {
-        in: ids,
-      },
+const resolvers = {
+  Mutation: {
+    updateConsults: async (parent, args, context, info) => {
+      return (updatedEntries = args.data.map((consult) => {
+        return context.prisma.consult.upsert({
+          where: {
+            id: consult.id,
+          },
+          update: {
+            date: consult.date,
+            hours: consult.hours,
+          },
+          create: {
+            date: consult.date,
+            hours: consult.hours,
+            relationId: consult.relationId,
+            year: consult.year,
+          },
+        });
+      }));
     },
-  });
-};
 
-const updateGroupConsults = async (parent, args, context, info) => {
-  return (updatedEntries = args.data.map((group) => {
-    group.consults.map(async (consult) => {
-      console.log(consult);
-      return await context.prisma.groupConsult.upsert({
+    deleteConsults: async (parent, args, context, info) => {
+      let ids = args.ids.map((id) => parseInt(id));
+
+      let res = await context.prisma.consult.deleteMany({
         where: {
-          id: consult.id,
-        },
-        update: {
-          date: consult.date,
-          hours: consult.hours,
-        },
-        create: {
-          date: consult.date,
-          year: consult.year,
-          teacherId: args.teacher,
-          courseId: args.course,
-          hours: consult.hours,
-          program: group.program,
-          subgroup: group.subgroup,
-          class: group.class,
+          id: {
+            in: ids,
+          },
         },
       });
-    });
-  }));
-};
+    },
 
-const resolvers = {
-  deleteGroupConsults: async (parent, args, context, info) => {
-    let ids = args.ids.map((id) => parseInt(id));
+    updateGroupConsults: async (parent, args, context, info) => {
+      return (updatedEntries = args.data.map((group) => {
+        group.consults.map(async (consult) => {
+          console.log(consult);
+          return await context.prisma.groupConsult.upsert({
+            where: {
+              id: consult.id,
+            },
+            update: {
+              date: consult.date,
+              hours: consult.hours,
+            },
+            create: {
+              date: consult.date,
+              year: consult.year,
+              teacherId: args.teacher,
+              courseId: args.course,
+              hours: consult.hours,
+              program: group.program,
+              subgroup: group.subgroup,
+              class: group.class,
+            },
+          });
+        });
+      }));
+    },
 
-    let res = await context.prisma.groupConsult.deleteMany({
-      where: {
-        id: {
-          in: ids,
-        },
-      },
-    });
-  },
-  fetchGroupConsults: async (parent, args, context) => {
-    const { userId } = context;
+    deleteGroupConsults: async (parent, args, context, info) => {
+      let ids = args.ids.map((id) => parseInt(id));
 
-    let availableGroups = await context.prisma.teacher_Course_Student.findMany({
-      where: {
-        teacherId: args.teacherId,
-        courseId: args.courseId,
-        archived: false,
-      },
-      select: {
-        subgroup: true,
-        student: {
-          select: {
-            class: true,
-            program: true,
+      let res = await context.prisma.groupConsult.deleteMany({
+        where: {
+          id: {
+            in: ids,
           },
         },
-      },
-    });
-
-    availableGroups = availableGroups.map(
-      (item) =>
-        `${item.student.class} ${item.student.program} ${
-          item.subgroup || "..."
-        }`
-    );
-
-    const consultsAll = await context.prisma.groupConsult.findMany({
-      where: {
-        teacherId: args.teacherId,
-        courseId: args.courseId,
-        year: args.year,
-      },
-    });
-
-    let consultsByGroups = new Map();
-
-    consultsAll.forEach((item) => {
-      const key = `${item.class} ${item.program} ${item.subgroup || "..."}`;
-
-      const value = {
-        id: item.id,
-        date: item.date,
-        hours: item.hours,
-      };
-
-      if (consultsByGroups.has(key))
-        consultsByGroups.set(key, consultsByGroups.get(key).push(value));
-      consultsByGroups.set(key, [value]);
-    });
-
-    return availableGroups.map((group) => {
-      if (consultsByGroups.has(group))
-        return { group, consults: consultsByGroups.get(group) };
-      return { group, consults: [] };
-    });
+      });
+    },
   },
-  fetchConsults: async (parent, args, context) => {
-    const { userId } = context;
-    return await context.prisma.teacher_Course_Student.findMany({
-      where: {
-        teacherId: args.teacherId,
-        courseId: args.courseId,
-      },
-      include: {
-        consult: {
-          orderBy: {
-            date: "asc",
-          },
+  Query: {
+    fetchGroupConsults: async (parent, args, context) => {
+      const { userId } = context;
+
+      let availableGroups = await context.prisma.teacher_Course_Student.findMany(
+        {
           where: {
-            year: args.year,
+            teacherId: args.teacherId,
+            courseId: args.courseId,
+            archived: false,
           },
+          select: {
+            subgroup: true,
+            student: {
+              select: {
+                class: true,
+                program: true,
+              },
+            },
+          },
+        }
+      );
+
+      availableGroups = availableGroups.map(
+        (item) =>
+          `${item.student.class} ${item.student.program} ${
+            item.subgroup || "..."
+          }`
+      );
+
+      const consultsAll = await context.prisma.groupConsult.findMany({
+        where: {
+          teacherId: args.teacherId,
+          courseId: args.courseId,
+          year: args.year,
         },
-        student: true,
-      },
-    });
+      });
+
+      let consultsByGroups = new Map();
+
+      consultsAll.forEach((item) => {
+        const key = `${item.class} ${item.program} ${item.subgroup || "..."}`;
+
+        const value = {
+          id: item.id,
+          date: item.date,
+          hours: item.hours,
+        };
+
+        if (consultsByGroups.has(key))
+          consultsByGroups.set(key, consultsByGroups.get(key).push(value));
+        consultsByGroups.set(key, [value]);
+      });
+
+      return availableGroups.map((group) => {
+        if (consultsByGroups.has(group))
+          return { group, consults: consultsByGroups.get(group) };
+        return { group, consults: [] };
+      });
+    },
+    fetchConsults: async (parent, args, context) => {
+      const { userId } = context;
+      return await context.prisma.teacher_Course_Student.findMany({
+        where: {
+          teacherId: args.teacherId,
+          courseId: args.courseId,
+        },
+        include: {
+          consult: {
+            orderBy: {
+              date: "asc",
+            },
+            where: {
+              year: args.year,
+            },
+          },
+          student: true,
+        },
+      });
+    },
   },
 };
 
-module.exports(typeDef, resolvers);
+module.exports = { typeDef, resolvers };

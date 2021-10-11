@@ -4,4 +4,4 @@ class NotAuthenticatedError extends Error {
   }
 }
 
-module.exports(NotAuthenticatedError);
+module.exports = { NotAuthenticatedError };

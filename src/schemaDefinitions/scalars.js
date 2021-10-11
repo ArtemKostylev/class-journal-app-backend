@@ -1,8 +1,6 @@
-const gql = require("graphql-tag");
-
-const typeDef = gql`
+const typeDef = `
   scalar Date
   scalar Upload
 `;
 
-module.exports(typeDef);
+module.exports = { typeDef };

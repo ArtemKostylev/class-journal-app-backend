@@ -1,6 +1,4 @@
-const gql = require("graphql-tag");
-
-const typeDef = gql`
+const typeDef = `
   type Student {
     id: Int!
     name: String
@@ -9,7 +7,6 @@ const typeDef = gql`
     program: String
     load: Int
     relations: [Teacher_Course_Student]
-    subgroup: [Subgroup]
   }
 
   extend type Query {
@@ -32,40 +29,44 @@ const typeDef = gql`
 `;
 
 const resolvers = {
-  updateStudent: async (parent, args, context, info) => {
-    return await context.prisma.student.update({
-      where: {
-        id: args.data.id,
-      },
-      data: {
-        name: args.data.name,
-        surname: args.data.surname,
-        class: args.data.class,
-        program: args.data.program,
-      },
-    });
+  Mutation: {
+    updateStudent: async (parent, args, context, info) => {
+      return await context.prisma.student.update({
+        where: {
+          id: args.data.id,
+        },
+        data: {
+          name: args.data.name,
+          surname: args.data.surname,
+          class: args.data.class,
+          program: args.data.program,
+        },
+      });
+    },
+    deleteStudent: async (parent, args, context, info) => {
+      await context.prisma.student.delete({
+        where: {
+          id: args.id,
+        },
+      });
+    },
+    createStudent: async (parent, args, context, info) => {
+      await context.prisma.student.create({
+        data: {
+          name: args.data.name,
+          surname: args.data.surname,
+          class: parseInt(args.data.class),
+          program: args.data.program,
+        },
+      });
+    },
   },
-  deleteStudent: async (parent, args, context, info) => {
-    await context.prisma.student.delete({
-      where: {
-        id: args.id,
-      },
-    });
-  },
-  createStudent: async (parent, args, context, info) => {
-    await context.prisma.student.create({
-      data: {
-        name: args.data.name,
-        surname: args.data.surname,
-        class: parseInt(args.data.class),
-        program: args.data.program,
-      },
-    });
-  },
-  fetchStudents: async (parent, args, context) => {
-    const { userId } = context;
-    return await context.prisma.student.findMany();
+  Query: {
+    fetchStudents: async (parent, args, context) => {
+      const { userId } = context;
+      return await context.prisma.student.findMany();
+    },
   },
 };
 
-module.exports(typeDef, resolvers);
+module.exports = { typeDef, resolvers };

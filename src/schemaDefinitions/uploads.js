@@ -1,6 +1,4 @@
-const gql = require("graphql-tag");
-
-const typeDef = gql`
+const typeDef = `
   extend type Mutation {
     uploadTeachersFromFile(file: Upload!): Boolean
     uploadCoursesFromFile(file: Upload!): Boolean
@@ -9,123 +7,143 @@ const typeDef = gql`
 `;
 
 const resolvers = {
-  uploadTeachersFromFile: async (_, args, context, info) => {
-    const { createReadStream, filetype, mimetype, encoding } = await args.file;
+  Mutation: {
+    uploadTeachersFromFile: async (_, args, context, info) => {
+      const {
+        createReadStream,
+        filetype,
+        mimetype,
+        encoding,
+      } = await args.file;
 
-    const stream = createReadStream();
+      const stream = createReadStream();
 
-    const rl = readline.createInterface({
-      input: stream,
-      crlfDelay: Infinity,
-    });
+      const rl = readline.createInterface({
+        input: stream,
+        crlfDelay: Infinity,
+      });
 
-    let lines = [];
+      let lines = [];
 
-    for await (const line of rl) {
-      const data = line.split(" ");
-      if (data.length !== 3) throw new Error("Invalid file format");
-      lines.push(data);
-      console.log(data);
-    }
-
-    const currentEntries = await context.prisma.teacher.findMany();
-
-    const created = lines.map(async (entry) => {
-      if (
-        -1 ===
-        currentEntries.findIndex(
-          (item) =>
-            item.name === entry[0] &&
-            item.surname === entry[1] &&
-            item.parent === entry[2]
-        )
-      ) {
-        await context.prisma.teacher.create({
-          data: {
-            name: entry[1],
-            surname: entry[0],
-            parent: entry[2] || "",
-          },
-        });
+      for await (const line of rl) {
+        const data = line.split(" ");
+        if (data.length !== 3) throw new Error("Invalid file format");
+        lines.push(data);
+        console.log(data);
       }
-    });
 
-    return true;
-  },
-  uploadCoursesFromFile: async (_, args, context, info) => {
-    const { createReadStream, filetype, mimetype, encoding } = await args.file;
+      const currentEntries = await context.prisma.teacher.findMany();
 
-    const stream = createReadStream();
+      const created = lines.map(async (entry) => {
+        if (
+          -1 ===
+          currentEntries.findIndex(
+            (item) =>
+              item.name === entry[0] &&
+              item.surname === entry[1] &&
+              item.parent === entry[2]
+          )
+        ) {
+          await context.prisma.teacher.create({
+            data: {
+              name: entry[1],
+              surname: entry[0],
+              parent: entry[2] || "",
+            },
+          });
+        }
+      });
 
-    const rl = readline.createInterface({
-      input: stream,
-      crlfDelay: Infinity,
-    });
+      return true;
+    },
+    uploadCoursesFromFile: async (_, args, context, info) => {
+      const {
+        createReadStream,
+        filetype,
+        mimetype,
+        encoding,
+      } = await args.file;
 
-    let lines = [];
+      const stream = createReadStream();
 
-    for await (const line of rl) {
-      const data = line.split(" ");
-      if (data.length !== 2) throw new Error("Invalid file format");
-      lines.push(data);
-      console.log(data);
-    }
+      const rl = readline.createInterface({
+        input: stream,
+        crlfDelay: Infinity,
+      });
 
-    const currentEntries = await context.prisma.course.findMany();
+      let lines = [];
 
-    const created = lines.map(async (entry) => {
-      if (-1 === currentEntries.findIndex((item) => item.name === entry[0])) {
-        await context.prisma.course.create({
-          data: {
-            name: entry[0],
-            group: entry[1] === "+" ? true : false,
-          },
-        });
+      for await (const line of rl) {
+        const data = line.split(" ");
+        if (data.length !== 2) throw new Error("Invalid file format");
+        lines.push(data);
+        console.log(data);
       }
-    });
 
-    return true;
-  },
-  uploadStudentsFromFile: async (_, args, context, info) => {
-    const { createReadStream, filetype, mimetype, encoding } = await args.file;
+      const currentEntries = await context.prisma.course.findMany();
 
-    const stream = createReadStream();
+      const created = lines.map(async (entry) => {
+        if (-1 === currentEntries.findIndex((item) => item.name === entry[0])) {
+          await context.prisma.course.create({
+            data: {
+              name: entry[0],
+              group: entry[1] === "+" ? true : false,
+            },
+          });
+        }
+      });
 
-    const rl = readline.createInterface({
-      input: stream,
-      crlfDelay: Infinity,
-    });
+      return true;
+    },
+    uploadStudentsFromFile: async (_, args, context, info) => {
+      const {
+        createReadStream,
+        filetype,
+        mimetype,
+        encoding,
+      } = await args.file;
 
-    let lines = [];
+      const stream = createReadStream();
 
-    for await (const line of rl) {
-      const data = line.split(" ");
-      if (data.length !== 4) throw new Error("Invalid file format");
-      lines.push(data);
-    }
+      const rl = readline.createInterface({
+        input: stream,
+        crlfDelay: Infinity,
+      });
 
-    const currentEntries = await context.prisma.student.findMany();
+      let lines = [];
 
-    const created = lines.map(async (entry) => {
-      if (
-        -1 ===
-        currentEntries.findIndex(
-          (item) => item.name === entry[0] && item.surname === entry[1]
-        )
-      ) {
-        await context.prisma.student.create({
-          data: {
-            name: entry[1],
-            surname: entry[0],
-            class: parseInt(entry[2]),
-            program: entry[3],
-          },
-        });
+      for await (const line of rl) {
+        const data = line.split(" ");
+        if (data.length !== 4) throw new Error("Invalid file format");
+        lines.push(data);
       }
-    });
 
-    return true;
+      const currentEntries = await context.prisma.student.findMany();
+
+      const created = lines.map(async (entry) => {
+        if (
+          -1 ===
+          currentEntries.findIndex(
+            (item) => item.name === entry[0] && item.surname === entry[1]
+          )
+        ) {
+          await context.prisma.student.create({
+            data: {
+              name: entry[1],
+              surname: entry[0],
+              class: parseInt(entry[2]),
+              program: entry[3],
+            },
+          });
+        }
+      });
+
+      return true;
+    },
   },
 };
 
-module.exports(typeDef, resolvers);
+module.exports = {
+  typeDef,
+  resolvers,
+};

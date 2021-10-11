@@ -1,6 +1,4 @@
-const gql = require("graphql-tag");
-
-const typeDef = gql`
+const typeDef = `
   type Course {
     id: Int!
     name: String!
@@ -34,6 +32,8 @@ const typeDef = gql`
 `;
 
 const resolvers = {
+  Mutation: {
+
   updateCourse: async (parent, args, context, info) => {
     return await context.prisma.course.update({
       where: {
@@ -68,10 +68,14 @@ const resolvers = {
       },
     });
   },
+  },
+  Query: {
+
   fetchCourses: async (parent, args, context) => {
     const { userId } = context;
     return await context.prisma.course.findMany();
   },
+  }
 };
 
-module.exports(typeDef, resolvers);
+module.exports = { typeDef, resolvers }

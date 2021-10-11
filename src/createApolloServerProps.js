@@ -4,57 +4,55 @@ const GraphQLDateTime = require("graphql-iso-date");
 const merge = require("lodash.merge");
 
 const {
-  uploadTypes,
-  uploadResolvers,
-} = require("./schemaDefinitions/typeDefs/uploads");
-const {
-  teacherTypes,
-  teacherResolvers,
-} = require("./schemaDefinitions/typeDefs/teacher");
-const {
-  subgroupTypes,
-  subgroupResolvers,
-} = require("./schemaDefinitions/typeDefs/subgroups");
-const {
-  studentTypes,
-  studentResolvers,
-} = require("./schemaDefinitions/typeDefs/student");
-const { scalarTypes } = require("./schemaDefinitions/typeDefs/scalars");
-const {
-  replacementTypes,
-  replacementResolvers,
-} = require("./schemaDefinitions/typeDefs/replacement");
-const {
-  partnerTypes,
-  partnerResolvers,
-} = require("./schemaDefinitions/typeDefs/partner");
-const {
-  noteTypes,
-  noteResolvers,
-} = require("./schemaDefinitions/typeDefs/notes");
-const {
-  journalTypes,
-  journalResolvers,
-} = require("./schemaDefinitions/typeDefs/journal");
-const {
-  courseTypes,
-  courseResolvers,
-} = require("./schemaDefinitions/typeDefs/course");
-const {
-  consultTypes,
-  consultResolvers,
-} = require("./schemaDefinitions/typeDefs/consult");
-const {
-  authTypes,
-  authResolvers,
-} = require("./schemaDefinitions/typeDefs/auth");
-const {
-  adminTypes,
-  adminResolvers,
-} = require("./schemaDefinitions/typeDefs/admin");
+  typeDef: uploadTypes,
+  resolvers: uploadResolvers,
+} = require("./schemaDefinitions/uploads");
 
-const fs = require("fs");
-const path = require("path");
+const {
+  typeDef: teacherTypes,
+  resolvers: teacherResolvers,
+} = require("./schemaDefinitions/teacher");
+const {
+  typeDef: subgroupTypes,
+  resolvers: subgroupResolvers,
+} = require("./schemaDefinitions/subgroups");
+const {
+  typeDef: studentTypes,
+  resolvers: studentResolvers,
+} = require("./schemaDefinitions/student");
+const { typeDef: scalarTypes } = require("./schemaDefinitions/scalars");
+const {
+  typeDef: replacementTypes,
+  resolvers: replacementResolvers,
+} = require("./schemaDefinitions/replacement");
+const {
+  typeDef: partnerTypes,
+  resolvers: partnerResolvers,
+} = require("./schemaDefinitions/partner");
+const {
+  typeDef: noteTypes,
+  resolvers: noteResolvers,
+} = require("./schemaDefinitions/notes");
+const {
+  typeDef: journalTypes,
+  resolvers: journalResolvers,
+} = require("./schemaDefinitions/journal");
+const {
+  typeDef: courseTypes,
+  resolvers: courseResolvers,
+} = require("./schemaDefinitions/course");
+const {
+  typeDef: consultTypes,
+  resolvers: consultResolvers,
+} = require("./schemaDefinitions/consult");
+const {
+  typeDef: authTypes,
+  resolvers: authResolvers,
+} = require("./schemaDefinitions/auth");
+const {
+  typeDef: adminTypes,
+  resolvers: adminResolvers,
+} = require("./schemaDefinitions/admin");
 
 const resolvers = merge(
   uploadResolvers,
@@ -75,7 +73,18 @@ const resolvers = merge(
   }
 );
 
+const baseTypes = `
+  type Query {
+    _empty: String
+  }
+
+  type Mutation {
+    _empty: String
+  }
+`;
+
 const typeDefs = [
+  baseTypes,
   uploadTypes,
   teacherTypes,
   subgroupTypes,
@@ -91,4 +100,8 @@ const typeDefs = [
   scalarTypes,
 ];
 
-module.exports({ resolvers, typeDefs });
+const createApolloServerProps = () => {
+  return { resolvers, typeDefs };
+};
+
+module.exports = { createApolloServerProps };

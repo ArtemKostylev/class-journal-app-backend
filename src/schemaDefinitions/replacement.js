@@ -1,6 +1,4 @@
-const gql = require("graphql-tag");
-
-const typeDef = gql`
+const typeDef = `
   type Replacement {
     id: Int!
     date: Date!
@@ -29,62 +27,66 @@ const typeDef = gql`
 `;
 
 const resolvers = {
-  updateReplacements: async (parent, args, context, info) => {
-    return (updatedEntries = args.data.map((repl) => {
-      return context.prisma.replacement.upsert({
+  Mutation: {
+    updateReplacements: async (parent, args, context, info) => {
+      return (updatedEntries = args.data.map((repl) => {
+        return context.prisma.replacement.upsert({
+          where: {
+            id: repl.id,
+          },
+          update: {
+            date: repl.date,
+          },
+          create: {
+            date: repl.date,
+            entryId: repl.entryId,
+          },
+        });
+      }));
+    },
+    deleteReplacements: async (parent, args, context, info) => {
+      let ids = args.ids.map((id) => parseInt(id));
+
+      let res = await context.prisma.replacement.deleteMany({
         where: {
-          id: repl.id,
-        },
-        update: {
-          date: repl.date,
-        },
-        create: {
-          date: repl.date,
-          entryId: repl.entryId,
+          id: {
+            in: ids,
+          },
         },
       });
-    }));
+    },
   },
-  deleteReplacements: async (parent, args, context, info) => {
-    let ids = args.ids.map((id) => parseInt(id));
-
-    let res = await context.prisma.replacement.deleteMany({
-      where: {
-        id: {
-          in: ids,
+  Query: {
+    fetchReplacements: async (parent, args, context) => {
+      const { userId } = context;
+      return await context.prisma.teacher_Course_Student.findMany({
+        where: {
+          teacherId: args.teacherId,
+          courseId: args.courseId,
         },
-      },
-    });
-  },
-  fetchReplacements: async (parent, args, context) => {
-    const { userId } = context;
-    return await context.prisma.teacher_Course_Student.findMany({
-      where: {
-        teacherId: args.teacherId,
-        courseId: args.courseId,
-      },
-      include: {
-        journalEntry: {
-          orderBy: {
-            date: "asc",
-          },
-          where: {
-            date: {
-              gte: args.date_gte,
-              lte: args.date_lte,
+        include: {
+          journalEntry: {
+            orderBy: {
+              date: "asc",
             },
-            mark: {
-              in: ["Б"],
+            where: {
+              date: {
+                gte: args.date_gte,
+                lte: args.date_lte,
+              },
+              mark: {
+                in: ["Б"],
+              },
+            },
+            include: {
+              replacement: true,
             },
           },
-          include: {
-            replacement: true,
-          },
+          student: true,
         },
-        student: true,
-      },
-    });
+      });
+    },
   },
 };
 
-module.exports(typeDef, resolvers);
+module.exports = { typeDef, resolvers };

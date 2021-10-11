@@ -4,4 +4,4 @@ class RequestFailureError extends Error {
   }
 }
 
-module.exports(RequestFailureError);
+module.exports = { RequestFailureError };

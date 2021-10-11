@@ -1,6 +1,4 @@
-const gql = require("graphql-tag");
-
-const typeDef = gql`
+const typeDef = `
   type Teacher {
     id: Int!
     name: String
@@ -29,47 +27,51 @@ const typeDef = gql`
 `;
 
 const resolvers = {
-  updateTeacher: async (_, args, context, info) => {
-    return await context.prisma.teacher.update({
-      where: {
-        id: args.data.id,
-      },
-      data: {
-        name: args.data.name,
-        surname: args.data.surname,
-        parent: args.data.parent,
-      },
-    });
+  Mutation: {
+    updateTeacher: async (_, args, context, info) => {
+      return await context.prisma.teacher.update({
+        where: {
+          id: args.data.id,
+        },
+        data: {
+          name: args.data.name,
+          surname: args.data.surname,
+          parent: args.data.parent,
+        },
+      });
+    },
+    deleteTeacher: async (_, args, context, info) => {
+      await context.prisma.teacher.delete({
+        where: {
+          id: args.id,
+        },
+      });
+    },
+    createTeacher: async (_, args, context, info) => {
+      await context.prisma.teacher.create({
+        data: {
+          name: args.data.name,
+          surname: args.data.surname,
+          parent: args.parent,
+        },
+      });
+    },
   },
-  deleteTeacher: async (_, args, context, info) => {
-    await context.prisma.teacher.delete({
-      where: {
-        id: args.id,
-      },
-    });
-  },
-  createTeacher: async (_, args, context, info) => {
-    await context.prisma.teacher.create({
-      data: {
-        name: args.data.name,
-        surname: args.data.surname,
-        parent: args.parent,
-      },
-    });
-  },
-  fetchTeachers: async (_, args, context) => {
-    const { userId } = context;
-    return await context.prisma.teacher.findMany({
-      include: {
-        relations: {
-          distinct: ["courseId"],
-          select: {
-            course: true,
+  Query: {
+    fetchTeachers: async (_, args, context) => {
+      const { userId } = context;
+      return await context.prisma.teacher.findMany({
+        include: {
+          relations: {
+            distinct: ["courseId"],
+            select: {
+              course: true,
+            },
           },
         },
-      },
-    });
+      });
+    },
   },
 };
 
-module.exports(typeDef, resolvers);
+module.exports = { typeDef, resolvers };
