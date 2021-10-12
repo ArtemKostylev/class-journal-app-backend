@@ -32,41 +32,41 @@ model Teacher {
   surname      String?
   parent       String?
   user         User?                    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId       Int?
+  userId       Int?                     @unique
   relations    Teacher_Course_Student[]
   Note         Note[]
   GroupConsult GroupConsult[]
-  courseHours      CourseHours[]
+  courseHours  CourseHours[]
 }
 
 model Course {
-  id           Int                      @id @default(autoincrement())
-  name         String?
-  group        Boolean                  @default(false)
-  Note         Note[]
-  relations    Teacher_Course_Student[]
-  GroupConsult GroupConsult[]
-  excludeFromReport Boolean? @default(false)
-  onlyGroups Boolean? @default(false)
-  onlyHours Boolean? @default(false)
-  parent Course? @relation("Reference course",fields: [parentId] ,references: [id])
-  parentId Int?
-  child Course? @relation("Reference course")
-  courseHours      CourseHours[]
+  id                Int                      @id @default(autoincrement())
+  name              String?
+  group             Boolean                  @default(false)
+  Note              Note[]
+  relations         Teacher_Course_Student[]
+  GroupConsult      GroupConsult[]
+  excludeFromReport Boolean?                 @default(false)
+  onlyGroups        Boolean?                 @default(false)
+  onlyHours         Boolean?                 @default(false)
+  parent            Course?                  @relation("Reference course", fields: [parentId], references: [id])
+  parentId          Int?                     @unique
+  child             Course?                  @relation("Reference course")
+  courseHours       CourseHours[]
 }
 
 // This model keeps hours pasted by sup to students
 model CourseHours {
-  id Int @id @default(autoincrement())
-  course Course? @relation(fields: [courseId], references: [id])
-  courseId Int?
-  teacher Teacher? @relation(fields: [teacherId], references: [id])
+  id        Int      @id @default(autoincrement())
+  course    Course?  @relation(fields: [courseId], references: [id])
+  courseId  Int?
+  teacher   Teacher? @relation(fields: [teacherId], references: [id])
   teacherId Int?
-  class Int?
-  program Program?
-  subgroup Int?
-  date DateTime
-  hours Float
+  class     Int?
+  program   Program?
+  subgroup  Int?
+  date      DateTime
+  hours     Float
 }
 
 model Student {
@@ -92,7 +92,7 @@ model Teacher_Course_Student {
   subgroup     Int?
   consult      Consult[]
   journalEntry JournalEntry[]
-  quaterMark   QuaterMark[]
+  quarterMark  QuarterMark[]
 }
 
 model JournalEntry {
@@ -104,7 +104,7 @@ model JournalEntry {
   replacement Replacement?
 }
 
-model QuaterMark {
+model QuarterMark {
   id         Int                    @id @default(autoincrement())
   mark       String
   period     Period
@@ -117,7 +117,7 @@ model Replacement {
   id           Int          @id @default(autoincrement())
   date         DateTime
   journalEntry JournalEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
-  entryId      Int
+  entryId      Int          @unique
 }
 
 model Consult {

@@ -7,14 +7,13 @@ const typeDef = `
   }
 
   type Group {
-    relation: Int
-    name: String
-    surname: String
+    id: Int
     subgroup: Int
+    student: Student
   }
 
   extend type Query {
-    fetchSubgroups(courseId: Int, teacherId: Int): [Group]
+    fetchSubgroups(courseId: Int, teacherId: Int): [SubgroupOutput]
   }
 
   extend type Mutation {

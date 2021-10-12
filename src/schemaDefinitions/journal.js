@@ -47,8 +47,8 @@ const typeDef = `
       year: Int!
       date_gte: Date
       date_lte: Date
-      type: String!
-    ): [ClassJournal]
+      type: String
+    ): ClassJournal
   }
 
   extend type Mutation {
