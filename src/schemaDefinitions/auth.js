@@ -1,3 +1,6 @@
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+
 const typeDef = `
   type User {
     id: Int!
@@ -26,7 +29,7 @@ const resolvers = {
         data: { ...args, password },
       });
 
-      const token = jwt.sign({ userId: user.id }, APP_SECRET);
+      const token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
 
       return {
         token,
@@ -58,7 +61,7 @@ const resolvers = {
         throw new Error("Invalid password");
       }
 
-      const token = jwt.sign({ userId: user.id }, APP_SECRET);
+      const token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
 
       return {
         token,

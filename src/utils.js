@@ -17,7 +17,7 @@ const getUserId = (req) => {
 
   const token = header.replace("Bearer ", "");
 
-  const { userId } = jwt.verify(token, APP_SECRET);
+  const { userId } = jwt.verify(token, process.env.APP_SECRET);
 
   if (!userId) {
     throw new NotAuthenticatedError();
