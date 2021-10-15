@@ -1,4 +1,4 @@
-const { buildGroups } = require("../utils");
+const { buildGroups, buildDatesByGroup, getPeriod } = require("../utils");
 
 const typeDef = `
   type Teacher_Course_Student {
@@ -175,8 +175,10 @@ const resolvers = {
         },
       });
 
+      console.log(rawData);
+
       if (args.type === QUERY_TYPES.GROUP) {
-        return groupJournalBuilder(rawData);
+        return groupJournalBuilder(rawData, getPeriod(args.date_gte));
       }
 
       return { dates: null, students: rawData };
@@ -186,20 +188,20 @@ const resolvers = {
 };
 
 const groupJournalBuilder = (data) => {
-  const groupedData = buildGroups(
+  const groupedData = buildGroups({
     data,
-    (item) =>
+    createKey: (item) =>
       `${item.student.class} ${item.student.program} ${item.subgroup || "..."}`,
-    (item) => ({
+    createValue: (item) => ({
       id: item.id,
       student: item.student,
       journalEntry: item.journalEntry,
       quarterMark: item.quarterMark,
       archived: item.archived,
     }),
-    "students"
-  );
-
+    groupedName: "students",
+  });
+  console.log(groupedData);
   const dates = buildDatesByGroup(groupedData);
 
   return [dates, groupedData];

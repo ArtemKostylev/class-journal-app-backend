@@ -1,8 +1,11 @@
 const jwt = require("jsonwebtoken");
 const { NotAuthenticatedError } = require("./errors/authErrors");
 const { RequestFailureError } = require("./errors/sharedErrors");
+const { GROUP_PERIODS } = require("./constants");
 
-const APP_SECRET = "dev-secret-1488"; //TODO change secret on prod
+const getMonthFromUTCString = (date) => {
+  return date.split("T")[0].split("-")[1];
+};
 
 const getUserId = (req) => {
   if (!req) {
@@ -30,6 +33,7 @@ const buildGroups = ({ data, createValue, createKey, groupedName }) => {
   const groups = new Map();
 
   data.forEach((item) => {
+    console.log(item);
     const key = createKey(item);
 
     const value = createValue(item);
@@ -58,13 +62,15 @@ const buildDatesByGroup = (data, period) => {
       ),
     ];
 
-    const mappedDates = GROUP_PERIODS[period]();
+    const mappedDates = period;
 
     const result = [];
 
     dates.forEach((date) => {
-      const month = date.split("T")[0].split("-")[1];
-      mappedDates.set(month, [...mappedDates.get(month), date]);
+      if (date) {
+        const month = getMonthFromUTCString(date);
+        mappedDates.set(month, [...mappedDates.get(month), date]);
+      }
     });
 
     mappedDates.forEach((value, key) => {
@@ -77,9 +83,16 @@ const buildDatesByGroup = (data, period) => {
   });
 };
 
+const getPeriod = (date) => {
+  return getMonthFromUTCString(date) > 8
+    ? GROUP_PERIODS.FIRST_HALF
+    : GROUP_PERIODS.SECOND_HALF;
+};
+
 module.exports = {
-  APP_SECRET,
   getUserId,
   buildGroups,
   buildDatesByGroup,
+  getPeriod,
+  getMonthFromUTCString,
 };

@@ -1,12 +1,12 @@
 const GROUP_PERIODS = {
-  first_half: () =>
+  FIRST_HALF: () =>
     new Map([
       ["8", []],
       ["9", []],
       ["10", []],
       ["11", []],
     ]),
-  second_half: () =>
+  SECOND_HALF: () =>
     new Map([
       ["0", []],
       ["1", []],
@@ -16,4 +16,4 @@ const GROUP_PERIODS = {
     ]),
 };
 
-module.exports(GROUP_PERIODS);
+module.exports = { GROUP_PERIODS };
