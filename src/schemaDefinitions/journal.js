@@ -23,13 +23,18 @@ const typeDef = `
   }
 
   type DatesByGroup {
-    group: String!
-    students: [Date!]!
+    group: String
+    dates: [Date]
+  }
+
+  type StudentsByGroup {
+    group: String
+    students: [Teacher_Course_Student]
   }
 
   type ClassJournal {
     dates: [DatesByGroup]
-    students: [Teacher_Course_Student]
+    students: [StudentsByGroup]
   }
 
   type QuarterMark {
@@ -175,19 +180,20 @@ const resolvers = {
         },
       });
 
-      console.log(rawData);
-
       if (args.type === QUERY_TYPES.GROUP) {
         return groupJournalBuilder(rawData, getPeriod(args.date_gte));
       }
 
-      return { dates: null, students: rawData };
+      return {
+        dates: [{ group: null, dates: null }],
+        students: [{ group: null, students: rawData }],
+      };
       // also add sorting where needed
     },
   },
 };
 
-const groupJournalBuilder = (data) => {
+const groupJournalBuilder = (data, period) => {
   const groupedData = buildGroups({
     data,
     createKey: (item) =>
@@ -201,10 +207,7 @@ const groupJournalBuilder = (data) => {
     }),
     groupedName: "students",
   });
-  console.log(groupedData);
-  const dates = buildDatesByGroup(groupedData);
-
-  return [dates, groupedData];
+  return buildDatesByGroup(groupedData, period);
 };
 
 module.exports = { typeDef, resolvers };

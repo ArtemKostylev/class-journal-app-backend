@@ -186,7 +186,6 @@ const resolvers = {
       });
 
       //TODO sort the data first
-      console.log("data unsorted", data);
 
       //const doc = new docx.Document({});
       return FILE_LOCATION;

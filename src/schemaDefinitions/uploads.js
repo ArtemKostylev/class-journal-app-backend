@@ -29,7 +29,6 @@ const resolvers = {
         const data = line.split(" ");
         if (data.length !== 3) throw new Error("Invalid file format");
         lines.push(data);
-        console.log(data);
       }
 
       const currentEntries = await context.prisma.teacher.findMany();
@@ -77,7 +76,6 @@ const resolvers = {
         const data = line.split(" ");
         if (data.length !== 2) throw new Error("Invalid file format");
         lines.push(data);
-        console.log(data);
       }
 
       const currentEntries = await context.prisma.course.findMany();

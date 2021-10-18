@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const { NotAuthenticatedError } = require("./errors/authErrors");
 const { RequestFailureError } = require("./errors/sharedErrors");
 const { GROUP_PERIODS } = require("./constants");
+const { RunPropertiesDefaults } = require("docx");
 
 const getMonthFromUTCString = (date) => {
   return date.split("T")[0].split("-")[1];
@@ -33,7 +34,6 @@ const buildGroups = ({ data, createValue, createKey, groupedName }) => {
   const groups = new Map();
 
   data.forEach((item) => {
-    console.log(item);
     const key = createKey(item);
 
     const value = createValue(item);
@@ -51,7 +51,11 @@ const buildGroups = ({ data, createValue, createKey, groupedName }) => {
 };
 
 const buildDatesByGroup = (data, period) => {
-  return data.map((group) => {
+  const resultData = {
+    dates: [],
+    students: [],
+  };
+  data.forEach((group) => {
     const dates = [
       ...new Set(
         group.students
@@ -62,7 +66,7 @@ const buildDatesByGroup = (data, period) => {
       ),
     ];
 
-    const mappedDates = period;
+    const mappedDates = period();
 
     const result = [];
 
@@ -76,11 +80,14 @@ const buildDatesByGroup = (data, period) => {
     mappedDates.forEach((value, key) => {
       const maxDates = key === 0 ? 4 : 5;
       const emptyCount = maxDates - value.length;
-      result.push([...result.get(key), ...Array(emptyCount).fill("")]);
+      result.push([...value, ...Array(emptyCount).fill("")]);
     });
 
-    return { group: group.group, dates: result };
+    resultData.dates.push({ group: group.group, dates: result });
+    resultData.students.push(group);
   });
+
+  return resultData;
 };
 
 const getPeriod = (date) => {

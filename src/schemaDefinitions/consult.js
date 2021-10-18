@@ -115,7 +115,6 @@ const resolvers = {
     updateGroupConsults: async (parent, args, context, info) => {
       return (updatedEntries = args.data.map((group) => {
         group.consults.map(async (consult) => {
-          console.log(consult);
           return await context.prisma.groupConsult.upsert({
             where: {
               id: consult.id,
