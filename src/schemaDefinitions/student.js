@@ -7,6 +7,7 @@ const typeDef = `
     program: String
     load: Int
     relations: [Teacher_Course_Student]
+    specialization: Specialization
   }
 
   extend type Query {

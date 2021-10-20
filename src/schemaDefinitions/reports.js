@@ -1,5 +1,12 @@
 const docx = require("docx");
 
+const typeDef = `
+  type Specialization {
+    id Int
+    name String
+  }
+`;
+
 const fetchAnnualReport = async (parent, args, context) => {
   const FILE_LOCATION = "";
 
@@ -13,13 +20,15 @@ const fetchAnnualReport = async (parent, args, context) => {
           year: args.year,
         },
       },
-      quarterMark: true,
       student: {
         include: {
           specialization: true,
         },
       },
-      course: true,
+      course: {
+        id: true,
+        name: true,
+      },
     },
   });
 
@@ -27,7 +36,7 @@ const fetchAnnualReport = async (parent, args, context) => {
   console.log("data unsorted", data);
 
   // here we have quarter data for each relation
-  /*  we need to get it to target shape, i.e. 
+  /*  we need to get it to target shape, i.e.
       top level is specialization, 
       inside specialization we have a table there quarter marks are 
       displayed by course. Inside course we display items by quarter and year
@@ -44,6 +53,16 @@ const fetchAnnualReport = async (parent, args, context) => {
       }
       ALSO, we need to create headers array from specialization object
   */
+  const dataBySpecialization = new Map();
+  data.forEach((relation) => {
+    const key = relation.student.specialization.name;
+    const value = {
+      course: relation.course,
+      student: relation.student,
+      marks: relation.quarterMark
+    };
+  });
+
   //const doc = new docx.Document({});
   return FILE_LOCATION;
 };
