@@ -57,10 +57,7 @@ const resolvers = {
     },
     uploadCoursesFromFile: async (_, args, context, info) => {
       const {
-        createReadStream,
-        filetype,
-        mimetype,
-        encoding,
+        createReadStream
       } = await args.file;
 
       const stream = createReadStream();
@@ -80,7 +77,7 @@ const resolvers = {
 
       const currentEntries = await context.prisma.course.findMany();
 
-      const created = lines.map(async (entry) => {
+      lines.map(async (entry) => {
         if (-1 === currentEntries.findIndex((item) => item.name === entry[0])) {
           await context.prisma.course.create({
             data: {
