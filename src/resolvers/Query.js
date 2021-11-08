@@ -1,8 +1,15 @@
 const { group } = require("console");
-const { TableCell } = require("docx");
+const {
+  TableCell,
+  Paragraph,
+  Packer,
+  Table,
+  Document,
+  TableRow,
+} = require("docx");
 const docx = require("docx");
 const fs = require("fs");
-const times = require("lodash/times")
+const times = require("lodash/times");
 
 const fetchJournal = async (parent, args, context) => {
   const { userId } = context;
@@ -345,6 +352,8 @@ const fetchGroupCompany = async (parent, args, context) => {
 const fetchAnnualReport = async (parent, args, context) => {
   const FILE_LOCATION = "";
 
+  const periods = ["first", "second", "third", "fourth", "year"];
+
   const data = await context.prisma.teacher_Course_Student.findMany({
     where: {
       archived: false,
@@ -378,53 +387,88 @@ const fetchAnnualReport = async (parent, args, context) => {
     );
   });
 
-  mappedData.forEach(value, key => {
-    const studentMarks = new Map();
-    item.forEach()
-  })
+  //students map
 
-  const createRow = (item, index) => {
+  mappedData.forEach((value, key) => {
+    let courses = new Map();
+
+    value.forEach((it) => courses.set(it.course.id, it.course.name));
+
+    courses = Array.from(courses, ([name, value]) => ({
+      id: name,
+      name: value,
+    }));
+
+    const studentMarks = new Map();
+
+    value.forEach((it) => {
+      const key = `${it.student.name} ${it.student.surname}`;
+      studentMarks.set(
+        key,
+        studentMarks.get(key)
+          ? [
+              ...studentMarks.get(key),
+              { courseId: it.course.id, marks: it.quaterMark },
+            ]
+          : [{ courseId: it.course.id, marks: it.quaterMark }]
+      );
+    });
+
+    mappedData.set(key, { courses, studentMarks });
+  });
+
+  const createRow = ({ key, value, index, courses }) => {
     return new TableRow({
       children: [
         new TableCell({
-          children: [new Paragraph(index)]
+          children: [new Paragraph(index)],
         }),
         new TableCell({
-          children: [new Paragraph(`${item.student.name} ${item.student.surname}`)]
-        })
-        times(5, new TableCell({})
-      ]
-    })
-  }
-
-  const createTable = () => {
-    const table = new Table({
-      rows: [
-          new TableRow({
-              children: [
-                  new TableCell({
-                      children: [new Paragraph("Hello")],
-                  }),
-                  new TableCell({
-                      children: [],
-                  }),
-              ],
-          }),
-          new TableRow({
-              children: [
-                  new TableCell({
-                      children: [],
-                  }),
-                  new TableCell({
-                      children: [new Paragraph("World")],
-                  }),
-              ],
-          }),
+          children: [new Paragraph(key)],
+        }),
+        ...courses.map((it) => {
+          const courseMarks = new Map(
+            value
+              .find((item) => item.courseId === it.id)
+              ?.marks?.map((mark) => [mark.period, mark.mark])
+          );
+          console.log(courseMarks);
+          return periods.map(
+            (period) =>
+              new TableCell({
+                children: [new Paragraph(period)],
+              })
+          );
+        }),
       ],
-  });
-  } 
+    });
+  };
 
-  const doc = new docx.Document({});
+  const createTable = (courses, marks) => {
+    return new Table({
+      rows: [
+        //createTableHeader
+        ...Array.from(marks).map(([key, value], index) =>
+          createRow({ key, value, index, courses })
+        ),
+      ],
+    });
+  };
+
+  const doc = new Document({
+    sections: [
+      ...Array.from(mappedData).map(([key, value]) => ({
+        children: [createTable(value.courses, value.studentMarks)],
+      })),
+    ],
+  });
+
+  console.log(doc);
+
+  Packer.toBuffer(doc).then((buffer) => {
+    fs.writeFileSync("My Document.docx", buffer);
+  });
+
   return FILE_LOCATION;
 };
 
