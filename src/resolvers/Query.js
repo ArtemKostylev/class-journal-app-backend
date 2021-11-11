@@ -6,6 +6,8 @@ const {
   Table,
   Document,
   TableRow,
+  WidthType,
+  PageOrientation,
 } = require("docx");
 const docx = require("docx");
 const fs = require("fs");
@@ -421,25 +423,31 @@ const fetchAnnualReport = async (parent, args, context) => {
     return new TableRow({
       children: [
         new TableCell({
-          children: [new Paragraph(index)],
+          children: [new Paragraph(String(index))],
         }),
         new TableCell({
           children: [new Paragraph(key)],
+          width: { size: 10, type: WidthType.PERCENTAGE },
         }),
-        ...courses.map((it) => {
-          const courseMarks = new Map(
-            value
-              .find((item) => item.courseId === it.id)
-              ?.marks?.map((mark) => [mark.period, mark.mark])
-          );
-          console.log(courseMarks);
-          return periods.map(
-            (period) =>
-              new TableCell({
-                children: [new Paragraph(period)],
-              })
-          );
-        }),
+        ...courses
+          .map((it) => {
+            console.log("course", it);
+            const courseMarks = new Map(
+              value
+                .find((item) => item.courseId === it.id)
+                ?.marks?.map((mark) => [mark.period, mark.mark])
+            );
+            return periods.map((period) => {
+              console.log(courseMarks.get(period));
+              return new TableCell({
+                children: [
+                  new Paragraph(String(courseMarks.get(period) || "")),
+                ],
+                width: { size: 3, type: WidthType.PERCENTAGE },
+              });
+            });
+          })
+          .flat(),
       ],
     });
   };
@@ -452,6 +460,10 @@ const fetchAnnualReport = async (parent, args, context) => {
           createRow({ key, value, index, courses })
         ),
       ],
+      width: {
+        size: 95,
+        type: WidthType.PERCENTAGE,
+      },
     });
   };
 
@@ -459,11 +471,12 @@ const fetchAnnualReport = async (parent, args, context) => {
     sections: [
       ...Array.from(mappedData).map(([key, value]) => ({
         children: [createTable(value.courses, value.studentMarks)],
+        size: {
+          orientation: PageOrientation.LANDSCAPE,
+        },
       })),
     ],
   });
-
-  console.log(doc);
 
   Packer.toBuffer(doc).then((buffer) => {
     fs.writeFileSync("My Document.docx", buffer);
