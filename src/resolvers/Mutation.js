@@ -1,9 +1,9 @@
-const bcrypt = require('bcryptjs')
-const { countReset } = require('console')
-const { ENETUNREACH } = require('constants')
-const jwt = require('jsonwebtoken')
-const { APP_SECRET, getUserId } = require('../utils')
-const readline = require('readline')
+const bcrypt = require("bcryptjs");
+const { countReset } = require("console");
+const { ENETUNREACH } = require("constants");
+const jwt = require("jsonwebtoken");
+const { APP_SECRET, getUserId } = require("../utils");
+const readline = require("readline");
 
 const addStudent = async (parent, args, context, info) => {
   const newStudent = await context.prisma.student.create({
@@ -13,24 +13,24 @@ const addStudent = async (parent, args, context, info) => {
       courseId: args.courseId,
       teacherId: args.teacherId,
     },
-  })
-  return newStudent
-}
+  });
+  return newStudent;
+};
 
 const signup = async (parent, args, context, info) => {
-  const password = await bcrypt.hash(args.password, 10)
+  const password = await bcrypt.hash(args.password, 10);
 
   const user = await context.prisma.user.create({
     data: { ...args, password },
-  })
+  });
 
-  const token = jwt.sign({ userId: user.id }, APP_SECRET)
+  const token = jwt.sign({ userId: user.id }, APP_SECRET);
 
   return {
     token,
     user,
-  }
-}
+  };
+};
 
 const signin = async (parent, args, context, info) => {
   const user = await context.prisma.user.findUnique({
@@ -39,7 +39,7 @@ const signin = async (parent, args, context, info) => {
       teacher: {
         include: {
           relations: {
-            distinct: ['courseId'],
+            distinct: ["courseId"],
             select: {
               course: true,
             },
@@ -47,27 +47,27 @@ const signin = async (parent, args, context, info) => {
         },
       },
     },
-  })
+  });
   if (!user) {
-    throw new Error('No such user found')
+    throw new Error("No such user found");
   }
 
-  const valid = await bcrypt.compare(args.password, user.password)
+  const valid = await bcrypt.compare(args.password, user.password);
   if (!valid) {
-    throw new Error('Invalid password')
+    throw new Error("Invalid password");
   }
 
-  const token = jwt.sign({ userId: user.id }, APP_SECRET)
+  const token = jwt.sign({ userId: user.id }, APP_SECRET);
 
   return {
     token,
     user,
-  }
-}
+  };
+};
 
 const updateJournal = async (parent, args, context, info) => {
-  const { userId } = context
-  const { updateCasual, updatePeriod, deleteCasual, deletePeriod } = args.data
+  const { userId } = context;
+  const { updateCasual, updatePeriod, deleteCasual, deletePeriod } = args.data;
 
   const updatedEntries = updateCasual.map(async (entry) => {
     return await context.prisma.journalEntry.upsert({
@@ -83,10 +83,10 @@ const updateJournal = async (parent, args, context, info) => {
         date: entry.date,
         relationId: entry.relationId,
       },
-    })
-  })
+    });
+  });
 
-  let ids = deleteCasual.map((id) => parseInt(id))
+  let ids = deleteCasual.map((id) => parseInt(id));
 
   const deleteRepl = context.prisma.replacement.deleteMany({
     where: {
@@ -94,19 +94,19 @@ const updateJournal = async (parent, args, context, info) => {
         in: ids,
       },
     },
-  })
+  });
   const deleteMark = context.prisma.journalEntry.deleteMany({
     where: {
       id: {
         in: ids,
       },
     },
-  })
+  });
 
   const transaction = await context.prisma.$transaction([
     deleteRepl,
     deleteMark,
-  ])
+  ]);
 
   const updatedQuaters = updatePeriod.map(async (mark) => {
     return await context.prisma.quaterMark.upsert({
@@ -121,10 +121,10 @@ const updateJournal = async (parent, args, context, info) => {
         period: mark.period,
         relationId: mark.relationId,
       },
-    })
-  })
+    });
+  });
 
-  let qids = deletePeriod.map((id) => parseInt(id))
+  let qids = deletePeriod.map((id) => parseInt(id));
 
   let res = await context.prisma.quaterMark.deleteMany({
     where: {
@@ -132,8 +132,8 @@ const updateJournal = async (parent, args, context, info) => {
         in: qids,
       },
     },
-  })
-}
+  });
+};
 
 const updateTeacher = async (parent, args, context, info) => {
   return await context.prisma.teacher.update({
@@ -145,16 +145,38 @@ const updateTeacher = async (parent, args, context, info) => {
       surname: args.data.surname,
       parent: args.data.parent,
     },
-  })
-}
+  });
+};
 
 const deleteTeacher = async (parent, args, context, info) => {
   await context.prisma.teacher.delete({
     where: {
       id: args.id,
     },
-  })
-}
+  });
+};
+
+const updateSpecialization = async (parent, args, context, info) => {
+  return await context.prisma.specialization.upsert({
+    where: {
+      id: args.data.id,
+    },
+    update: {
+      name: args.data.name,
+    },
+    create: {
+      name: args.data.name,
+    },
+  });
+};
+
+const deleteSpecialization = async (parent, args, context, info) => {
+  await context.prisma.specialization.delete({
+    where: {
+      id: args.id,
+    },
+  });
+};
 
 const createStudent = async (parent, args, context, info) => {
   await context.prisma.student.create({
@@ -163,9 +185,10 @@ const createStudent = async (parent, args, context, info) => {
       surname: args.data.surname,
       class: parseInt(args.data.class),
       program: args.data.program,
+      specialization: args.data.specialization,
     },
-  })
-}
+  });
+};
 
 const createTeacher = async (parent, args, context, info) => {
   await context.prisma.teacher.create({
@@ -174,8 +197,8 @@ const createTeacher = async (parent, args, context, info) => {
       surname: args.data.surname,
       parent: args.parent,
     },
-  })
-}
+  });
+};
 
 const createCourse = async (parent, args, context, info) => {
   await context.prisma.course.create({
@@ -187,8 +210,8 @@ const createCourse = async (parent, args, context, info) => {
       onlyGroups: args.data.onlyGroups,
       parentId: args.data.parentId,
     },
-  })
-}
+  });
+};
 
 const updateStudent = async (parent, args, context, info) => {
   return await context.prisma.student.update({
@@ -200,17 +223,18 @@ const updateStudent = async (parent, args, context, info) => {
       surname: args.data.surname,
       class: args.data.class,
       program: args.data.program,
+      specialization: args.data.specialization,
     },
-  })
-}
+  });
+};
 
 const deleteStudent = async (parent, args, context, info) => {
   await context.prisma.student.delete({
     where: {
       id: args.id,
     },
-  })
-}
+  });
+};
 
 const updateCourse = async (parent, args, context, info) => {
   return await context.prisma.course.update({
@@ -225,16 +249,16 @@ const updateCourse = async (parent, args, context, info) => {
       onlyGroups: args.data.onlyGroups,
       parentId: args.data.parentId,
     },
-  })
-}
+  });
+};
 
 const deleteCourse = async (parent, args, context, info) => {
   await context.prisma.course.delete({
     where: {
       id: args.id,
     },
-  })
-}
+  });
+};
 
 const updateNote = async (parent, args, context, info) => {
   return await context.prisma.note.upsert({
@@ -250,16 +274,16 @@ const updateNote = async (parent, args, context, info) => {
       teacherId: args.data.teacherId,
       courseId: args.data.courseId,
     },
-  })
-}
+  });
+};
 
 const deleteNote = async (parent, args, context, info) => {
   await context.prisma.course.delete({
     where: {
       id: args.id,
     },
-  })
-}
+  });
+};
 
 const updateReplacements = async (parent, args, context, info) => {
   return (updatedEntries = args.data.map((repl) => {
@@ -274,12 +298,12 @@ const updateReplacements = async (parent, args, context, info) => {
         date: repl.date,
         entryId: repl.entryId,
       },
-    })
-  }))
-}
+    });
+  }));
+};
 
 const deleteReplacements = async (parent, args, context, info) => {
-  let ids = args.ids.map((id) => parseInt(id))
+  let ids = args.ids.map((id) => parseInt(id));
 
   let res = await context.prisma.replacement.deleteMany({
     where: {
@@ -287,8 +311,8 @@ const deleteReplacements = async (parent, args, context, info) => {
         in: ids,
       },
     },
-  })
-}
+  });
+};
 
 const updateConsults = async (parent, args, context, info) => {
   return (updatedEntries = args.data.map((consult) => {
@@ -306,12 +330,12 @@ const updateConsults = async (parent, args, context, info) => {
         relationId: consult.relationId,
         year: consult.year,
       },
-    })
-  }))
-}
+    });
+  }));
+};
 
 const deleteConsults = async (parent, args, context, info) => {
-  let ids = args.ids.map((id) => parseInt(id))
+  let ids = args.ids.map((id) => parseInt(id));
 
   let res = await context.prisma.consult.deleteMany({
     where: {
@@ -319,13 +343,13 @@ const deleteConsults = async (parent, args, context, info) => {
         in: ids,
       },
     },
-  })
-}
+  });
+};
 
 const updateGroupConsults = async (parent, args, context, info) => {
   return (updatedEntries = args.data.map((group) => {
     group.consults.map(async (consult) => {
-      console.log(consult)
+      console.log(consult);
       return await context.prisma.groupConsult.upsert({
         where: {
           id: consult.id,
@@ -344,13 +368,13 @@ const updateGroupConsults = async (parent, args, context, info) => {
           subgroup: group.subgroup,
           class: group.class,
         },
-      })
-    })
-  }))
-}
+      });
+    });
+  }));
+};
 
 const deleteGroupConsults = async (parent, args, context, info) => {
-  let ids = args.ids.map((id) => parseInt(id))
+  let ids = args.ids.map((id) => parseInt(id));
 
   let res = await context.prisma.groupConsult.deleteMany({
     where: {
@@ -358,8 +382,8 @@ const deleteGroupConsults = async (parent, args, context, info) => {
         in: ids,
       },
     },
-  })
-}
+  });
+};
 
 const updateSubgroups = async (parent, args, context, info) => {
   return (updatedEntries = args.data.map((subgroup) => {
@@ -370,30 +394,30 @@ const updateSubgroups = async (parent, args, context, info) => {
       data: {
         subgroup: subgroup.subgroup,
       },
-    })
-  }))
-}
+    });
+  }));
+};
 
 const updateCourseRelations = async (parent, args, context, info) => {
   //teacherID, [{courseId, archived}]
 
-  console.log('input', args.courses)
+  console.log("input", args.courses);
 
-  const archived = args.courses.filter((el) => el.archived)
+  const archived = args.courses.filter((el) => el.archived);
 
   const pendingEntries = await context.prisma.teacher_Course_Student.findMany({
     where: {
       teacherId: args.teacher,
       courseId: { in: args.courses.map((item) => item.id) },
     },
-  })
-  console.log('pending', pendingEntries)
+  });
+  console.log("pending", pendingEntries);
 
   const newCourses = args.courses.filter(
-    (el) => 0 > pendingEntries.findIndex((entry) => el.id !== entry.CourseId),
-  )
+    (el) => 0 > pendingEntries.findIndex((entry) => el.id !== entry.CourseId)
+  );
 
-  console.log('new', newCourses)
+  console.log("new", newCourses);
 
   const createdEntries = newCourses.map(
     async (item) =>
@@ -402,10 +426,10 @@ const updateCourseRelations = async (parent, args, context, info) => {
           teacherId: args.teacher,
           courseId: item.id,
         },
-      }),
-  )
+      })
+  );
 
-  console.log('archived', archived)
+  console.log("archived", archived);
 
   const updatedEntries = pendingEntries.map(async (entry) => {
     return await context.prisma.teacher_Course_Student.update({
@@ -415,16 +439,16 @@ const updateCourseRelations = async (parent, args, context, info) => {
       data: {
         archived: !!archived.find((el) => el.id === entry.courseId),
       },
-    })
-  })
-}
+    });
+  });
+};
 
 const updateStudentRelations = async (parent, args, context, info) => {
-  console.log('input', args.students)
+  console.log("input", args.students);
 
-  const archived = args.students.filter((el) => el.archived)
+  const archived = args.students.filter((el) => el.archived);
 
-  console.log('archived', archived)
+  console.log("archived", archived);
 
   const newEmptyRelation = await context.prisma.teacher_Course_Student.findMany(
     {
@@ -433,10 +457,10 @@ const updateStudentRelations = async (parent, args, context, info) => {
         courseId: args.course,
         studentId: null,
       },
-    },
-  )
+    }
+  );
 
-  console.log('empty', newEmptyRelation)
+  console.log("empty", newEmptyRelation);
 
   const pendingEntries = await context.prisma.teacher_Course_Student.findMany({
     where: {
@@ -444,16 +468,16 @@ const updateStudentRelations = async (parent, args, context, info) => {
       courseId: args.course,
       studentId: { in: args.students.map((item) => item.id) },
     },
-  })
+  });
 
-  console.log('pending', pendingEntries)
+  console.log("pending", pendingEntries);
 
   const newStudents = args.students.filter(
     (el) =>
-      -1 === pendingEntries.findIndex((entry) => el.id === entry.studentId),
-  )
+      -1 === pendingEntries.findIndex((entry) => el.id === entry.studentId)
+  );
 
-  console.log('new', newStudents)
+  console.log("new", newStudents);
 
   if (newEmptyRelation.length !== 0) {
     //we should add first n new students to empty relations. Actually, there should be no more than one empty relation.
@@ -466,11 +490,11 @@ const updateStudentRelations = async (parent, args, context, info) => {
         studentId: newStudents[0].id,
         archived: false,
       },
-    })
-    newStudents.splice(0, 1)
+    });
+    newStudents.splice(0, 1);
   }
 
-  console.log('new after fill', newStudents)
+  console.log("new after fill", newStudents);
 
   const createdEntries = newStudents.map(
     async (item) =>
@@ -480,8 +504,8 @@ const updateStudentRelations = async (parent, args, context, info) => {
           courseId: args.course,
           studentId: item.id,
         },
-      }),
-  )
+      })
+  );
 
   const updatedEntries = pendingEntries.map(async (entry) => {
     return await context.prisma.teacher_Course_Student.update({
@@ -491,30 +515,30 @@ const updateStudentRelations = async (parent, args, context, info) => {
       data: {
         archived: !!archived.find((el) => el.id === entry.studentId),
       },
-    })
-  })
-}
+    });
+  });
+};
 
 const uploadTeachersFromFile = async (oarent, args, context, info) => {
-  const { createReadStream, filetype, mimetype, encoding } = await args.file
+  const { createReadStream, filetype, mimetype, encoding } = await args.file;
 
-  const stream = createReadStream()
+  const stream = createReadStream();
 
   const rl = readline.createInterface({
     input: stream,
     crlfDelay: Infinity,
-  })
+  });
 
-  let lines = []
+  let lines = [];
 
   for await (const line of rl) {
-    const data = line.split(' ')
-    if (data.length !== 3) throw new Error('Invalid file format')
-    lines.push(data)
-    console.log(data)
+    const data = line.split(" ");
+    if (data.length !== 3) throw new Error("Invalid file format");
+    lines.push(data);
+    console.log(data);
   }
 
-  const currentEntries = await context.prisma.teacher.findMany()
+  const currentEntries = await context.prisma.teacher.findMany();
 
   const created = lines.map(async (entry) => {
     if (
@@ -523,82 +547,82 @@ const uploadTeachersFromFile = async (oarent, args, context, info) => {
         (item) =>
           item.name === entry[0] &&
           item.surname === entry[1] &&
-          item.parent === entry[2],
+          item.parent === entry[2]
       )
     ) {
       await context.prisma.teacher.create({
         data: {
           name: entry[1],
           surname: entry[0],
-          parent: entry[2] || '',
+          parent: entry[2] || "",
         },
-      })
+      });
     }
-  })
+  });
 
-  return true
-}
+  return true;
+};
 
 const uploadCoursesFromFile = async (oarent, args, context, info) => {
-  const { createReadStream, filetype, mimetype, encoding } = await args.file
+  const { createReadStream, filetype, mimetype, encoding } = await args.file;
 
-  const stream = createReadStream()
+  const stream = createReadStream();
 
   const rl = readline.createInterface({
     input: stream,
     crlfDelay: Infinity,
-  })
+  });
 
-  let lines = []
+  let lines = [];
 
   for await (const line of rl) {
-    const data = line.split(' ')
-    if (data.length !== 2) throw new Error('Invalid file format')
-    lines.push(data)
-    console.log(data)
+    const data = line.split(" ");
+    if (data.length !== 2) throw new Error("Invalid file format");
+    lines.push(data);
+    console.log(data);
   }
 
-  const currentEntries = await context.prisma.course.findMany()
+  const currentEntries = await context.prisma.course.findMany();
 
   const created = lines.map(async (entry) => {
     if (-1 === currentEntries.findIndex((item) => item.name === entry[0])) {
       await context.prisma.course.create({
         data: {
           name: entry[0],
-          group: entry[1] === '+' ? true : false,
+          group: entry[1] === "+" ? true : false,
         },
-      })
+      });
     }
-  })
+  });
 
-  return true
-}
+  return true;
+};
 
 const uploadStudentsFromFile = async (oarent, args, context, info) => {
-  const { createReadStream, filetype, mimetype, encoding } = await args.file
+  const { createReadStream, filetype, mimetype, encoding } = await args.file;
 
-  const stream = createReadStream()
+  const stream = createReadStream();
 
   const rl = readline.createInterface({
     input: stream,
     crlfDelay: Infinity,
-  })
+  });
 
-  let lines = []
+  let lines = [];
 
   for await (const line of rl) {
-    const data = line.split(' ')
-    if (data.length !== 4) throw new Error('Invalid file format')
-    lines.push(data)
+    const data = line.split(" ");
+    if (data.length !== 4) throw new Error("Invalid file format");
+    lines.push(data);
   }
 
-  const currentEntries = await context.prisma.student.findMany()
+  const currentEntries = await context.prisma.student.findMany();
 
   const created = lines.map(async (entry) => {
     if (
       -1 ===
       currentEntries.findIndex(
-        (item) => item.name === entry[0] && item.surname === entry[1],
+        (item) => item.name === entry[0] && item.surname === entry[1]
       )
     ) {
       await context.prisma.student.create({
@@ -608,12 +632,12 @@ const uploadStudentsFromFile = async (oarent, args, context, info) => {
           class: parseInt(entry[2]),
           program: entry[3],
         },
-      })
+      });
     }
-  })
+  });
 
-  return true
-}
+  return true;
+};
 
 const updateGroupCompany = async (parent, args, context, info) => {
   await args.data.map(async (item) => {
@@ -634,12 +658,12 @@ const updateGroupCompany = async (parent, args, context, info) => {
         date: item.date,
         hours: item.hours,
       },
-    })
-  })
-}
+    });
+  });
+};
 
 const deleteGroupCompany = async (parent, args, context, info) => {
-  let ids = args.ids.map((id) => parseInt(id))
+  let ids = args.ids.map((id) => parseInt(id));
 
   let res = await context.prisma.courseHours.deleteMany({
     where: {
@@ -647,8 +671,8 @@ const deleteGroupCompany = async (parent, args, context, info) => {
         in: ids,
       },
     },
-  })
-}
+  });
+};
 
 module.exports = {
   addStudent,
@@ -680,4 +704,6 @@ module.exports = {
   deleteGroupConsults,
   updateGroupCompany,
   deleteGroupCompany,
-}
+  updateSpecialization,
+  deleteSpecialization,
+};

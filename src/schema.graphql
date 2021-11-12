@@ -36,6 +36,7 @@ type Query {
   fetchFullInfo: FullInfo!
   fetchGroupCompany(teacherId: Int, courseId: Int): [CourseHoursOutput]
   fetchAnnualReport(year: Int): String
+  fetchSpecialization: [Specialization]
 }
 
 type Mutation {
@@ -83,6 +84,8 @@ type Mutation {
   uploadStudentsFromFile(file: Upload!): Boolean
   updateGroupCompany(data: [CourseHoursInput]): Boolean
   deleteGroupCompany(ids: [Int]): Boolean
+  updateSpecialization(data: SpecializationInput): Boolean
+  deleteSpecialization(id: Int): Boolean
 }
 
 type User {
@@ -121,6 +124,13 @@ type Student {
   load: Int
   relations: [Teacher_Course_Student]
   subgroup: [Subgroup]
+  specialization: Specialization
+}
+
+type Specialization {
+  id: Int!
+  name: String
+  students: [Student]
 }
 
 type Teacher_Course_Student {
@@ -232,6 +242,7 @@ input StudentInput {
   surname: String
   class: Int
   program: String
+  specialization: Int
 }
 
 input Teacher_Course_StudentInput {
@@ -324,6 +335,11 @@ input CourseHoursInput {
   hours: Float
 }
 
+input SpecializationInput {
+  id: Int
+  name: String
+}
+
 type AuthPayload {
   token: String
   user: User
@@ -334,6 +350,7 @@ type FullInfo {
   students: [Student]
   courses: [Course]
   relations: [Teacher_Course_Student]
+  specializations: [Specialization]
 }
 
 type GroupConsultShort {

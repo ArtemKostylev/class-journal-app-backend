@@ -12,6 +12,7 @@ const {
 const docx = require("docx");
 const fs = require("fs");
 const times = require("lodash/times");
+const { buildHtml } = require("./helpers/htmlBuilder");
 
 const fetchJournal = async (parent, args, context) => {
   const { userId } = context;
@@ -210,6 +211,7 @@ const fetchFullInfo = async (parent, args, context) => {
   const teachers = await context.prisma.teacher.findMany();
   const students = await context.prisma.student.findMany();
   const courses = await context.prisma.course.findMany();
+  const specializations = await context.prisma.specialization.findMany();
   const relations = await context.prisma.teacher_Course_Student.findMany({
     include: {
       teacher: true,
@@ -222,6 +224,7 @@ const fetchFullInfo = async (parent, args, context) => {
     students,
     courses,
     relations,
+    specializations,
   };
 };
 
@@ -351,10 +354,13 @@ const fetchGroupCompany = async (parent, args, context) => {
   });
 };
 
+const fetchSpecialization = async (parent, args, context) => {
+  const { userId } = context;
+  return await context.prisma.specialization.findMany();
+};
+
 const fetchAnnualReport = async (parent, args, context) => {
   const FILE_LOCATION = "";
-
-  const periods = ["first", "second", "third", "fourth", "year"];
 
   const data = await context.prisma.teacher_Course_Student.findMany({
     where: {
@@ -419,68 +425,13 @@ const fetchAnnualReport = async (parent, args, context) => {
     mappedData.set(key, { courses, studentMarks });
   });
 
-  const createRow = ({ key, value, index, courses }) => {
-    return new TableRow({
-      children: [
-        new TableCell({
-          children: [new Paragraph(String(index))],
-        }),
-        new TableCell({
-          children: [new Paragraph(key)],
-          width: { size: 10, type: WidthType.PERCENTAGE },
-        }),
-        ...courses
-          .map((it) => {
-            console.log("course", it);
-            const courseMarks = new Map(
-              value
-                .find((item) => item.courseId === it.id)
-                ?.marks?.map((mark) => [mark.period, mark.mark])
-            );
-            return periods.map((period) => {
-              console.log(courseMarks.get(period));
-              return new TableCell({
-                children: [
-                  new Paragraph(String(courseMarks.get(period) || "")),
-                ],
-                width: { size: 3, type: WidthType.PERCENTAGE },
-              });
-            });
-          })
-          .flat(),
-      ],
-    });
-  };
+  const doc = buildHtml(mappedData);
 
-  const createTable = (courses, marks) => {
-    return new Table({
-      rows: [
-        //createTableHeader
-        ...Array.from(marks).map(([key, value], index) =>
-          createRow({ key, value, index, courses })
-        ),
-      ],
-      width: {
-        size: 95,
-        type: WidthType.PERCENTAGE,
-      },
-    });
-  };
-
-  const doc = new Document({
-    sections: [
-      ...Array.from(mappedData).map(([key, value]) => ({
-        children: [createTable(value.courses, value.studentMarks)],
-        size: {
-          orientation: PageOrientation.LANDSCAPE,
-        },
-      })),
-    ],
+  fs.writeFile("test.html", doc, function (err, result) {
+    if (err) console.log("error", err);
   });
 
-  Packer.toBuffer(doc).then((buffer) => {
-    fs.writeFileSync("My Document.docx", buffer);
-  });
+  // TODO: add conversion
 
   return FILE_LOCATION;
 };
@@ -498,4 +449,5 @@ module.exports = {
   fetchGroupConsults,
   fetchGroupCompany,
   fetchAnnualReport,
+  fetchSpecialization,
 };
