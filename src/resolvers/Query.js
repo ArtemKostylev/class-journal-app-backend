@@ -209,7 +209,11 @@ const fetchSubgroups = async (parent, args, context) => {
 const fetchFullInfo = async (parent, args, context) => {
   const { userId } = context;
   const teachers = await context.prisma.teacher.findMany();
-  const students = await context.prisma.student.findMany();
+  const students = await context.prisma.student.findMany({
+    include: {
+      specialization: true,
+    },
+  });
   const courses = await context.prisma.course.findMany();
   const specializations = await context.prisma.specialization.findMany();
   const relations = await context.prisma.teacher_Course_Student.findMany({
@@ -387,7 +391,9 @@ const fetchAnnualReport = async (parent, args, context) => {
   const mappedData = new Map();
 
   data.forEach((item) => {
-    const key = `${item.student.class} ${item.student.specialization} ${item.student.program}`;
+    const key = `${item.student.class} ${
+      item.student.specialization?.name || null
+    } ${item.student.program === "OP" ? "OP" : "PP"}`;
 
     mappedData.set(
       key,

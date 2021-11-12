@@ -45,7 +45,14 @@ const addTable = ({ title, header, body }) =>
   </table>
   </div>`;
 
-const addTitle = (text) => `<p>${text}</p>`;
+const addTitle = (text) => {
+  const [course, spec, program] = text.split(" ");
+
+  if (program === "OP")
+    return `<p>${course} класс ОБЩЕРАЗВИВАЮЩИЕ ОП в области музыкального искусства (${spec})</p>`;
+
+  return `<p>${course} класс ${spec} (предпрофессиональная ОП)</p>`;
+};
 
 const styles = {
   base: `
@@ -56,6 +63,7 @@ const styles = {
   table: `
     margin-bottom: 20px;
     border-collapse: collapse;
+    width: 100%;
   `,
   header: `
     font-weight: normal;
@@ -95,11 +103,11 @@ const createRow = ({ key, value, index, courses }) => {
   return addRow([
     addCell({
       text: String(index),
-      className: "index",
+      className: "header",
     }),
     addCell({
       text: key,
-      className: "name",
+      className: "header",
     }),
     ...courses
       .map((it) => {

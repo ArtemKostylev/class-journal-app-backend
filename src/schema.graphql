@@ -242,7 +242,7 @@ input StudentInput {
   surname: String
   class: Int
   program: String
-  specialization: Int
+  specializationId: Int
 }
 
 input Teacher_Course_StudentInput {

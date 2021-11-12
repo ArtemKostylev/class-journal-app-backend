@@ -157,7 +157,7 @@ const deleteTeacher = async (parent, args, context, info) => {
 };
 
 const updateSpecialization = async (parent, args, context, info) => {
-  return await context.prisma.specialization.upsert({
+  await context.prisma.specialization.upsert({
     where: {
       id: args.data.id,
     },
@@ -168,6 +168,8 @@ const updateSpecialization = async (parent, args, context, info) => {
       name: args.data.name,
     },
   });
+
+  return true;
 };
 
 const deleteSpecialization = async (parent, args, context, info) => {
@@ -176,6 +178,8 @@ const deleteSpecialization = async (parent, args, context, info) => {
       id: args.id,
     },
   });
+
+  return true;
 };
 
 const createStudent = async (parent, args, context, info) => {
@@ -214,7 +218,7 @@ const createCourse = async (parent, args, context, info) => {
 };
 
 const updateStudent = async (parent, args, context, info) => {
-  return await context.prisma.student.update({
+  const res = await context.prisma.student.update({
     where: {
       id: args.data.id,
     },
@@ -223,9 +227,12 @@ const updateStudent = async (parent, args, context, info) => {
       surname: args.data.surname,
       class: args.data.class,
       program: args.data.program,
-      specialization: args.data.specialization,
+      specializationId: args.data.specializationId,
     },
   });
+
+  console.log(res);
+  return res;
 };
 
 const deleteStudent = async (parent, args, context, info) => {
