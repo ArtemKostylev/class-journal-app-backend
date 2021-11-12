@@ -13,6 +13,7 @@ const docx = require("docx");
 const fs = require("fs");
 const times = require("lodash/times");
 const { buildHtml } = require("./helpers/htmlBuilder");
+const htmlDocx = require("html-docx-js");
 
 const fetchJournal = async (parent, args, context) => {
   const { userId } = context;
@@ -433,11 +434,11 @@ const fetchAnnualReport = async (parent, args, context) => {
 
   const doc = buildHtml(mappedData);
 
-  fs.writeFile("test.html", doc, function (err, result) {
-    if (err) console.log("error", err);
-  });
+  const docx = htmlDocx.asBlob(doc, { orientation: "landscape" });
 
-  // TODO: add conversion
+  fs.writeFile("vedomost.docx", docx, function (err) {
+    if (err) throw err;
+  });
 
   return FILE_LOCATION;
 };
