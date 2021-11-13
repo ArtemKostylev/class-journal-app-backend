@@ -436,11 +436,11 @@ const fetchAnnualReport = async (parent, args, context) => {
 
   const docx = htmlDocx.asBlob(doc, { orientation: "landscape" });
 
-  fs.writeFile(`vedomost_${args.year}.docx`, docx, function (err) {
+  fs.writeFile(`/var/www/files/vedomost_${args.year}.docx`, docx, function (err) {
     if (err) throw err;
   });
 
-  return `http://localhost:8080/vedomost_${args.year}.docx`;
+  return `https://akostylev.con/files/vedomost_${args.year}.docx`;
 };
 
 module.exports = {
