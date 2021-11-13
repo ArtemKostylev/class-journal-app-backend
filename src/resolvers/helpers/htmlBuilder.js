@@ -46,7 +46,7 @@ const addTable = ({ title, header, body }) =>
   </div>`;
 
 const addTitle = (text) => {
-  const [course, spec, program] = text.split(" ");
+  const [course, spec, program] = text.split("/");
 
   if (program === "OP")
     return `<p>${course} класс ОБЩЕРАЗВИВАЮЩИЕ ОП в области музыкального искусства (${spec})</p>`;

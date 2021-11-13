@@ -392,9 +392,9 @@ const fetchAnnualReport = async (parent, args, context) => {
   const mappedData = new Map();
 
   data.forEach((item) => {
-    const key = `${item.student.class} ${
+    const key = `${item.student.class}/${
       item.student.specialization?.name || null
-    } ${item.student.program === "OP" ? "OP" : "PP"}`;
+    }/${item.student.program === "OP" ? "OP" : "PP"}`;
 
     mappedData.set(
       key,
@@ -436,11 +436,11 @@ const fetchAnnualReport = async (parent, args, context) => {
 
   const docx = htmlDocx.asBlob(doc, { orientation: "landscape" });
 
-  fs.writeFile("vedomost.docx", docx, function (err) {
+  fs.writeFile(`vedomost_${args.year}.docx`, docx, function (err) {
     if (err) throw err;
   });
 
-  return FILE_LOCATION;
+  return `http://localhost:8080/vedomost_${args.year}.docx`;
 };
 
 module.exports = {
