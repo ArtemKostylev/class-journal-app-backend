@@ -1,0 +1,23 @@
+type SubgroupOutput {
+  group: String!
+  relations: [Group!]!
+}
+
+type Group {
+  id: Int
+  subgroup: Int
+  student: Student
+}
+
+extend type Query {
+  fetchSubgroups(courseId: Int, teacherId: Int): [SubgroupOutput]
+}
+
+extend type Mutation {
+  updateSubgroups(data: [SubgroupInput]): [Teacher_Course_Student]
+}
+
+input SubgroupInput {
+  id: Int!
+  subgroup: Int
+}

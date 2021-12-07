@@ -1,0 +1,24 @@
+type Note {
+  id: Int!
+  text: String!
+  year: Int!
+  teacher: Teacher
+  course: Course
+}
+
+extend type Query {
+  fetchNotes(teacherId: Int, courseId: Int, year: Int): Note
+}
+
+extend type Mutation {
+  updateNote(data: NoteInput): Note
+  deleteNote(id: Int): Boolean
+}
+
+input NoteInput {
+  id: Int!
+  text: String
+  year: Int
+  teacherId: Int
+  courseId: Int
+}

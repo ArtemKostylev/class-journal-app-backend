@@ -1,31 +1,20 @@
-const { ApolloServer } = require("apollo-server-express");
 const express = require("express");
+const { ApolloServer } = require("apollo-server-express");
+const { createApolloServerProps } = require("./createApolloServerProps");
 const { PrismaClient } = require("@prisma/client");
-const fs = require("fs");
-const path = require("path");
 const { getUserId } = require("./utils");
-const { GraphQLUpload, graphqlUploadExpress } = require("graphql-upload");
-const Query = require("./resolvers/Query");
-const Mutation = require("./resolvers/Mutation");
-
+const { graphqlUploadExpress } = require("graphql-upload");
 const {
   ApolloServerPluginLandingPageGraphQLPlayground,
 } = require("apollo-server-core");
-const GraphQLDateTime = require("graphql-iso-date");
+const { makeExecutableSchema } = require("@graphql-tools/schema");
 
 async function startApolloServer() {
   const prisma = new PrismaClient();
 
-  const resolvers = {
-    Date: GraphQLDateTime,
-    Upload: GraphQLUpload,
-    Query,
-    Mutation,
-  };
-
+  const { typeDefs, resolvers } = createApolloServerProps();
   const server = new ApolloServer({
-    typeDefs: fs.readFileSync(path.join(__dirname, "schema.graphql"), "utf8"),
-    resolvers,
+    schema: makeExecutableSchema({ typeDefs, resolvers }),
     cacheControl: {
       calculateHttpHeaders: false,
     },
@@ -33,7 +22,7 @@ async function startApolloServer() {
       return {
         ...req,
         prisma,
-        userId: req && req.headers.authorization ? getUserId(req) : null,
+        userId: getUserId(req),
       };
     },
     plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
@@ -42,10 +31,11 @@ async function startApolloServer() {
   await server.start();
 
   const app = express();
+
   app.use(graphqlUploadExpress());
+
   server.applyMiddleware({
     app,
-
     path: "/",
   });
 
