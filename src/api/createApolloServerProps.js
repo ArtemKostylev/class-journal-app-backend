@@ -81,6 +81,9 @@ const baseTypes = `
   type Mutation {
     _empty: String
   }
+
+  scalar Date
+  scalar Upload
 `;
 
 const typeDefs = [

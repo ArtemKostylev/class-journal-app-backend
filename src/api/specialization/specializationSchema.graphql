@@ -1,0 +1,19 @@
+type Specialization {
+  id: Int!
+  name: String
+  students: [Student]
+}
+
+input SpecializationInput {
+  id: Int
+  name: String
+}
+
+extend type Mutation {
+  updateSpecialization(data: SpecializationInput): Boolean
+  deleteSpecialization(id: Int): Boolean
+}
+
+extend type Query {
+  fetchSpecialization: [Specialization]
+}

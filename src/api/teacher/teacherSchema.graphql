@@ -1,0 +1,25 @@
+type Teacher {
+  id: Int!
+  name: String
+  surname: String
+  parent: String
+  userId: Int
+  relations: [Teacher_Course_Student]
+}
+
+extend type Query {
+  fetchTeachers: [Teacher!]!
+}
+
+extend type Mutation {
+  updateTeacher(data: TeacherInput): Teacher
+  deleteTeacher(id: Int): Boolean
+  createTeacher(data: TeacherInput): Teacher
+}
+
+input TeacherInput {
+  id: Int
+  name: String
+  surname: String
+  parent: String
+}
