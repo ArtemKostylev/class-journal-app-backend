@@ -7,7 +7,9 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialActions", "selectRelationCount"]
+
 }
 
 model User {
@@ -91,7 +93,7 @@ model Teacher_Course_Student {
   subgroup     Int?
   consult      Consult[]
   journalEntry JournalEntry[]
-  quarterMark  QuarterMark[]
+  quaterMark   QuaterMark[]
 }
 
 model JournalEntry {
@@ -103,7 +105,7 @@ model JournalEntry {
   replacement Replacement?
 }
 
-model QuarterMark {
+model QuaterMark {
   id         Int                    @id @default(autoincrement())
   mark       String
   period     Period

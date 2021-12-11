@@ -1,16 +1,16 @@
-const jwt = require("jsonwebtoken");
-const { NotAuthenticatedError } = require("./errors/authErrors");
-const { RequestFailureError } = require("./errors/sharedErrors");
-const { GROUP_PERIODS } = require("./constants");
-const { RunPropertiesDefaults } = require("docx");
+const jwt = require('jsonwebtoken');
+const { NotAuthenticatedError } = require('./errors/authErrors');
+const { RequestFailureError } = require('./errors/sharedErrors');
+const { GROUP_PERIODS } = require('./constants');
+const { RunPropertiesDefaults } = require('docx');
 
 const getMonthFromUTCString = (date) => {
-  return date.split("T")[0].split("-")[1];
+  return date.split('T')[0].split('-')[1];
 };
 
 const getUserId = (req) => {
   if (!req) {
-    throw new RequestFailureError("auth");
+    throw new RequestFailureError('auth');
   }
 
   const header = req.headers.authorization;
@@ -19,7 +19,7 @@ const getUserId = (req) => {
     return null;
   }
 
-  const token = header.replace("Bearer ", "");
+  const token = header.replace('Bearer ', '');
 
   const { userId } = jwt.verify(token, process.env.APP_SECRET);
 
@@ -80,7 +80,7 @@ const buildDatesByGroup = (data, period) => {
     mappedDates.forEach((value, key) => {
       const maxDates = key === 0 ? 4 : 5;
       const emptyCount = maxDates - value.length;
-      result.push([...value, ...Array(emptyCount).fill("")]);
+      result.push([...value, ...Array(emptyCount).fill('')]);
     });
 
     resultData.dates.push({ group: group.group, dates: result });

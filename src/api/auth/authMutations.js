@@ -37,6 +37,7 @@ const signin = async (parent, args, context, info) => {
   }
 
   const valid = await bcrypt.compare(args.password, user.password);
+  
   if (!valid) {
     throw new Error("Invalid password");
   }

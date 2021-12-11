@@ -5,7 +5,7 @@ type Teacher_Course_Student {
   student: Student
   subgroup: Int
   journalEntry: [JournalEntry]
-  quarterMark: [QuarterMark]
+  quaterMark: [QuaterMark]
   consult: [Consult]
   archived: Boolean
   hours: Int
@@ -19,7 +19,7 @@ type JournalEntry {
   replacement: Replacement
 }
 
-type QuarterMark {
+type QuaterMark {
   id: Int!
   mark: String!
   period: String!

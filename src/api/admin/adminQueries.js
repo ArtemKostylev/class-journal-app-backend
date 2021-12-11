@@ -1,5 +1,6 @@
+const fs = require('fs');
 const htmlDocx = require('html-docx-js');
-const { buildHtml } = require("../../helpers/htmlBuilder");
+const { buildHtml } = require('../../helpers/htmlBuilder');
 
 const fetchFullInfo = async (parent, args, context) => {
   const { userId } = context;
