@@ -1,14 +1,9 @@
-const { GraphQLUpload } = require('graphql-upload');
-const GraphQLDateTime = require('graphql-iso-date');
 const merge = require('lodash.merge');
 const path = require('path');
+const { GraphQLUpload } = require('graphql-upload');
+const GraphQLDateTime = require('graphql-iso-date');
 const { loadFilesSync } = require('@graphql-tools/load-files');
 const { mergeTypeDefs } = require('@graphql-tools/merge');
-
-const typesArray = loadFilesSync(path.join(__dirname, '.'), {
-  recursive: true,
-  extensions: ['graphql'],
-});
 
 const uploadResolvers = require('./api/uploads');
 const accompanyResolvers = require('./api/accompany');
@@ -43,6 +38,11 @@ const resolvers = merge(
     Upload: GraphQLUpload,
   }
 );
+
+const typesArray = loadFilesSync(path.join(__dirname, '.'), {
+  recursive: true,
+  extensions: ['graphql'],
+});
 
 const createApolloServerProps = () => {
   return {
