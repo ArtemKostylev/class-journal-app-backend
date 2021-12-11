@@ -1,4 +1,4 @@
-
+# import 
 type FullInfo {
   teachers: [Teacher]
   students: [Student]

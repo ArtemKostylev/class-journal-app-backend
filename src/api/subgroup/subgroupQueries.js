@@ -1,4 +1,4 @@
-import { buildGroups } from '../../utils';
+const { buildGroups } = require('../../utils');
 
 const fetchSubgroups = async (parent, args, context) => {
   let students = await context.prisma.teacher_Course_Student.findMany({

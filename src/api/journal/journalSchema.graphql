@@ -1,6 +1,6 @@
 type Teacher_Course_Student {
   id: Int!
-  teacher: Teacher! 
+  teacher: Teacher!
   course: Course!
   student: Student
   subgroup: Int
@@ -58,7 +58,7 @@ input JournalEntryInput {
 input QuaterMarkInput {
   id: Int
   mark: String!
-  period: String!`
+  period: String!
   relationId: Int!
   year: Int
 }

@@ -1,13 +1,15 @@
-const express = require("express");
-const { ApolloServer } = require("apollo-server-express");
-const { createApolloServerProps } = require("./createApolloServerProps");
-const { PrismaClient } = require("@prisma/client");
-const { getUserId } = require("./utils");
-const { graphqlUploadExpress } = require("graphql-upload");
+const express = require('express');
+const { ApolloServer } = require('apollo-server-express');
+const {
+  createApolloServerProps,
+} = require('./src/createApolloServerProps');
+const { PrismaClient } = require('@prisma/client');
+const { getUserId } = require('./src/utils');
+const { graphqlUploadExpress } = require('graphql-upload');
 const {
   ApolloServerPluginLandingPageGraphQLPlayground,
-} = require("apollo-server-core");
-const { makeExecutableSchema } = require("@graphql-tools/schema");
+} = require('apollo-server-core');
+const { makeExecutableSchema } = require('@graphql-tools/schema');
 
 async function startApolloServer() {
   const prisma = new PrismaClient();
@@ -36,7 +38,7 @@ async function startApolloServer() {
 
   server.applyMiddleware({
     app,
-    path: "/",
+    path: '/',
   });
 
   await new Promise((resolve) => app.listen({ port: 4000 }, resolve));
