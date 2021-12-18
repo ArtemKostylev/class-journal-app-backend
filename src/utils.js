@@ -21,13 +21,17 @@ const getUserId = (req) => {
 
   const token = header.replace('Bearer ', '');
 
-  const { userId } = jwt.verify(token, process.env.APP_SECRET);
+  try {
+    const { userId } = jwt.verify(token, process.env.APP_SECRET);
 
-  if (!userId) {
+    if (!userId) {
+      throw new NotAuthenticatedError();
+    }
+
+    return userId;
+  } catch {
     throw new NotAuthenticatedError();
   }
-
-  return userId;
 };
 
 const buildGroups = ({ data, createValue, createKey, groupedName }) => {
