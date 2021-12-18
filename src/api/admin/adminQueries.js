@@ -29,8 +29,6 @@ const fetchFullInfo = async (parent, args, context) => {
 };
 
 const fetchAnnualReport = async (parent, args, context) => {
-  const FILE_LOCATION = '';
-
   const data = await context.prisma.teacher_Course_Student.findMany({
     where: {
       archived: false,
@@ -65,8 +63,6 @@ const fetchAnnualReport = async (parent, args, context) => {
       mappedData.get(key) ? [...mappedData.get(key), item] : [item]
     );
   });
-
-  //students map
 
   mappedData.forEach((value, key) => {
     let courses = new Map();

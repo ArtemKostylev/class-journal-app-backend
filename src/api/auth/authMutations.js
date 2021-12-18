@@ -1,5 +1,5 @@
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const signup = async (parent, args, context, info) => {
   const password = await bcrypt.hash(args.password, 10);
@@ -23,23 +23,24 @@ const signin = async (parent, args, context, info) => {
       teacher: {
         include: {
           relations: {
-            distinct: ["courseId"],
+            distinct: ['courseId'],
             select: {
               course: true,
             },
           },
         },
       },
+      role: true,
     },
   });
   if (!user) {
-    throw new Error("No such user found");
+    throw new Error('No such user found');
   }
 
   const valid = await bcrypt.compare(args.password, user.password);
-  
+
   if (!valid) {
-    throw new Error("Invalid password");
+    throw new Error('Invalid password');
   }
 
   const token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
@@ -52,5 +53,5 @@ const signin = async (parent, args, context, info) => {
 
 module.exports = {
   signup,
-  signin
-}
+  signin,
+};

@@ -1,6 +1,6 @@
 type User {
   id: Int!
-  roleId: Int!
+  role: Role!
   email: String!
   teacher: Teacher
 }
@@ -8,6 +8,11 @@ type User {
 type AuthPayload {
   token: String
   user: User
+}
+
+type Role {
+  id: Int
+  name: String
 }
 
 extend type Mutation {
