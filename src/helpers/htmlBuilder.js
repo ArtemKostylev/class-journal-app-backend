@@ -59,11 +59,12 @@ const styles = {
     display: flex;
     flex-direction: column;
     width: 100%;
+    margin: 50px !important;
   `,
   table: `
     margin-bottom: 20px;
     border-collapse: collapse;
-    width: 100%;
+    max-width: 100%;
   `,
   header: `
     font-weight: normal;
@@ -76,6 +77,7 @@ const styles = {
     border: 1px solid black;
     border-collapse: collapse;
     padding: 0px;
+    width: 30px !important
   `,
 };
 
