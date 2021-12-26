@@ -77,7 +77,8 @@ const styles = {
     border: 1px solid black;
     border-collapse: collapse;
     padding: 0px;
-    width: 30px !important
+    max-width: 30px !important;
+    width: 30px !important;
     margin-right: 2rem;
     margin-left: 2rem;
   `,
