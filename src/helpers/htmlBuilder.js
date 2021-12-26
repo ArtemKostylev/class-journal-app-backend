@@ -1,18 +1,18 @@
-const periods = ["first", "second", "third", "fourth", "year"];
+const periods = ['first', 'second', 'third', 'fourth', 'year'];
 
 const PERIOD_MAP = {
-  first: "I",
-  second: "II",
-  third: "III",
-  fourth: "IV",
-  year: "год",
+  first: 'I',
+  second: 'II',
+  third: 'III',
+  fourth: 'IV',
+  year: 'год',
 };
 
 // TODO: add program mapper
 
 const addRow = (children) =>
   `<tr>
-  ${children.reduce((acc, curr) => acc.concat(curr), "")}
+  ${children.reduce((acc, curr) => acc.concat(curr), '')}
   </tr>`;
 
 const addHeader = ({ text, className }) =>
@@ -38,17 +38,17 @@ const addTable = ({ title, header, body }) =>
   `<div>
   ${title}
   <table class="table">
-  <thead>${header.reduce((acc, curr) => acc.concat(curr), "")}</thead>
+  <thead>${header.reduce((acc, curr) => acc.concat(curr), '')}</thead>
   <tbody>
-  ${body.reduce((acc, curr) => acc.concat(curr), "")}
+  ${body.reduce((acc, curr) => acc.concat(curr), '')}
   </tbody>
   </table>
   </div>`;
 
 const addTitle = (text) => {
-  const [course, spec, program] = text.split("/");
+  const [course, spec, program] = text.split('/');
 
-  if (program === "OP")
+  if (program === 'OP')
     return `<p>${course} класс ОБЩЕРАЗВИВАЮЩИЕ ОП в области музыкального искусства (${spec})</p>`;
 
   return `<p>${course} класс ${spec} (предпрофессиональная ОП)</p>`;
@@ -78,6 +78,8 @@ const styles = {
     border-collapse: collapse;
     padding: 0px;
     width: 30px !important
+    margin-right: 2rem;
+    margin-left: 2rem;
   `,
 };
 
@@ -85,7 +87,7 @@ const createStyleSheet = () =>
   `<style>
   ${Object.keys(styles).reduce(
     (acc, curr) => acc.concat(`.${curr} {${styles[curr]}} \n`),
-    ""
+    ''
   )}
   </style>`;
 
@@ -95,7 +97,7 @@ const createDocument = (tables) => `
 <body>
 ${createStyleSheet()}
 <div class="base">
-${tables.reduce((acc, curr) => acc.concat(curr), "")}
+${tables.reduce((acc, curr) => acc.concat(curr), '')}
 </div>
 </body>
 </html>
@@ -104,12 +106,12 @@ ${tables.reduce((acc, curr) => acc.concat(curr), "")}
 const createRow = ({ key, value, index, courses }) => {
   return addRow([
     addCell({
-      text: String(index),
-      className: "header",
+      text: String(index + 1),
+      className: 'header',
     }),
     addCell({
       text: key,
-      className: "header",
+      className: 'header',
     }),
     ...courses
       .map((it) => {
@@ -120,8 +122,8 @@ const createRow = ({ key, value, index, courses }) => {
         );
         return periods.map((period) => {
           return addCell({
-            text: String(courseMarks.get(period) || ""),
-            className: "mark",
+            text: String(courseMarks.get(period) || ''),
+            className: 'mark',
           });
         });
       })
@@ -135,22 +137,22 @@ const createHeader = (courses) => {
   return [
     addRow([
       addTallHeader({
-        text: "№",
-        className: "header",
+        text: '№',
+        className: 'header',
       }),
       addTallHeader({
-        text: "Фамилия, имя учащегося",
-        className: "header",
+        text: 'Фамилия, имя учащегося',
+        className: 'header',
       }),
       ...courses.map((it) =>
-        addLongHeader({ text: it.name, className: "header" })
+        addLongHeader({ text: it.name, className: 'header' })
       ),
     ]),
     addRow([
       ...courses
         .map(() =>
           periods.map((period) =>
-            addHeader({ text: PERIOD_MAP[period], className: "header" })
+            addHeader({ text: PERIOD_MAP[period], className: 'header' })
           )
         )
         .flat(),
