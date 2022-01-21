@@ -1,16 +1,16 @@
-type SubgroupOutput {
-  group: String!
-  relations: [Group!]!
+type Subgroup {
+  course: Course!
+  student: Student!
+  subgroup: Int
 }
 
 type Group {
-  id: Int
-  subgroup: Int
-  student: Student
+  class: Int
+  program: String
+  relations: [Teacher_Course_Student]
 }
-
 extend type Query {
-  fetchSubgroups(courseId: Int, teacherId: Int): [SubgroupOutput]
+  fetchSubgroups(courseId: Int, teacherId: Int): [Group]
 }
 
 extend type Mutation {
