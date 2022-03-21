@@ -20,11 +20,11 @@ const fetchGroupConsults = async (parent, args, context) => {
     }
   );
 
-  availableGroups = availableGroups.map(
+  availableGroups = new Set(availableGroups.map(
     (item) =>
       `${item.student.class} ${item.student.program} ${item.subgroup || "..."
       }`
-  );
+  ));
 
   const consultsAll = await context.prisma.groupConsult.findMany({
     where: {
@@ -46,11 +46,11 @@ const fetchGroupConsults = async (parent, args, context) => {
     };
 
     if (consultsByGroups.has(key))
-      consultsByGroups.set(key, consultsByGroups.get(key).push(value));
-    consultsByGroups.set(key, [value]);
+	  {consultsByGroups.set(key, [...consultsByGroups.get(key), value]);}
+	  else {consultsByGroups.set(key, [value]);}
   });
 
-  return availableGroups.map((group) => {
+  return Array.from(availableGroups).map((group) => {
     if (consultsByGroups.has(group))
       return { group, consults: consultsByGroups.get(group) };
     return { group, consults: [] };
