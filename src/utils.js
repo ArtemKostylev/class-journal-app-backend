@@ -2,7 +2,6 @@ const jwt = require('jsonwebtoken');
 const { NotAuthenticatedError } = require('./errors/authErrors');
 const { RequestFailureError } = require('./errors/sharedErrors');
 const { GROUP_PERIODS } = require('./constants');
-const { RunPropertiesDefaults } = require('docx');
 
 const getMonthFromUTCString = (date) => {
   return date.split('T')[0].split('-')[1];

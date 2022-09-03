@@ -30,20 +30,21 @@ const addLongHeader = ({ text, className }) =>
 ${text}
 </th>`;
 
-// TODO: mb add <p>
+// TODO: mb add <p> UPD: for sure, so we can add max-width to columns
 const addCell = ({ text, className }) =>
   `<td class="${className}">${text}</td>`;
 
-const addTable = ({ title, header, body }) =>
-  `<div>
-  ${title}
-  <table class="table">
-  <thead>${header.reduce((acc, curr) => acc.concat(curr), '')}</thead>
-  <tbody>
-  ${body.reduce((acc, curr) => acc.concat(curr), '')}
-  </tbody>
-  </table>
-  </div>`;
+const addTable = ({ title, header, body }) => `
+    <div>
+        ${title}
+        <table class="table">
+            <thead>${header.reduce((acc, curr) => acc.concat(curr), '')}</thead>
+            <tbody>
+                ${body.reduce((acc, curr) => acc.concat(curr), '')}
+            </tbody>
+        </table>
+    </div>
+`;
 
 const addTitle = (text) => {
   const [course, spec, program] = text.split('/');
@@ -84,24 +85,22 @@ const styles = {
   `,
 };
 
-const createStyleSheet = () =>
-  `<style>
-  ${Object.keys(styles).reduce(
-    (acc, curr) => acc.concat(`.${curr} {${styles[curr]}} \n`),
-    ''
-  )}
-  </style>`;
+const createStyleSheet = () => `
+    <style>
+        ${Object.keys(styles).reduce((acc, curr) => acc.concat(`.${curr} {${styles[curr]}} \n`), '')}
+    </style>
+`;
 
 const createDocument = (tables) => `
-<!DOCTYPE html>
-<html>
-<body>
-${createStyleSheet()}
-<div class="base">
-${tables.reduce((acc, curr) => acc.concat(curr), '')}
-</div>
-</body>
-</html>
+    <!DOCTYPE html>
+    <html>
+        <body>
+            ${createStyleSheet()}
+            <div class="base">
+                ${tables.reduce((acc, curr) => acc.concat(curr), '')}
+            </div>
+        </body>
+    </html>
 `;
 
 const createRow = ({ key, value, index, courses }) => {
@@ -114,21 +113,15 @@ const createRow = ({ key, value, index, courses }) => {
       text: key,
       className: 'header',
     }),
-    ...courses
-      .map((it) => {
-        const courseMarks = new Map(
-          value
-            .find((item) => item.courseId === it.id)
-            ?.marks?.map((mark) => [mark.period, mark.mark])
-        );
+    ...courses.map((it) => { // FIXME: find adds extra complexity. We can avoid it.
+        const courseMarks = new Map(value.find((item) => item.courseId === it.id)?.marks?.map((mark) => [mark.period, mark.mark]));
         return periods.map((period) => {
           return addCell({
             text: String(courseMarks.get(period) || ''),
             className: 'mark',
           });
         });
-      })
-      .flat(),
+      }).flat()
   ]);
 };
 
@@ -145,19 +138,9 @@ const createHeader = (courses) => {
         text: 'Фамилия, имя учащегося',
         className: 'header',
       }),
-      ...courses.map((it) =>
-        addLongHeader({ text: it.name, className: 'header' })
-      ),
+      ...courses.map((it) => addLongHeader({ text: it.name, className: 'header' })),
     ]),
-    addRow([
-      ...courses
-        .map(() =>
-          periods.map((period) =>
-            addHeader({ text: PERIOD_MAP[period], className: 'header' })
-          )
-        )
-        .flat(),
-    ]),
+    addRow([...courses.map(() => periods.map((period) => addHeader({ text: PERIOD_MAP[period], className: 'header' }))).flat()]),
   ];
 };
 
@@ -165,18 +148,10 @@ const createTable = (title, courses, marks) =>
   addTable({
     title: addTitle(title),
     header: createHeader(courses),
-    body: [
-      ...Array.from(marks).map(([key, value], index) =>
-        createRow({ key, value, index, courses })
-      ),
-    ],
+    body: [...Array.from(marks).map(([key, value], index) => createRow({ key, value, index, courses }))],
   });
 
 const buildHtml = (mappedData) =>
-  createDocument([
-    ...Array.from(mappedData).map(([key, value]) =>
-      createTable(key, value.courses, value.studentMarks)
-    ),
-  ]);
+  createDocument([...Array.from(mappedData).map(([key, value]) => createTable(key, value.courses, value.studentMarks))]);
 
 module.exports = { buildHtml };
