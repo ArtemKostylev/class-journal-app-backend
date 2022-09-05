@@ -1,6 +1,6 @@
 
 const updateCourseRelations = async (parent, args, context, info) => {
-  const archived = args.courses.filter((el) => el.archived);
+  const deleted = args.courses.filter((el) => el.deleted);
 
   const pendingEntries = await context.prisma.teacher_Course_Student.findMany(
     {
@@ -34,7 +34,7 @@ const updateCourseRelations = async (parent, args, context, info) => {
           id: entry.id,
         },
         data: {
-          archived: !!archived.find((el) => el.id === entry.courseId),
+          deleted: !!deleted.find((el) => el.id === entry.courseId),
         },
       });
     })
@@ -42,7 +42,7 @@ const updateCourseRelations = async (parent, args, context, info) => {
 };
 
 const updateStudentRelations = async (parent, args, context, info) => {
-  const archived = args.students.filter((el) => el.archived);
+  const deleted = args.students.filter((el) => el.deleted);
 
   const newEmptyRelation = await context.prisma.teacher_Course_Student.findMany(
     {
@@ -76,7 +76,7 @@ const updateStudentRelations = async (parent, args, context, info) => {
       },
       data: {
         studentId: newStudents[0].id,
-        archived: false,
+        deleted: false,
       },
     });
     newStudents.splice(0, 1);
@@ -99,7 +99,7 @@ const updateStudentRelations = async (parent, args, context, info) => {
         id: entry.id,
       },
       data: {
-        archived: !!archived.find((el) => el.id === entry.studentId),
+        deleted: !!deleted.find((el) => el.id === entry.studentId),
       },
     });
   });

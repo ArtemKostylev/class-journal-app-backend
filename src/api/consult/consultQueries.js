@@ -6,7 +6,7 @@ const fetchGroupConsults = async (parent, args, context) => {
       where: {
         teacherId: args.teacherId,
         courseId: args.courseId,
-        archived: false,
+        deleted: false,
       },
       select: {
         subgroup: true,

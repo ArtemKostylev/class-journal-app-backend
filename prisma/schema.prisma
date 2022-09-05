@@ -9,7 +9,6 @@ datasource db {
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["referentialActions", "selectRelationCount"]
-
 }
 
 model User {
@@ -19,6 +18,7 @@ model User {
   role     Role     @relation(fields: [roleId], references: [id])
   roleId   Int
   teacher  Teacher?
+  deleted  Boolean  @default(false)
 }
 
 model Role {
@@ -38,6 +38,7 @@ model Teacher {
   Note         Note[]
   GroupConsult GroupConsult[]
   courseHours  CourseHours[]
+  deleted      Boolean                  @default(false)
 }
 
 model Course {
@@ -54,6 +55,19 @@ model Course {
   parentId          Int?                     @unique
   child             Course?                  @relation("Reference course")
   courseHours       CourseHours[]
+  deleted           Boolean                  @default(false)
+}
+
+model Student {
+  id               Int                      @id @default(autoincrement())
+  name             String?
+  surname          String?
+  class            Int?
+  program          Program?
+  relations        Teacher_Course_Student[]
+  specialization   Specialization?          @relation(fields: [specializationId], references: [id])
+  specializationId Int?
+  deleted          Boolean                  @default(false)
 }
 
 // This model keeps hours pasted by sup to students
@@ -68,17 +82,7 @@ model CourseHours {
   subgroup  Int?
   date      DateTime
   hours     Float
-}
-
-model Student {
-  id               Int                      @id @default(autoincrement())
-  name             String?
-  surname          String?
-  class            Int?
-  program          Program?
-  relations        Teacher_Course_Student[]
-  specialization   Specialization?          @relation(fields: [specializationId], references: [id])
-  specializationId Int?
+  deleted   Boolean  @default(false)
 }
 
 model Teacher_Course_Student {
@@ -89,11 +93,11 @@ model Teacher_Course_Student {
   studentId    Int?
   course       Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
   courseId     Int
-  archived     Boolean        @default(false)
   subgroup     Int?
   consult      Consult[]
   journalEntry JournalEntry[]
   quaterMark   QuaterMark[]
+  deleted      Boolean        @default(false)
 }
 
 model JournalEntry {
@@ -103,6 +107,7 @@ model JournalEntry {
   relation    Teacher_Course_Student @relation(fields: [relationId], references: [id], onDelete: Cascade)
   relationId  Int
   replacement Replacement?
+  deleted     Boolean                @default(false)
 }
 
 model QuaterMark {
@@ -112,6 +117,7 @@ model QuaterMark {
   relation   Teacher_Course_Student @relation(fields: [relationId], references: [id], onDelete: Cascade)
   relationId Int
   year       Int                    @default(2021)
+  deleted    Boolean                @default(false)
 }
 
 model Replacement {
@@ -119,6 +125,7 @@ model Replacement {
   date         DateTime
   journalEntry JournalEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
   entryId      Int          @unique
+  deleted      Boolean      @default(false)
 }
 
 model Consult {
@@ -128,6 +135,7 @@ model Consult {
   relation   Teacher_Course_Student @relation(fields: [relationId], references: [id], onDelete: Cascade)
   relationId Int
   hours      Float
+  deleted    Boolean                @default(false)
 }
 
 model GroupConsult {
@@ -142,6 +150,7 @@ model GroupConsult {
   courseId  Int
   hours     Float
   program   Program
+  deleted   Boolean  @default(false)
 }
 
 model Note {
@@ -152,6 +161,7 @@ model Note {
   teacherId Int
   course    Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
   courseId  Int
+  deleted   Boolean @default(false)
 }
 
 model Load {
@@ -160,12 +170,14 @@ model Load {
   class   Int
   program Program
   hours   Int
+  deleted Boolean @default(false)
 }
 
 model Specialization {
   id      Int       @id @default(autoincrement())
   name    String
   Student Student[]
+  deleted Boolean   @default(false)
 }
 
 enum Period {
