@@ -1,9 +1,18 @@
 const fetchReplacements = async (parent, args, context) => {
-  const { userId } = context;
+  const {userId} = context;
+
+  const freezeVersion = await context.prisma.freezeVersion.findFirst({
+    where: {
+      year: args.year
+    }
+  }) || null
+
   return await context.prisma.teacher_Course_Student.findMany({
     where: {
       teacherId: args.teacherId,
       courseId: args.courseId,
+      deleted: false,
+      freezeVersion: freezeVersion
     },
     include: {
       journalEntry: {

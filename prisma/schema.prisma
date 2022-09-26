@@ -28,17 +28,20 @@ model Role {
 }
 
 model Teacher {
-  id           Int                      @id @default(autoincrement())
-  name         String?
-  surname      String?
-  parent       String?
-  user         User?                    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId       Int?                     @unique
-  relations    Teacher_Course_Student[]
-  Note         Note[]
-  GroupConsult GroupConsult[]
-  courseHours  CourseHours[]
-  deleted      Boolean                  @default(false)
+  id              Int                      @id @default(autoincrement())
+  name            String?
+  surname         String?
+  parent          String?
+  user            User?                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          Int?                     @unique
+  relations       Teacher_Course_Student[]
+  Note            Note[]
+  GroupConsult    GroupConsult[]
+  courseHours     CourseHours[]
+  deleted         Boolean                  @default(false)
+    previousId      Int?
+  freezeVersion   FreezeVersion?           @relation(fields: [freezeVersionId], references: [id])
+  freezeVersionId Int?
 }
 
 model Course {
@@ -56,6 +59,9 @@ model Course {
   child             Course?                  @relation("Reference course")
   courseHours       CourseHours[]
   deleted           Boolean                  @default(false)
+    previousId      Int?
+  freezeVersion     FreezeVersion?           @relation(fields: [freezeVersionId], references: [id])
+  freezeVersionId   Int?
 }
 
 model Student {
@@ -68,6 +74,9 @@ model Student {
   specialization   Specialization?          @relation(fields: [specializationId], references: [id])
   specializationId Int?
   deleted          Boolean                  @default(false)
+    previousId      Int?
+  freezeVersion    FreezeVersion?           @relation(fields: [freezeVersionId], references: [id])
+  freezeVersionId  Int?
 }
 
 // This model keeps hours pasted by sup to students
@@ -86,18 +95,21 @@ model CourseHours {
 }
 
 model Teacher_Course_Student {
-  id           Int            @id @default(autoincrement())
-  teacher      Teacher        @relation(fields: [teacherId], references: [id], onDelete: Cascade)
-  teacherId    Int
-  student      Student?       @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  studentId    Int?
-  course       Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  courseId     Int
-  subgroup     Int?
-  consult      Consult[]
-  journalEntry JournalEntry[]
-  quaterMark   QuaterMark[]
-  deleted      Boolean        @default(false)
+  id              Int            @id @default(autoincrement())
+  teacher         Teacher        @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  teacherId       Int
+  student         Student?       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId       Int?
+  course          Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId        Int
+  subgroup        Int?
+  consult         Consult[]
+  journalEntry    JournalEntry[]
+  quaterMark      QuaterMark[]
+  deleted         Boolean        @default(false)
+    previousId      Int?
+  freezeVersion   FreezeVersion? @relation(fields: [freezeVersionId], references: [id])
+  freezeVersionId Int?
 }
 
 model JournalEntry {
@@ -174,10 +186,23 @@ model Load {
 }
 
 model Specialization {
-  id      Int       @id @default(autoincrement())
-  name    String
-  Student Student[]
-  deleted Boolean   @default(false)
+  id              Int            @id @default(autoincrement())
+  name            String
+  Student         Student[]
+  deleted         Boolean        @default(false)
+  previousId      Int?
+  freezeVersion   FreezeVersion? @relation(fields: [freezeVersionId], references: [id])
+  freezeVersionId Int?
+}
+
+model FreezeVersion {
+  id                     Int                      @id @default(autoincrement())
+  year                   Int
+  Teacher                Teacher[]
+  Course                 Course[]
+  Student                Student[]
+  Teacher_Course_Student Teacher_Course_Student[]
+  Specialization         Specialization[]
 }
 
 enum Period {
