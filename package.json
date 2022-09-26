@@ -39,7 +39,7 @@
     "lodash": "^4.17.21",
     "lodash.merge": "^4.6.2",
     "nodemon": "^2.0.7",
-    "prisma": "^2.27.0-dev.57"
+    "prisma": "^4.3.1"
   },
   "resolutions": {
     "apollo-server/apollo-server-core/graphql-upload/fs-capacitor": "^6.2.0",

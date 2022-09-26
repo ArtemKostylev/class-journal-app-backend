@@ -1,0 +1,34 @@
+type MidtermExam {
+    id: Int!
+    teacher: Teacher
+    student: Student
+    date: Date
+    mark: String
+    contents: String
+}
+
+extend type Query {
+    fetchMidtermExams(
+        teacherId: Int!
+        courseId: Int!
+        date_gte: Date
+        date_lte: Date
+    ): [MidtermExam]
+}
+
+extend type Mutation {
+    updateMidtermExam(data: MidtermExamUpdateInput): Boolean
+}
+
+input MidtermExamUpdateInput {
+    update: [MidtermExamInput]
+    delete: [Int]
+}
+
+input MidtermExamInput {
+    id: Int
+    mark: String!
+    date: Date!
+    teacherId: Int!
+    studentId: Int!
+}

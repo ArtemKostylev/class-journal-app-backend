@@ -1,15 +1,10 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["referentialActions", "selectRelationCount"]
-
+  provider = "prisma-client-js"
 }
 
 model User {
@@ -38,6 +33,7 @@ model Teacher {
   Note         Note[]
   GroupConsult GroupConsult[]
   courseHours  CourseHours[]
+  MidtermExam  MidtermExam[]
 }
 
 model Course {
@@ -79,6 +75,7 @@ model Student {
   relations        Teacher_Course_Student[]
   specialization   Specialization?          @relation(fields: [specializationId], references: [id])
   specializationId Int?
+  MidtermExam      MidtermExam[]
 }
 
 model Teacher_Course_Student {
@@ -166,6 +163,17 @@ model Specialization {
   id      Int       @id @default(autoincrement())
   name    String
   Student Student[]
+}
+
+model MidtermExam {
+  id        Int      @id @default(autoincrement())
+  student   Student  @relation(fields: [studentId], references: [id])
+  studentId Int
+  teacher   Teacher  @relation(fields: [teacherId], references: [id])
+  teacherId Int
+  contents  String
+  date      DateTime
+  mark      String
 }
 
 enum Period {

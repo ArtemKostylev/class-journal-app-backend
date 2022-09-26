@@ -53,6 +53,18 @@ const fetchJournal = async (parent, args, context) => {
     }));
 };
 
+const fetchTeacherStudents = async (parent, args, context) => {
+    return await context.prisma.teacher_Course_Student.findMany({
+        where: {
+            teacherId: args.teacherId
+        },
+        select: {
+            student: true
+        }
+    });
+}
+
 module.exports = {
-    fetchJournal
+    fetchJournal,
+    fetchTeacherStudents
 }
