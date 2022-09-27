@@ -1,4 +1,4 @@
-import {Course, FreezeVersion, PrismaClient, Specialization, Student, Teacher, Teacher_Course_Student} from '@prisma/client';
+import {Course, FreezeVersion, PrismaClient, Specialization, Student, Teacher, Teacher_Course_Student, Prisma} from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -22,33 +22,33 @@ async function updateRecords(freezeVersion: FreezeVersion, client: any, softDele
 
 }
 
-async function main() {
-  const freezeVersion = await prisma.freezeVersion.create({
+const main = async (tx: Prisma.TransactionClient) => {
+  const freezeVersion = await tx.freezeVersion.create({
     data: {
       year: 2021
     }
   })
 
-  const updatedStudents: Student[] = await updateRecords(freezeVersion, prisma.student);
-  const updatedTeachers: Teacher[] = await updateRecords(freezeVersion, prisma.teacher);
-  const updatedCourses: Course[] = await updateRecords(freezeVersion, prisma.course);
-  const updatedRelations: Teacher_Course_Student[] = await updateRecords(freezeVersion, prisma.teacher_Course_Student, 'archived');
-  const updatedSpecs: Specialization[] = await updateRecords(freezeVersion, prisma.specialization);
+  const updatedStudents: Student[] = await updateRecords(freezeVersion, tx.student);
+  const updatedTeachers: Teacher[] = await updateRecords(freezeVersion, tx.teacher);
+  const updatedCourses: Course[] = await updateRecords(freezeVersion, tx.course);
+  const updatedRelations: Teacher_Course_Student[] = await updateRecords(freezeVersion, tx.teacher_Course_Student, 'archived');
+  const updatedSpecs: Specialization[] = await updateRecords(freezeVersion, tx.specialization);
 
-  await prisma.teacher.updateMany({
+  await tx.teacher.updateMany({
     data: {
       userId: null
     }
   });
 
-  await prisma.specialization.createMany({
+  await tx.specialization.createMany({
     data: updatedSpecs.map(it => ({
       name: it.name,
       previousId: it.id
     }))
   })
 
-  const newSpecs = await prisma.specialization.findMany({
+  const newSpecs = await tx.specialization.findMany({
     where: {
       freezeVersionId: null
     }
@@ -67,7 +67,7 @@ async function main() {
     }))
   })
 
-  const newStudents = await prisma.student.findMany({
+  const newStudents = await tx.student.findMany({
     where: {
       freezeVersionId: null
     }
@@ -75,7 +75,7 @@ async function main() {
 
   const newStudentsMap = new Map(newStudents.map(it => [it.previousId, it]))
 
-  await prisma.teacher.createMany({
+  await tx.teacher.createMany({
     data: updatedTeachers.map(it => ({
       name: it.name,
       surname: it.surname,
@@ -85,7 +85,7 @@ async function main() {
     }))
   })
 
-  const newTeachers = await prisma.teacher.findMany({
+  const newTeachers = await tx.teacher.findMany({
     where: {
       freezeVersionId: null
     }
@@ -93,7 +93,7 @@ async function main() {
 
   const newTeachersMap = new Map(newTeachers.map(it => [it.previousId, it]))
 
-  await prisma.course.createMany({
+  await tx.course.createMany({
     data: updatedCourses.map(it => ({
       name: it.name,
       group: it.group,
@@ -104,7 +104,7 @@ async function main() {
     }))
   })
 
-  const newCourses = await prisma.course.findMany({
+  const newCourses = await tx.course.findMany({
     where: {
       freezeVersionId: null
     }
@@ -112,7 +112,7 @@ async function main() {
 
   const newCoursesMap = new Map(newCourses.map(it => [it.previousId, it]))
 
-  return await prisma.teacher_Course_Student.createMany({
+  return await tx.teacher_Course_Student.createMany({
     data: updatedRelations.map(it => ({
       teacherId: newTeachersMap.get(it.teacherId)?.id || 0,
       studentId: newStudentsMap.get(it.studentId)?.id || 0,
@@ -124,4 +124,4 @@ async function main() {
   });
 }
 
-main().then(res => console.log(res))
+prisma.$transaction(main).then(res => console.log(res))
