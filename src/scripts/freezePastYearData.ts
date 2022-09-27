@@ -2,7 +2,7 @@ import {Course, FreezeVersion, PrismaClient, Specialization, Student, Teacher, T
 
 const prisma = new PrismaClient();
 
-async function updateRecords(freezeVersion: FreezeVersion, client: any) {
+async function updateRecords(freezeVersion: FreezeVersion, client: any, softDeleteKey = 'deleted') {
 
   await client.updateMany({
     where: {
@@ -16,7 +16,7 @@ async function updateRecords(freezeVersion: FreezeVersion, client: any) {
   return await client.findMany({
     where: {
       freezeVersionId: freezeVersion.id,
-      deleted: false
+      [softDeleteKey]: false
     }
   })
 
@@ -32,7 +32,7 @@ async function main() {
   const updatedStudents: Student[] = await updateRecords(freezeVersion, prisma.student);
   const updatedTeachers: Teacher[] = await updateRecords(freezeVersion, prisma.teacher);
   const updatedCourses: Course[] = await updateRecords(freezeVersion, prisma.course);
-  const updatedRelations: Teacher_Course_Student[] = await updateRecords(freezeVersion, prisma.teacher_Course_Student);
+  const updatedRelations: Teacher_Course_Student[] = await updateRecords(freezeVersion, prisma.teacher_Course_Student, 'archived');
   const updatedSpecs: Specialization[] = await updateRecords(freezeVersion, prisma.specialization);
 
   const studMap = new Map(updatedStudents.map(it => [it.id, it]))

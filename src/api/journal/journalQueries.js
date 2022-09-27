@@ -14,7 +14,7 @@ const fetchJournal = async (parent, args, context) => {
         where: {
             teacherId: args.teacherId,
             courseId: args.courseId,
-            deleted: false,
+            archived: false,
             freezeVersion: freezeVersion
         },
         include: {
@@ -42,7 +42,7 @@ const fetchJournal = async (parent, args, context) => {
         where: {
             teacherId: args.teacherId,
             courseId: args.courseId,
-            deleted: false,
+            archived: false,
             freezeVersion: freezeVersion
         },
         select: {

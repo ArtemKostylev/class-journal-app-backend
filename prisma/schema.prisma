@@ -106,8 +106,8 @@ model Teacher_Course_Student {
   consult         Consult[]
   journalEntry    JournalEntry[]
   quaterMark      QuaterMark[]
-  deleted         Boolean        @default(false)
-    previousId      Int?
+  archived         Boolean        @default(false)
+  previousId      Int?
   freezeVersion   FreezeVersion? @relation(fields: [freezeVersionId], references: [id])
   freezeVersionId Int?
 }

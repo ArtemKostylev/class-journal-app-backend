@@ -6,7 +6,7 @@ const fetchSubgroups = async (parent, args, context) => {
         where: {
             teacherId: args.teacherId,
             courseId: args.courseId,
-            deleted: false,
+            archived: false,
             freezeVersionId: null
         },
         include: {
