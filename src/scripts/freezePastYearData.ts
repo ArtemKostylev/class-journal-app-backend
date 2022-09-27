@@ -35,12 +35,6 @@ const main = async (tx: Prisma.TransactionClient) => {
   const updatedRelations: Teacher_Course_Student[] = await updateRecords(freezeVersion, tx.teacher_Course_Student, 'archived');
   const updatedSpecs: Specialization[] = await updateRecords(freezeVersion, tx.specialization);
 
-  await tx.teacher.updateMany({
-    data: {
-      userId: null
-    }
-  });
-
   await tx.specialization.createMany({
     data: updatedSpecs.map(it => ({
       name: it.name,

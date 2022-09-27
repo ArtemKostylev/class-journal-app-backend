@@ -33,7 +33,7 @@ model Teacher {
   surname         String?
   parent          String?
   user            User?                    @relation(fields: [userId], references: [id])
-  userId          Int?                     @unique
+  userId          Int?
   relations       Teacher_Course_Student[]
   Note            Note[]
   GroupConsult    GroupConsult[]
