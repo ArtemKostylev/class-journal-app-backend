@@ -31,7 +31,7 @@ model Teacher {
   name            String?
   surname         String?
   parent          String?
-  user            User?                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user            User?                    @relation(fields: [userId], references: [id])
   userId          Int?                     @unique
   relations       Teacher_Course_Student[]
   Note            Note[]
@@ -95,11 +95,11 @@ model CourseHours {
 
 model Teacher_Course_Student {
   id              Int            @id @default(autoincrement())
-  teacher         Teacher        @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  teacher         Teacher        @relation(fields: [teacherId], references: [id])
   teacherId       Int
-  student         Student?       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  student         Student?       @relation(fields: [studentId], references: [id])
   studentId       Int?
-  course          Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course          Course         @relation(fields: [courseId], references: [id])
   courseId        Int
   subgroup        Int?
   consult         Consult[]
@@ -115,7 +115,7 @@ model JournalEntry {
   id          Int                    @id @default(autoincrement())
   mark        String
   date        DateTime
-  relation    Teacher_Course_Student @relation(fields: [relationId], references: [id], onDelete: Cascade)
+  relation    Teacher_Course_Student @relation(fields: [relationId], references: [id])
   relationId  Int
   replacement Replacement?
   deleted     Boolean                @default(false)
@@ -125,7 +125,7 @@ model QuaterMark {
   id         Int                    @id @default(autoincrement())
   mark       String
   period     Period
-  relation   Teacher_Course_Student @relation(fields: [relationId], references: [id], onDelete: Cascade)
+  relation   Teacher_Course_Student @relation(fields: [relationId], references: [id])
   relationId Int
   year       Int                    @default(2021)
   deleted    Boolean                @default(false)
@@ -134,7 +134,7 @@ model QuaterMark {
 model Replacement {
   id           Int          @id @default(autoincrement())
   date         DateTime
-  journalEntry JournalEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  journalEntry JournalEntry @relation(fields: [entryId], references: [id])
   entryId      Int          @unique
   deleted      Boolean      @default(false)
 }
@@ -143,7 +143,7 @@ model Consult {
   id         Int                    @id @default(autoincrement())
   date       DateTime
   year       Int
-  relation   Teacher_Course_Student @relation(fields: [relationId], references: [id], onDelete: Cascade)
+  relation   Teacher_Course_Student @relation(fields: [relationId], references: [id])
   relationId Int
   hours      Float
   deleted    Boolean                @default(false)
@@ -155,9 +155,9 @@ model GroupConsult {
   year      Int
   class     Int
   subgroup  Int?
-  teacher   Teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  teacher   Teacher  @relation(fields: [teacherId], references: [id])
   teacherId Int
-  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course    Course   @relation(fields: [courseId], references: [id])
   courseId  Int
   hours     Float
   program   Program
@@ -168,9 +168,9 @@ model Note {
   id        Int     @id @default(autoincrement())
   text      String
   year      Int
-  teacher   Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  teacher   Teacher @relation(fields: [teacherId], references: [id])
   teacherId Int
-  course    Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course    Course  @relation(fields: [courseId], references: [id])
   courseId  Int
   deleted   Boolean @default(false)
 }
