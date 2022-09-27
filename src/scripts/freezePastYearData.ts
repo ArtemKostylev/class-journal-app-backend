@@ -56,23 +56,16 @@ const main = async (tx: Prisma.TransactionClient) => {
 
   const newSpecsMap = new Map(newSpecs.map(it => [it.previousId, it]))
 
-  await prisma.student.createMany({
+  await tx.student.createMany({
     data: updatedStudents.map(it => {
-      const result: Record<string, any> = {
+      return {
         name: it.name,
         surname: it.surname,
         class: it.class,
         program: it.program,
+        specializationId: newSpecsMap.get(it.specializationId)?.id,
         previousId: it.id
       }
-
-      const spec = newSpecsMap.get(it.specializationId)?.id;
-
-      if (spec) result.specializationId = spec;
-
-      console.log(result);
-
-      return result;
     })
   })
 
