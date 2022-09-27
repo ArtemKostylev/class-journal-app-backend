@@ -102,7 +102,7 @@ const main = async (tx: Prisma.TransactionClient) => {
       excludeFromReport: it.excludeFromReport,
       onlyGroups: it.onlyGroups,
       onlyHours: it.onlyHours,
-      previousId: it.previousId
+      previousId: it.id
     }))
   })
 
@@ -116,9 +116,6 @@ const main = async (tx: Prisma.TransactionClient) => {
 
   return await tx.teacher_Course_Student.createMany({
     data: updatedRelations.map(it => {
-      console.log(it.courseId);
-      console.log(newCoursesMap)
-
       return {
         teacherId: newTeachersMap.get(it.teacherId)?.id as number,
         studentId: newStudentsMap.get(it.studentId)?.id as number,
