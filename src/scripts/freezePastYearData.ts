@@ -56,6 +56,8 @@ const main = async (tx: Prisma.TransactionClient) => {
 
   const newSpecsMap = new Map(newSpecs.map(it => [it.previousId, it]))
 
+  console.log(newSpecsMap);
+
   await prisma.student.createMany({
     data: updatedStudents.map(it => ({
       name: it.name,
