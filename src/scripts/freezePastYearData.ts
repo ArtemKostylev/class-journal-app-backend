@@ -70,6 +70,8 @@ const main = async (tx: Prisma.TransactionClient) => {
 
       if (spec) result.specializationId = spec;
 
+      console.log(result);
+
       return result;
     })
   })
