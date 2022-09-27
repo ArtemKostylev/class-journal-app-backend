@@ -116,7 +116,8 @@ const main = async (tx: Prisma.TransactionClient) => {
 
   return await tx.teacher_Course_Student.createMany({
     data: updatedRelations.map(it => {
-      console.log(newCoursesMap.get(it.courseId)?.id)
+      console.log(it.courseId);
+      console.log(newCoursesMap)
 
       return {
         teacherId: newTeachersMap.get(it.teacherId)?.id as number,
