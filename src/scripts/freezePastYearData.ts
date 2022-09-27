@@ -35,11 +35,11 @@ async function main() {
   const updatedRelations: Teacher_Course_Student[] = await updateRecords(freezeVersion, prisma.teacher_Course_Student, 'archived');
   const updatedSpecs: Specialization[] = await updateRecords(freezeVersion, prisma.specialization);
 
-  const studMap = new Map(updatedStudents.map(it => [it.id, it]))
-  const teacherMap = new Map(updatedTeachers.map(it => [it.id, it]))
-  const courseMap = new Map(updatedCourses.map(it => [it.id, it]))
-  const relMap = new Map(updatedRelations.map(it => [it.id, it]))
-  const specMap = new Map(updatedSpecs.map(it => [it.id, it]))
+  await prisma.teacher.updateMany({
+    data: {
+      userId: null
+    }
+  });
 
   await prisma.specialization.createMany({
     data: updatedSpecs.map(it => ({
