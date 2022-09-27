@@ -53,12 +53,9 @@ model Course {
   excludeFromReport Boolean?                 @default(false)
   onlyGroups        Boolean?                 @default(false)
   onlyHours         Boolean?                 @default(false)
-  parent            Course?                  @relation("Reference course", fields: [parentId], references: [id])
-  parentId          Int?                     @unique
-  child             Course?                  @relation("Reference course")
   courseHours       CourseHours[]
   deleted           Boolean                  @default(false)
-    previousId      Int?
+  previousId      Int?
   freezeVersion     FreezeVersion?           @relation(fields: [freezeVersionId], references: [id])
   freezeVersionId   Int?
 }
