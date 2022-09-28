@@ -7,8 +7,8 @@ type Teacher_Course_Student {
   journalEntry: [JournalEntry]
   quaterMark: [QuaterMark]
   consult: [Consult]
-  archived: Boolean
   hours: Int
+  deleted: Boolean
 }
 
 type JournalEntry {

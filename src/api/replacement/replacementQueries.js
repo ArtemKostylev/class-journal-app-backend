@@ -1,33 +1,42 @@
 const fetchReplacements = async (parent, args, context) => {
-  const { userId } = context;
-  return await context.prisma.teacher_Course_Student.findMany({
-    where: {
-      teacherId: args.teacherId,
-      courseId: args.courseId,
-    },
-    include: {
-      journalEntry: {
-        orderBy: {
-          date: "asc",
-        },
+    const {userId} = context;
+
+    const freezeVersion = await context.prisma.freezeVersion.findFirst({
         where: {
-          date: {
-            gte: args.date_gte,
-            lte: args.date_lte,
-          },
-          mark: {
-            in: ["Б"],
-          },
+            year: args.year
+        }
+    }) || null
+
+    return await context.prisma.teacher_Course_Student.findMany({
+        where: {
+            teacherId: args.teacherId,
+            courseId: args.courseId,
+            archived: false,
+            freezeVersion: freezeVersion
         },
         include: {
-          replacement: true,
+            journalEntry: {
+                orderBy: {
+                    date: "asc",
+                },
+                where: {
+                    date: {
+                        gte: args.date_gte,
+                        lte: args.date_lte,
+                    },
+                    mark: {
+                        in: ["Б"],
+                    },
+                },
+                include: {
+                    replacement: true,
+                },
+            },
+            student: true,
         },
-      },
-      student: true,
-    },
-  });
+    });
 };
 
 module.exports = {
-  fetchReplacements
+    fetchReplacements
 }
