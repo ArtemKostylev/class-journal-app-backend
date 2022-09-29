@@ -1,57 +1,60 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const signup = async (parent, args, context, info) => {
-  const password = await bcrypt.hash(args.password, 10);
+const signup = async (parent, args, context, _) => {
+    const password = await bcrypt.hash(args.password, 10);
 
-  const user = await context.prisma.user.create({
-    data: { ...args, password },
-  });
+    const user = await context.prisma.user.create({
+        data: {...args, password},
+    });
 
-  const token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
+    const token = jwt.sign({userId: user.id}, process.env.APP_SECRET);
 
-  return {
-    token,
-    user,
-  };
+    return {
+        token,
+        user,
+    };
 };
 
-const signin = async (parent, args, context, info) => {
-  const user = await context.prisma.user.findUnique({
-    where: { login: args.login },
-    include: {
-      teacher: {
+const signIn = async (parent, args, context, _) => {
+    const user = await context.prisma.user.findUnique({
+        where: {login: args.login},
         include: {
-          relations: {
-            distinct: ['courseId'],
-            select: {
-              course: true,
+            teacher: {
+                include: {
+                    relations: {
+                        distinct: ['courseId'],
+                        select: {
+                            course: true,
+                        },
+                    },
+                    freezeVersion: {
+                        year: true
+                    }
+                },
             },
-          },
+            role: true,
         },
-      },
-      role: true,
-    },
-  });
-  if (!user) {
-    throw new Error('No such user found');
-  }
+    });
+    if (!user) {
+        throw new Error('No such user found');
+    }
 
-  const valid = await bcrypt.compare(args.password, user.password);
+    const valid = await bcrypt.compare(args.password, user.password);
 
-  if (!valid) {
-    throw new Error('Invalid password');
-  }
+    if (!valid) {
+        throw new Error('Invalid password');
+    }
 
-  const token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
+    const token = jwt.sign({userId: user.id}, process.env.APP_SECRET);
 
-  return {
-    token,
-    user,
-  };
+    return {
+        token,
+        user,
+    };
 };
 
 module.exports = {
-  signup,
-  signin,
+    signup,
+    signin: signIn,
 };

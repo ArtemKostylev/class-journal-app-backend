@@ -4,10 +4,18 @@ const fetchJournal = async (parent, args, context) => {
     const dateGte = args.date_gte || `${args.year}-09-01T00:00:00.000Z`;
     const dateLte = args.date_lte || `${args.year + 1}-05-31T00:00:00.000Z`;
 
+    const freezeVersion = await context.prisma.freezeVersion.findFirst({
+        where: {
+            year: args.year
+        }
+    }) || null
+
     const students = await context.prisma.teacher_Course_Student.findMany({
         where: {
             teacherId: args.teacherId,
             courseId: args.courseId,
+            archived: false,
+            freezeVersion: freezeVersion
         },
         include: {
             journalEntry: {
@@ -34,6 +42,8 @@ const fetchJournal = async (parent, args, context) => {
         where: {
             teacherId: args.teacherId,
             courseId: args.courseId,
+            archived: false,
+            freezeVersion: freezeVersion
         },
         select: {
             journalEntry: {
