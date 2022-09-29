@@ -1,9 +1,14 @@
 type Query {
-  _empty: String
+    _empty: String
 }
 
 type Mutation {
-  _empty: String
+    _empty: String
+}
+
+type FreezeVersion {
+    id: Int
+    year: Int
 }
 
 scalar Date

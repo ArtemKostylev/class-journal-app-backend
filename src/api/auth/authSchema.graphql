@@ -1,21 +1,21 @@
 type User {
-  id: Int!
-  role: Role!
-  email: String!
-  teacher: Teacher
+    id: Int!
+    role: Role!
+    email: String!
+    teacher: [Teacher]
 }
 
 type AuthPayload {
-  token: String
-  user: User
+    token: String
+    user: User
 }
 
 type Role {
-  id: Int
-  name: String
+    id: Int
+    name: String
 }
 
 extend type Mutation {
-  signup(login: String!, password: String!, roleId: Int!): AuthPayload
-  signin(login: String!, password: String!): AuthPayload
+    signup(login: String!, password: String!, roleId: Int!): AuthPayload
+    signIn(login: String!, password: String!): AuthPayload
 }
