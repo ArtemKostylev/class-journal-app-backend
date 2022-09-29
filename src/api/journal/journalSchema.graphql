@@ -8,7 +8,7 @@ type Teacher_Course_Student {
     quaterMark: [QuaterMark]
     consult: [Consult]
     hours: Int
-    deleted: Boolean
+    archived: Boolean
     freezeVersion: FreezeVersion
 }
 
