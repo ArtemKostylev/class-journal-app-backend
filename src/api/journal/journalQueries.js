@@ -15,7 +15,7 @@ const fetchJournal = async (parent, args, context) => {
             teacherId: args.teacherId,
             courseId: args.courseId,
             archived: false,
-            freezeVersion: freezeVersion
+            freezeVersionId: freezeVersion.id
         },
         include: {
             journalEntry: {
