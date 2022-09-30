@@ -8,14 +8,14 @@ const fetchJournal = async (parent, args, context) => {
         where: {
             year: args.year
         }
-    }) || null
+    })?.id || null
 
     const students = await context.prisma.teacher_Course_Student.findMany({
         where: {
             teacherId: args.teacherId,
             courseId: args.courseId,
             archived: false,
-            freezeVersionId: freezeVersion.id
+            freezeVersionId: freezeVersion
         },
         include: {
             journalEntry: {
