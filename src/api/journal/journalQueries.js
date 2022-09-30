@@ -12,8 +12,6 @@ const fetchJournal = async (parent, args, context) => {
 
     const versionId = freezeVersion?.id || null
 
-    console.log(versionId);
-
     const students = await context.prisma.teacher_Course_Student.findMany({
         where: {
             teacherId: args.teacherId,
