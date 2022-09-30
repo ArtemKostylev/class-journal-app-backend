@@ -29,7 +29,9 @@ const signIn = async (parent, args, context, _) => {
                         },
                     },
                     freezeVersion: {
-                        year: true
+                        select: {
+                            year: true
+                        }
                     }
                 },
             },
