@@ -24,12 +24,11 @@ const signIn = async (parent, args, context, _) => {
                 include: {
                     relations: {
                         distinct: ['courseId'],
+                        where: {
+                            archived: false
+                        },
                         select: {
-                            course: {
-                                where: {
-                                    freezeVersionId: null
-                                },
-                            },
+                            course: true
                         },
                     },
                     freezeVersion: {
