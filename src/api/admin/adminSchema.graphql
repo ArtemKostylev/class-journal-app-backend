@@ -26,10 +26,10 @@ extend type Mutation {
 
 input CourseRelationInput {
   id: Int
-  deleted: Boolean
+  archived: Boolean
 }
 
 input StudentRelationInput {
   id: Int
-  deleted: Boolean
+  archived: Boolean
 }
