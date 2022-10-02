@@ -23,12 +23,13 @@ const signIn = async (parent, args, context, _) => {
             teacher: {
                 include: {
                     relations: {
-                        where: {
-                            freezeVersionId: null
-                        },
                         distinct: ['courseId'],
                         select: {
-                            course: true,
+                            course: {
+                                where: {
+                                    freezeVersionId: null
+                                },
+                            },
                         },
                     },
                     freezeVersion: {
