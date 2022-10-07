@@ -26,5 +26,5 @@ input StudentInput {
     surname: String
     class: Int
     program: String
-    specializarionId: Int
+    specializationId: Int
 }
