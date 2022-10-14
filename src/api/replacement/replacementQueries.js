@@ -1,18 +1,15 @@
+const {getFreezeVersion} = require('../../queryUtils/getFreezeVersion');
 const fetchReplacements = async (parent, args, context) => {
     const {userId} = context;
 
-    const freezeVersion = await context.prisma.freezeVersion.findFirst({
-        where: {
-            year: args.year
-        }
-    }) || null
+    const freezeVersion = await getFreezeVersion(args.year, context.prisma);
 
     return await context.prisma.teacher_Course_Student.findMany({
         where: {
             teacherId: args.teacherId,
             courseId: args.courseId,
             archived: false,
-            freezeVersion: freezeVersion
+            freezeVersionId: freezeVersion
         },
         include: {
             journalEntry: {
