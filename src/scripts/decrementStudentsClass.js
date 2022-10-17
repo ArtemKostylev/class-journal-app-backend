@@ -2,10 +2,19 @@ const {PrismaClient} = require('@prisma/client');
 
 const prisma = new PrismaClient();
 
-prisma.student.updateMany({
+const main = async (tx) => tx.student.updateMany({
+    where: {
+        none: {
+            freezeVersionId: {
+                id: null
+            }
+        }
+    },
     data: {
         class: {
             decrement: 1
         }
     }
-}).then(res => console.log(res));
+});
+
+prisma.$transaction(main).then(res => console.log(res));
