@@ -5,9 +5,7 @@ const prisma = new PrismaClient();
 const main = async (tx) => tx.student.updateMany({
     where: {
         NOT: {
-            freezeVersionId: {
-                id: null
-            }
+            freezeVersionId: null
         }
     },
     data: {
