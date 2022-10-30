@@ -105,7 +105,7 @@ const fetchAnnualReport = async (parent, args, context) => {
     const docx = htmlDocx.asBlob(doc, {orientation: 'landscape'});
 
     fs.writeFile(
-        `/var/www/files/vedomost_${args.year}.docx`,
+        `/var/www/akostylev/files/vedomost_${args.year}.docx`,
         docx,
         function (err) {
             if (err) throw err;
