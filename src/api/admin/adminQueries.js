@@ -2,6 +2,7 @@ const fs = require('fs');
 const htmlDocx = require('html-docx-js');
 const {buildHtml} = require('../../helpers/htmlBuilder');
 const {NOT_FREEZED} = require('../../queires');
+const {getFreezeVersion} = require('../../queryUtils/getFreezeVersion');
 
 const fetchFullInfo = async (parent, args, context) => {
     const {userId} = context;
@@ -32,10 +33,13 @@ const fetchFullInfo = async (parent, args, context) => {
 };
 
 const fetchAnnualReport = async (parent, args, context) => {
+
+    const freezeVersion = await getFreezeVersion(args.year, context.prisma);
+
     const data = await context.prisma.teacher_Course_Student.findMany({
         where: {
             archived: false,
-            freezeVersionId: null,
+            freezeVersionId: freezeVersion,
             course: {
                 excludeFromReport: false,
             },
