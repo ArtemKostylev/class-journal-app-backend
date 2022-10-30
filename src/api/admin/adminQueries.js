@@ -34,7 +34,7 @@ const fetchFullInfo = async (parent, args, context) => {
 const fetchAnnualReport = async (parent, args, context) => {
     const data = await context.prisma.teacher_Course_Student.findMany({
         where: {
-            deleted: false,
+            archived: false,
             freezeVersionId: null,
             course: {
                 excludeFromReport: false,
