@@ -1,11 +1,17 @@
 const {ApolloServer} = require('apollo-server-express');
 const {createApolloServerProps} = require('./createApolloServerProps');
-const {PrismaClient} = require('@prisma/client');
+import {PrismaClient} from '@prisma/client';
+
 const {getUserId} = require('./utils');
 const {graphqlUploadExpress} = require('graphql-upload');
 const {ApolloServerPluginLandingPageGraphQLPlayground} = require('apollo-server-core');
 const {makeExecutableSchema} = require('@graphql-tools/schema');
 import express, {Request} from 'express';
+
+export type Context = {
+  userId: (req: any) => void;
+  prisma: PrismaClient;
+}
 
 async function startApolloServer() {
   const prisma = new PrismaClient();
@@ -18,7 +24,6 @@ async function startApolloServer() {
     },
     context: ({req}: { req: Request }) => {
       return {
-        ...req,
         prisma,
         userId: getUserId(req),
       };

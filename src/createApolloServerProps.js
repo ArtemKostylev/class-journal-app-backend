@@ -1,9 +1,9 @@
 const merge = require('lodash.merge');
 const path = require('path');
-const { GraphQLUpload } = require('graphql-upload');
+const {GraphQLUpload} = require('graphql-upload');
 const GraphQLDateTime = require('graphql-iso-date');
-const { loadFilesSync } = require('@graphql-tools/load-files');
-const { mergeTypeDefs } = require('@graphql-tools/merge');
+const {loadFilesSync} = require('@graphql-tools/load-files');
+const {mergeTypeDefs} = require('@graphql-tools/merge');
 
 const uploadResolvers = require('./api/uploads');
 const accompanyResolvers = require('./api/accompany');
@@ -18,37 +18,39 @@ const specializationResolvers = require('./api/specialization');
 const studentResolvers = require('./api/student');
 const subgroupResolvers = require('./api/subgroup');
 const teacherResolvers = require('./api/teacher');
+const midtermExamResolvers = require('./api/midtermExam');
 
 const resolvers = merge(
-  uploadResolvers,
-  teacherResolvers,
-  subgroupResolvers,
-  studentResolvers,
-  replacementResolvers,
-  noteResolvers,
-  journalResolvers,
-  courseResolvers,
-  consultResolvers,
-  authResolvers,
-  adminResolvers,
-  accompanyResolvers,
-  specializationResolvers,
-  {
-    Date: GraphQLDateTime,
-    Upload: GraphQLUpload,
-  }
+    uploadResolvers,
+    teacherResolvers,
+    subgroupResolvers,
+    studentResolvers,
+    replacementResolvers,
+    noteResolvers,
+    journalResolvers,
+    courseResolvers,
+    consultResolvers,
+    authResolvers,
+    adminResolvers,
+    accompanyResolvers,
+    specializationResolvers,
+    midtermExamResolvers,
+    {
+        Date: GraphQLDateTime,
+        Upload: GraphQLUpload,
+    }
 );
 
 const typesArray = loadFilesSync(path.join(__dirname, '.'), {
-  recursive: true,
-  extensions: ['graphql'],
+    recursive: true,
+    extensions: ['graphql'],
 });
 
 const createApolloServerProps = () => {
-  return {
-    resolvers: resolvers.resolvers,
-    typeDefs: mergeTypeDefs(typesArray),
-  };
+    return {
+        resolvers: resolvers.resolvers,
+        typeDefs: mergeTypeDefs(typesArray),
+    };
 };
 
-module.exports = { createApolloServerProps };
+module.exports = {createApolloServerProps};

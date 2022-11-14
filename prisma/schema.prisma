@@ -9,13 +9,13 @@ generator client {
 }
 
 model User {
-  id       Int      @id @default(autoincrement())
-  login    String   @unique
+  id       Int       @id @default(autoincrement())
+  login    String    @unique
   password String
-  role     Role     @relation(fields: [roleId], references: [id])
+  role     Role      @relation(fields: [roleId], references: [id])
   roleId   Int
   teacher  Teacher[]
-  deleted  Boolean  @default(false)
+  deleted  Boolean   @default(false)
 }
 
 model Role {
@@ -36,10 +36,10 @@ model Teacher {
   GroupConsult    GroupConsult[]
   courseHours     CourseHours[]
   deleted         Boolean                  @default(false)
-    previousId      Int?
+  previousId      Int?
   freezeVersion   FreezeVersion?           @relation(fields: [freezeVersionId], references: [id])
   freezeVersionId Int?
-  MidtermExam  MidtermExam[]
+  MidtermExam     MidtermExam[]
 }
 
 model Course {
@@ -54,7 +54,7 @@ model Course {
   onlyHours         Boolean?                 @default(false)
   courseHours       CourseHours[]
   deleted           Boolean                  @default(false)
-  previousId      Int?
+  previousId        Int?
   freezeVersion     FreezeVersion?           @relation(fields: [freezeVersionId], references: [id])
   freezeVersionId   Int?
 }
@@ -69,7 +69,7 @@ model Student {
   specialization   Specialization?          @relation(fields: [specializationId], references: [id])
   specializationId Int?
   deleted          Boolean                  @default(false)
-  previousId      Int?
+  previousId       Int?
   freezeVersion    FreezeVersion?           @relation(fields: [freezeVersionId], references: [id])
   freezeVersionId  Int?
   MidtermExam      MidtermExam[]
@@ -102,7 +102,7 @@ model Teacher_Course_Student {
   consult         Consult[]
   journalEntry    JournalEntry[]
   quaterMark      QuaterMark[]
-  archived         Boolean        @default(false)
+  archived        Boolean        @default(false)
   previousId      Int?
   freezeVersion   FreezeVersion? @relation(fields: [freezeVersionId], references: [id])
   freezeVersionId Int?
@@ -199,17 +199,31 @@ model FreezeVersion {
   Student                Student[]
   Teacher_Course_Student Teacher_Course_Student[]
   Specialization         Specialization[]
+  MidtermExam            MidtermExam[]
 }
 
 model MidtermExam {
-  id        Int      @id @default(autoincrement())
-  student   Student  @relation(fields: [studentId], references: [id])
-  studentId Int
-  teacher   Teacher  @relation(fields: [teacherId], references: [id])
-  teacherId Int
-  contents  String
-  date      DateTime
-  mark      String
+  id              Int             @id @default(autoincrement())
+  student         Student         @relation(fields: [studentId], references: [id])
+  studentId       Int
+  teacher         Teacher         @relation(fields: [teacherId], references: [id])
+  teacherId       Int
+  type            MidtermExamType @relation(fields: [typeId], references: [id])
+  typeId          Int
+  contents        String
+  date            DateTime
+  result          String
+  number          Int
+  freezeVersion   FreezeVersion?  @relation(fields: [freezeVersionId], references: [id])
+  freezeVersionId Int?
+  deleted         Boolean @default(false)
+}
+
+model MidtermExamType {
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
+  MidtermExam MidtermExam[]
+  deleted     Boolean @default(false)
 }
 
 enum Period {
