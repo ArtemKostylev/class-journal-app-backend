@@ -4,8 +4,9 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "start": "tsc && copyfiles \"**/*.graphql\" dist/ && nodemon dist/index.js",
-    "preinstall": "npx npm-force-resolutions"
+    "start": "tsc && copyfiles \"**/*.graphql\" dist/ && node dist/index.js",
+    "preinstall": "npx npm-force-resolutions",
+    "build": "tsc && copyfiles \"**/*.graphql\" dist/"
   },
   "keywords": [],
   "author": "",

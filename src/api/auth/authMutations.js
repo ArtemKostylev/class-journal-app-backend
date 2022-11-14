@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const signup = async (parent, args, context, _) => {
+const signUp = async (parent, args, context, _) => {
     const password = await bcrypt.hash(args.password, 10);
 
     const user = await context.prisma.user.create({
@@ -24,12 +24,17 @@ const signIn = async (parent, args, context, _) => {
                 include: {
                     relations: {
                         distinct: ['courseId'],
+                        where: {
+                            archived: false
+                        },
                         select: {
-                            course: true,
+                            course: true
                         },
                     },
                     freezeVersion: {
-                        year: true
+                        select: {
+                            year: true
+                        }
                     }
                 },
             },
@@ -55,6 +60,6 @@ const signIn = async (parent, args, context, _) => {
 };
 
 module.exports = {
-    signup,
-    signin: signIn,
+    signUp,
+    signIn,
 };

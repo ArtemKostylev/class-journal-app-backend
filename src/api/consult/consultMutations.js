@@ -19,7 +19,7 @@ const updateConsults = async (parent, args, context, info) => {
 };
 
 const deleteConsults = async (parent, args, context, info) => {
-    let ids = args.ids.map((id) => parseInt(id));
+  let ids = args.ids.map((id) => parseInt(id));
 
     return await context.prisma.consult.deleteMany({
         where: {

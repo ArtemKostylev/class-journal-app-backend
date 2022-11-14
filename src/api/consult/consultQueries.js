@@ -45,12 +45,12 @@ const fetchGroupConsults = async (parent, args, context) => {
             hours: item.hours,
         };
 
-        if (consultsByGroups.has(key)) {
-            consultsByGroups.set(key, [...consultsByGroups.get(key), value]);
-        } else {
-            consultsByGroups.set(key, [value]);
-        }
-    });
+    if (consultsByGroups.has(key)) {
+      consultsByGroups.set(key, [...consultsByGroups.get(key), value]);
+    } else {
+      consultsByGroups.set(key, [value]);
+    }
+  });
 
     return Array.from(availableGroups).map((group) => {
         if (consultsByGroups.has(group))

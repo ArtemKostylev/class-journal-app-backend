@@ -16,6 +16,6 @@ type Role {
 }
 
 extend type Mutation {
-    signup(login: String!, password: String!, roleId: Int!): AuthPayload
+    signUp(login: String!, password: String!, roleId: Int!): AuthPayload
     signIn(login: String!, password: String!): AuthPayload
 }
