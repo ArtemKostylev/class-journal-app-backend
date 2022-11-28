@@ -5,13 +5,13 @@ type MidtermExamType {
 
 type MidtermExam {
     id: Int!
-    teacher: Teacher!
-    student: Student!
-    date: Date!
-    contents: String!
-    result: String!
-    type: MidtermExamType!
-    number: Int!
+    teacher: Teacher
+    student: Student
+    date: Date
+    contents: String
+    result: String
+    type: MidtermExamType
+    number: Int
     freezeVersion: FreezeVersion
 }
 
@@ -19,6 +19,7 @@ extend type Query {
     fetchMidtermExams(
         teacherId: Int!
         year: Int!
+        typeId: Int!
         dateGte: Date!
         dateLte: Date!
     ): [MidtermExam]
@@ -33,14 +34,14 @@ extend type Mutation {
 }
 
 input MidtermExamInput {
-    id: Int
-    date: Date!
-    teacherId: Int!
-    studentId: Int!
-    typeId: Int!
-    contents: String!
-    result: String!
-    number: Int!
+    id: Int!
+    date: Date
+    teacherId: Int
+    studentId: Int
+    typeId: Int
+    contents: String
+    result: String
+    number: Int
 }
 
 input MidtermExamTypeInput {

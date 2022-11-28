@@ -206,7 +206,7 @@ model MidtermExam {
   id              Int             @id @default(autoincrement())
   student         Student         @relation(fields: [studentId], references: [id])
   studentId       Int
-  teacher         Teacher         @relation(fields: [teacherId], references: [id])
+  teacher         Teacher        @relation(fields: [teacherId], references: [id])
   teacherId       Int
   type            MidtermExamType @relation(fields: [typeId], references: [id])
   typeId          Int
