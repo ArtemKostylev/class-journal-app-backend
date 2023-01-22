@@ -19,17 +19,36 @@ const updateMidtermExam: Resolver<UpdateParams> = async (_, {data: {id, ...data}
     },
     create: {
       ...data
+    },
+    include: {
+      student: true,
+      type: true
     }
   })
 }
 
-const deleteMidtermExam: Resolver<{id: number}> = async (_, {id}, {prisma}) => {
-  return await prisma.midtermExam.update({
+const deleteMidtermExam: Resolver<{ id: number }> = async (_, {id}, {prisma}) => {
+  const deletedEntry = await prisma.midtermExam.update({
     where: {id},
     data: {
       deleted: true
     }
-  })
+  });
+
+  await prisma.midtermExam.updateMany({
+    where: {
+      number: {
+        gte: deletedEntry.number
+      }
+    },
+    data: {
+      number: {
+        decrement: 1
+      }
+    }
+  });
+
+  return deletedEntry;
 }
 
 const updateMidtermExamType: Resolver<UpdateTypeParams> = async (_, {data: {id, name}}, {prisma}) => {
@@ -40,7 +59,7 @@ const updateMidtermExamType: Resolver<UpdateTypeParams> = async (_, {data: {id, 
   })
 }
 
-const deleteMidtermExamType: Resolver<{id: number}> = async (_, {id}, {prisma}) => {
+const deleteMidtermExamType: Resolver<{ id: number }> = async (_, {id}, {prisma}) => {
   return await prisma.midtermExamType.update({
     where: {id},
     data: {

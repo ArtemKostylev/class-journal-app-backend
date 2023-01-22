@@ -24,7 +24,7 @@ const fetchMidtermExams: Resolver<FetchArgs> = async (_, {teacherId, year, dateL
       }
     },
     orderBy: {
-      number: 'desc'
+      number: 'asc'
     },
     include: {
       student: true,

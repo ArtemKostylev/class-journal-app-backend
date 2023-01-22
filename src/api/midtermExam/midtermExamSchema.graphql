@@ -28,9 +28,9 @@ extend type Query {
 
 extend type Mutation {
     updateMidtermExam(data: MidtermExamInput): MidtermExam
-    deleteMidtermExam(id: Int): Int
+    deleteMidtermExam(id: Int): MidtermExam
     updateMidtermExamType(data: MidtermExamTypeInput): MidtermExamType
-    deleteMidtermExamType(id: Int): Int
+    deleteMidtermExamType(id: Int): MidtermExamType
 }
 
 input MidtermExamInput {
