@@ -19,9 +19,9 @@ const updateConsults = async (parent, args, context, info) => {
 };
 
 const deleteConsults = async (parent, args, context, info) => {
-    let ids = args.ids.map((id) => parseInt(id));
+  let ids = args.ids.map((id) => parseInt(id));
 
-    let res = await context.prisma.consult.deleteMany({
+    return await context.prisma.consult.deleteMany({
         where: {
             id: {
                 in: ids,
@@ -31,9 +31,8 @@ const deleteConsults = async (parent, args, context, info) => {
 };
 
 const updateGroupConsults = async (parent, args, context, info) => {
-    return (updatedEntries = args.data.map((group) => {
-        group.consults.map(async (consult) => {
-            return await context.prisma.groupConsult.upsert({
+    await Promise.all(args.data.map(async (group) =>
+        await Promise.all(group.consult.map((consult) => context.prisma.groupConsult.upsert({
                 where: {
                     id: consult.id,
                 },
@@ -51,15 +50,15 @@ const updateGroupConsults = async (parent, args, context, info) => {
                     subgroup: group.subgroup,
                     class: group.class,
                 },
-            });
-        });
-    }));
+            })
+        )))
+    );
 };
 
 const deleteGroupConsults = async (parent, args, context, info) => {
-    let ids = args.ids.map((id) => parseInt(id));
+    const ids = args.ids.map((id) => parseInt(id));
 
-    let res = await context.prisma.groupConsult.deleteMany({
+    return await context.prisma.groupConsult.deleteMany({
         where: {
             id: {
                 in: ids,

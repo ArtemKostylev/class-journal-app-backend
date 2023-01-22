@@ -61,6 +61,23 @@ const fetchJournal = async (parent, args, context) => {
     }));
 };
 
+const fetchTeacherStudents = async (parent, args, context) => {
+
+    const freezeVersion = await getFreezeVersion(args.year, context.prisma);
+    const data = await context.prisma.teacher_Course_Student.findMany({
+        where: {
+            teacherId: args.teacherId,
+            freezeVersionId: freezeVersion
+        },
+        select: {
+            student: true
+        }
+    });
+
+    return data.map(it => it.student);
+}
+
 module.exports = {
-    fetchJournal
+    fetchJournal,
+    fetchTeacherStudents
 }

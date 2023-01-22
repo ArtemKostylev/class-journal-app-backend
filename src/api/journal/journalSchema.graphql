@@ -36,6 +36,7 @@ extend type Query {
         date_gte: Date
         date_lte: Date
     ): [Teacher_Course_Student]
+    fetchTeacherStudents(teacherId: Int!, year: Int!): [Student]
 }
 
 extend type Mutation {

@@ -1,0 +1,50 @@
+type MidtermExamType {
+    id: Int!
+    name: String!
+}
+
+type MidtermExam {
+    id: Int!
+    teacher: Teacher
+    student: Student
+    date: Date
+    contents: String
+    result: String
+    type: MidtermExamType
+    number: Int
+    freezeVersion: FreezeVersion
+}
+
+extend type Query {
+    fetchMidtermExams(
+        teacherId: Int!
+        year: Int!
+        typeId: Int!
+        dateGte: Date!
+        dateLte: Date!
+    ): [MidtermExam]
+    fetchMidtermExamTypes: [MidtermExamType]
+}
+
+extend type Mutation {
+    updateMidtermExam(data: MidtermExamInput): MidtermExam
+    deleteMidtermExam(id: Int): MidtermExam
+    updateMidtermExamType(data: MidtermExamTypeInput): MidtermExamType
+    deleteMidtermExamType(id: Int): MidtermExamType
+}
+
+input MidtermExamInput {
+    id: Int!
+    date: Date
+    teacherId: Int
+    studentId: Int
+    typeId: Int
+    contents: String
+    result: String
+    number: Int
+}
+
+input MidtermExamTypeInput {
+    id: Int
+    name: String!
+}
