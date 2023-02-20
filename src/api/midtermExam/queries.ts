@@ -5,11 +5,9 @@ type FetchArgs = {
   teacherId: number;
   year: number;
   typeId: number;
-  dateGte: string;
-  dateLte: string;
 }
 
-const fetchMidtermExams: Resolver<FetchArgs> = async (_, {teacherId, year, dateLte, dateGte, typeId}, {prisma}) => {
+const fetchMidtermExams: Resolver<FetchArgs> = async (_, {teacherId, year, typeId}, {prisma}) => {
   const freezeVersion = await getFreezeVersion(year, prisma);
 
   return await prisma.midtermExam.findMany({
@@ -18,10 +16,6 @@ const fetchMidtermExams: Resolver<FetchArgs> = async (_, {teacherId, year, dateL
       teacherId,
       deleted: false,
       typeId,
-      date: {
-        gte: dateGte,
-        lte: dateLte
-      }
     },
     orderBy: {
       number: 'asc'

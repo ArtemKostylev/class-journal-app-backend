@@ -20,8 +20,6 @@ extend type Query {
         teacherId: Int!
         year: Int!
         typeId: Int!
-        dateGte: Date!
-        dateLte: Date!
     ): [MidtermExam]
     fetchMidtermExamTypes: [MidtermExamType]
 }
