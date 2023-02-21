@@ -12,8 +12,6 @@ type FetchArgs = {
 const fetchMidtermExams: Resolver<FetchArgs> = async (_, {teacherId, year, typeId, dateGte, dateLte}, {prisma}) => {
   const freezeVersion = await getFreezeVersion(year, prisma);
 
-  console.log(dateGte, dateLte)
-
   return await prisma.midtermExam.findMany({
     where: {
       freezeVersionId: freezeVersion,
