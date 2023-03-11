@@ -28,11 +28,8 @@ const updateMidtermExam: Resolver<UpdateParams> = async (_, {data: {id, ...data}
 }
 
 const deleteMidtermExam: Resolver<{ id: number }> = async (_, {id}, {prisma}) => {
-  const deletedEntry = await prisma.midtermExam.update({
-    where: {id},
-    data: {
-      deleted: true
-    }
+  const deletedEntry = await prisma.midtermExam.delete({
+    where: {id}
   });
 
   await prisma.midtermExam.updateMany({
