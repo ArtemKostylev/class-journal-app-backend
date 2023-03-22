@@ -36,7 +36,7 @@ input MidtermExamInput {
     id: Int!
     date: Date
     teacherId: Int!
-    studentId: Int!
+    studentId: String!
     typeId: Int
     contents: String
     result: String

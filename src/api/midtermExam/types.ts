@@ -2,7 +2,7 @@ export type MidtermExamInput = {
   id?: number;
   date?: string;
   teacherId: number;
-  studentId: number;
+  studentId: string;
   typeId: number;
   contents?: string;
   result?: string;

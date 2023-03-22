@@ -15,10 +15,12 @@ const updateMidtermExam: Resolver<UpdateParams> = async (_, {data: {id, ...data}
       id
     },
     update: {
-      ...data
+      ...data,
+      studentId: parseInt(data.studentId)
     },
     create: {
-      ...data
+      ...data,
+      studentId: parseInt(data.studentId)
     },
     include: {
       student: true,
