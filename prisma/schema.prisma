@@ -213,7 +213,6 @@ model MidtermExam {
   contents        String?
   date            DateTime?       @db.Timestamp(0)
   result          String?
-  number          Int
   freezeVersion   FreezeVersion?  @relation(fields: [freezeVersionId], references: [id])
   freezeVersionId Int?
   deleted         Boolean         @default(false)

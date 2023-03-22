@@ -6,7 +6,6 @@ export type MidtermExamInput = {
   typeId: number;
   contents?: string;
   result?: string;
-  number: number
 }
 
 export type MidtermExamTypeInput = {
