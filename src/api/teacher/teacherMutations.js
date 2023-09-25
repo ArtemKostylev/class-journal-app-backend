@@ -24,7 +24,7 @@ const createTeacher = async (_, args, context, info) => {
     data: {
       name: args.data.name,
       surname: args.data.surname,
-      parent: args.parent,
+      parent: args.data.parent,
     },
   });
 };
