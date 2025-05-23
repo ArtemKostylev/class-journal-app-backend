@@ -1,5 +1,4 @@
 import {Resolver} from '../../@types/resolver';
-import {getFreezeVersion} from '../../queryUtils/getFreezeVersion';
 
 type FetchArgs = {
   teacherId: number;
@@ -10,11 +9,8 @@ type FetchArgs = {
 }
 
 const fetchMidtermExams: Resolver<FetchArgs> = async (_, {teacherId, year, typeId, dateGte, dateLte}, {prisma}) => {
-  const freezeVersion = await getFreezeVersion(year, prisma);
-
   return await prisma.midtermExam.findMany({
     where: {
-      freezeVersionId: freezeVersion,
       teacherId,
       deleted: false,
       typeId,
