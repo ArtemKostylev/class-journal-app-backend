@@ -1,7 +1,5 @@
-const merge = require('lodash.merge');
-const path = require('path');
-const {GraphQLUpload} = require('graphql-upload');
-const GraphQLDateTime = require('graphql-iso-date');
+import path from 'path';
+import { mergeResolvers } from './utils';
 const {loadFilesSync} = require('@graphql-tools/load-files');
 const {mergeTypeDefs} = require('@graphql-tools/merge');
 
@@ -20,25 +18,28 @@ const subgroupResolvers = require('./api/subgroup');
 const teacherResolvers = require('./api/teacher');
 const midtermExamResolvers = require('./api/midtermExam');
 
-const resolvers = merge(
-    uploadResolvers,
-    teacherResolvers,
-    subgroupResolvers,
-    studentResolvers,
-    replacementResolvers,
-    noteResolvers,
-    journalResolvers,
-    courseResolvers,
-    consultResolvers,
-    authResolvers,
-    adminResolvers,
-    accompanyResolvers,
-    specializationResolvers,
-    midtermExamResolvers,
-    {
-        Date: GraphQLDateTime,
-        Upload: GraphQLUpload,
-    }
+const resolvers = mergeResolvers(
+    [
+        uploadResolvers,
+        teacherResolvers,
+        subgroupResolvers,
+        studentResolvers,
+        replacementResolvers,
+        noteResolvers,
+        journalResolvers,
+        courseResolvers,
+        consultResolvers,
+        authResolvers,
+        adminResolvers,
+        accompanyResolvers,
+        specializationResolvers,
+        midtermExamResolvers,
+        // TODO: temporary disabled upload and date resolvers, mb they are included in newer versions
+        {
+            // Date: GraphQLDateTime,
+            // Upload: GraphQLUpload,
+        }
+    ]
 );
 
 const typesArray = loadFilesSync(path.join(__dirname, '.'), {
@@ -46,10 +47,12 @@ const typesArray = loadFilesSync(path.join(__dirname, '.'), {
     extensions: ['graphql'],
 });
 
+const typeDefs = mergeTypeDefs(typesArray);
+
 const createApolloServerProps = () => {
     return {
-        resolvers: resolvers.resolvers,
-        typeDefs: mergeTypeDefs(typesArray),
+        resolvers,
+        typeDefs,
     };
 };
 

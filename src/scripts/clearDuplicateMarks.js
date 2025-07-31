@@ -18,19 +18,17 @@ const clearDuplicateMarks = async () => {
       value.sort(function (a, b) {
         return a - b;
       });
-      dropRight(value).forEach(async (it) => {
+      value.slice(0, value.length - 1).forEach(async (it) => {
         const deletedReplacements = await prisma.replacement.deleteMany({
           where: {
             entryId: it,
           },
         });
-        console.log(deletedReplacements);
         const deleted = await prisma.journalEntry.delete({
           where: {
             id: it,
           },
         });
-        console.log(deleted);
       });
     }
   });

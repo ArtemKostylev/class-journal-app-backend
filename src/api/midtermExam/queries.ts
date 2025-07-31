@@ -1,4 +1,4 @@
-import {Resolver} from '../../@types/resolver';
+import {Resolver} from '../../types/resolver';
 
 type FetchArgs = {
   teacherId: number;

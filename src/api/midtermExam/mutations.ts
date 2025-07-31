@@ -1,4 +1,4 @@
-import {Resolver} from '../../@types/resolver';
+import {Resolver} from '../../types/resolver';
 import {MidtermExamInput, MidtermExamTypeInput} from './types';
 
 type UpdateParams = {
