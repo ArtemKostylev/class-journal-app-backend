@@ -19,12 +19,13 @@ const clearDuplicateMarks = async () => {
         return a - b;
       });
       value.slice(0, value.length - 1).forEach(async (it) => {
-        const deletedReplacements = await prisma.replacement.deleteMany({
+        // TODO: try cascade delete
+        await prisma.replacement.deleteMany({
           where: {
             entryId: it,
           },
         });
-        const deleted = await prisma.journalEntry.delete({
+        await prisma.journalEntry.delete({
           where: {
             id: it,
           },

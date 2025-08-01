@@ -1,4 +1,4 @@
-const GROUP_PERIODS = {
+export const GROUP_PERIODS = {
   FIRST_HALF: () =>
     new Map([
       ['8', []],
@@ -15,18 +15,3 @@ const GROUP_PERIODS = {
       ['4', []],
     ]),
 };
-
-const BASE_TYPES = `
-  type Query {
-    _empty: String
-  }
-
-  type Mutation {
-    _empty: String
-  }
-
-  scalar Date
-  scalar Upload
-`;
-
-module.exports = { GROUP_PERIODS, BASE_TYPES };

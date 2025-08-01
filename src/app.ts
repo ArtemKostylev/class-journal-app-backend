@@ -33,10 +33,11 @@ const server = new ApolloServer({
 
 await server.start();
 
+app.use(cors<cors.CorsRequest>());
+app.use(express.json());
+app.use(authentication);
+
 app.use(GRAPHQL_PATH,
-  cors<cors.CorsRequest>(),
-  express.json(),
-  authentication,
   expressMiddleware(server, {
     context: async ({req}) => ({
       userId: req.userId
