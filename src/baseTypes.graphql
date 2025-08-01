@@ -21,5 +21,17 @@ type Teacher {
   freezeVersion: FreezeVersion
 }
 
+type Subgroup {
+  course: Course!
+  student: Student!
+  subgroup: Int
+}
+
+type Group {
+  class: Int
+  program: String
+  relations: [Teacher_Course_Student]
+}
+
 scalar Date
 scalar Upload

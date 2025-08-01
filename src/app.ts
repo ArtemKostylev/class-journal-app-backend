@@ -10,6 +10,7 @@ import {createApolloServerProps} from './createApolloServerProps';
 import { authentication } from './middleware/authentication';
 import { teacherRouter } from './rest-api/teacher';
 import { db } from './db';
+import subgroupRouter from './rest-api/subgroup';
 
 declare module 'express-serve-static-core' {
   interface Request {
@@ -53,6 +54,7 @@ async function main() {
 
   // describe rest api
   app.use('/api/teacher', teacherRouter);
+  app.use('/api/subgroup', subgroupRouter);
 
   // start http-server application
   await new Promise((resolve) => app.listen({port: PORT}, resolve as () => void));

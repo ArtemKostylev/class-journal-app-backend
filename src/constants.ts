@@ -15,3 +15,9 @@ export const GROUP_PERIODS = {
       ['4', []],
     ]),
 };
+
+export const PROGRAMS_RU: Record<string, string> = {
+  PP_5: '(5)ПП',
+  PP_8: '(8)ПП',
+  OP: 'ОП',
+};
