@@ -7,6 +7,7 @@ import cors from 'cors';
 
 const {createApolloServerProps} = require('./createApolloServerProps');
 import { authentication } from './middleware/authentication';
+import { teacherRouter } from './rest-api/teacher';
 
 declare module 'express-serve-static-core' {
   interface Request {
@@ -37,6 +38,7 @@ app.use(cors<cors.CorsRequest>());
 app.use(express.json());
 app.use(authentication);
 
+// describe graphql api
 app.use(GRAPHQL_PATH,
   expressMiddleware(server, {
     context: async ({req}) => ({
@@ -45,5 +47,9 @@ app.use(GRAPHQL_PATH,
   })
 )
 
+// describe rest api
+app.use('/api/teacher', teacherRouter);
+
+// start http-server application
 await new Promise((resolve) => app.listen({port: PORT}, resolve as () => void));
 console.log(`🚀 Server ready at http://localhost:4000${GRAPHQL_PATH}`);
