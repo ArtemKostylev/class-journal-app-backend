@@ -29,8 +29,9 @@ export function authentication(
 
     const signature = authHeader?.replace('Bearer ', '');
 
+    // TODO: throw unauthorized error
     if (!signature) {
-        res.status(StatusCodes.UNAUTHORIZED).send();
+        next();
         return;
     }
 

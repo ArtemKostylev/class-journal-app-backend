@@ -1,27 +1,23 @@
 import path from 'path';
 import { mergeResolvers } from './utils';
-const {loadFilesSync} = require('@graphql-tools/load-files');
-const {mergeTypeDefs} = require('@graphql-tools/merge');
+import { mergeTypeDefs } from '@graphql-tools/merge';
+import { loadFilesSync } from '@graphql-tools/load-files';
 
-const uploadResolvers = require('./api/uploads');
-const accompanyResolvers = require('./api/accompany');
-const adminResolvers = require('./api/admin');
-const authResolvers = require('./api/auth');
-const consultResolvers = require('./api/consult');
-const courseResolvers = require('./api/course');
-const journalResolvers = require('./api/journal');
-const noteResolvers = require('./api/notes');
-const replacementResolvers = require('./api/replacement');
-const specializationResolvers = require('./api/specialization');
-const studentResolvers = require('./api/student');
-const subgroupResolvers = require('./api/subgroup');
-const teacherResolvers = require('./api/teacher');
-const midtermExamResolvers = require('./api/midtermExam');
+const accompanyResolvers = require('./graphql-api/accompany');
+const adminResolvers = require('./graphql-api/admin');
+const authResolvers = require('./graphql-api/auth');
+const consultResolvers = require('./graphql-api/consult');
+const courseResolvers = require('./graphql-api/course');
+const journalResolvers = require('./graphql-api/journal');
+const noteResolvers = require('./graphql-api/notes');
+const replacementResolvers = require('./graphql-api/replacement');
+const specializationResolvers = require('./graphql-api/specialization');
+const studentResolvers = require('./graphql-api/student');
+const subgroupResolvers = require('./graphql-api/subgroup');
+const midtermExamResolvers = require('./graphql-api/midtermExam');
 
 const resolvers = mergeResolvers(
     [
-        uploadResolvers,
-        teacherResolvers,
         subgroupResolvers,
         studentResolvers,
         replacementResolvers,
@@ -33,12 +29,7 @@ const resolvers = mergeResolvers(
         adminResolvers,
         accompanyResolvers,
         specializationResolvers,
-        midtermExamResolvers,
-        // TODO: temporary disabled upload and date resolvers, mb they are included in newer versions
-        {
-            // Date: GraphQLDateTime,
-            // Upload: GraphQLUpload,
-        }
+        midtermExamResolvers
     ]
 );
 
@@ -49,11 +40,9 @@ const typesArray = loadFilesSync(path.join(__dirname, '.'), {
 
 const typeDefs = mergeTypeDefs(typesArray);
 
-const createApolloServerProps = () => {
+export const createApolloServerProps = () => {
     return {
         resolvers,
         typeDefs,
     };
 };
-
-module.exports = {createApolloServerProps};

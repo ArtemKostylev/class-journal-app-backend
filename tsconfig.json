@@ -1,18 +1,19 @@
 {
   "compilerOptions": {
-    "target": "es2017",
-    "module": "es2022",
-    "sourceMap": true,
-    "outDir": "./dist",
+    "lib": ["es2023"],
+    "module": "NodeNext",
+    "target": "es2023",
+    "noEmit": true,
     "strict": true,
-    "allowJs": true,
-    "moduleResolution": "node",
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "moduleResolution": "NodeNext",
+    "allowImportingTsExtensions": true,
+    "allowSyntheticDefaultImports": true,
+    "outDir": "./dist"
   },
   "include": [
-    "./src/**/*"
+    "src"
   ],
   "exclude": [
     "./node_modules/**/*"

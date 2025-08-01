@@ -1,14 +1,24 @@
 type Query {
-    _empty: String
+  _empty: String
 }
 
 type Mutation {
-    _empty: String
+  _empty: String
 }
 
 type FreezeVersion {
-    id: Int
-    year: Int
+  id: Int
+  year: Int
+}
+
+type Teacher {
+  id: Int!
+  name: String
+  surname: String
+  parent: String
+  userId: Int
+  relations: [Teacher_Course_Student]
+  freezeVersion: FreezeVersion
 }
 
 scalar Date
