@@ -25,8 +25,8 @@ interface Subgroup {
 }
 
 class SubgroupService {
-    public async updateSubgroups(args: UpdateSubgroupsParams): Promise<void> {
-        const {subgroups} = args;
+    public async updateSubgroups(params: UpdateSubgroupsParams): Promise<void> {
+        const {subgroups} = params;
 
         await Promise.all(
             subgroups.map((subgroup) =>
@@ -42,11 +42,13 @@ class SubgroupService {
         );
     }
     
-    public async fetchSubgroups(args: FetchSubgroupsParams): Promise<Subgroup[]>{
+    public async fetchSubgroups(params: FetchSubgroupsParams): Promise<Subgroup[]>{
+        const {teacherId, courseId} = params;
+
         const relations = await db.teacher_Course_Student.findMany({
             where: {
-                teacherId: args.teacherId,
-                courseId: args.courseId,
+                teacherId: teacherId,
+                courseId: courseId,
                 archived: false,
                 freezeVersionId: null
             },

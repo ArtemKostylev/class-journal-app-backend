@@ -33,5 +33,13 @@ type Group {
   relations: [Teacher_Course_Student]
 }
 
+type Note {
+  id: Int!
+  text: String!
+  year: Int!
+  teacher: Teacher
+  course: Course
+}
+
 scalar Date
 scalar Upload

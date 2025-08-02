@@ -11,6 +11,7 @@ import { authentication } from './middleware/authentication';
 import { teacherRouter } from './rest-api/teacher';
 import { db } from './db';
 import subgroupRouter from './rest-api/subgroup';
+import { noteRouter } from './rest-api/note';
 
 declare module 'express-serve-static-core' {
   interface Request {
@@ -55,6 +56,9 @@ async function main() {
   // describe rest api
   app.use('/api/teacher', teacherRouter);
   app.use('/api/subgroup', subgroupRouter);
+  app.use('/api/note', noteRouter);
+
+  // TODO: add error handling
 
   // start http-server application
   await new Promise((resolve) => app.listen({port: PORT}, resolve as () => void));

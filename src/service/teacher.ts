@@ -14,8 +14,8 @@ interface CreateTeacherParams {
 }
 
 class TeacherService {
-    public async updateTeacher(args: UpdateTeacherParams) {
-        const {id, name, surname, parent} = args;
+    public async updateTeacher(params: UpdateTeacherParams) {
+        const {id, name, surname, parent} = params;
 
         const updatedTeacher = await db.teacher.update({
           where: {
@@ -39,8 +39,8 @@ class TeacherService {
         });
     }
       
-    public async createTeacher(args: CreateTeacherParams) {
-        const {name, surname, parent} = args;
+    public async createTeacher(params: CreateTeacherParams) {
+        const {name, surname, parent} = params;
 
         const createdTeacher = await db.teacher.create({
           data: {
