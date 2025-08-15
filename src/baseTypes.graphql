@@ -41,5 +41,25 @@ type Note {
   course: Course
 }
 
+type Consult {
+    id: Int!
+    date: Date!
+    year: Int!
+    hours: Float!
+    relation: Teacher_Course_Student
+}
+
+type GroupConsult {
+    teacher: Teacher!
+    course: Course!
+    id: Int!
+    date: Date!
+    year: Int!
+    subgroup: Int!
+    hours: Float!
+    class: Int!
+    program: String!
+}
+
 scalar Date
 scalar Upload

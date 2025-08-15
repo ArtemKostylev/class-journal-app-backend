@@ -12,6 +12,8 @@ import { teacherRouter } from './rest-api/teacher';
 import { db } from './db';
 import subgroupRouter from './rest-api/subgroup';
 import { noteRouter } from './rest-api/note';
+import { consultRouter } from './rest-api/consult';
+import { groupConsultRouter } from './rest-api/groupConsult';
 
 declare module 'express-serve-static-core' {
   interface Request {
@@ -57,6 +59,8 @@ async function main() {
   app.use('/api/teacher', teacherRouter);
   app.use('/api/subgroup', subgroupRouter);
   app.use('/api/note', noteRouter);
+  app.use('/api/consult', consultRouter);
+  app.use('/api/groupConsult', groupConsultRouter);
 
   // TODO: add error handling
 
