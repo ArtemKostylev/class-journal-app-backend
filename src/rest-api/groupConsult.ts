@@ -25,9 +25,9 @@ groupConsultRouter.get('/', async (req, res) => {
 })
 
 groupConsultRouter.post('/', async (req, res) => {
-    const { groups, teacher, course } = req.body
+    const { consults, teacher, course } = req.body
 
-    await groupConsultService.updateGroupConsults({ groups, teacher, course })
+    await groupConsultService.updateGroupConsults({ consults, teacher, course })
 })
 
 groupConsultRouter.delete('/', async (req, res) => {

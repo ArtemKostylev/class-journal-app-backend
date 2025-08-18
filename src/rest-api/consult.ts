@@ -30,10 +30,4 @@ consultRouter.post('/', async (req, res) => {
     await consultService.updateConsults({ consults })
 })
 
-consultRouter.delete('/', async (req, res) => {
-    const { ids } = req.body
-
-    await consultService.deleteConsults(ids)
-})
-
 export { consultRouter }

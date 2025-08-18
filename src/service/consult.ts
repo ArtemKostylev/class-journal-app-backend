@@ -3,7 +3,7 @@ import { type Consult, type Student } from '@prisma/client'
 import { freezeVersionService } from './freezeVersion'
 
 interface ConsultDto {
-    consultId: number
+    id: number
     date: string
     hours: number
     relationId: number
@@ -31,12 +31,24 @@ class ConsultService {
         const { consults } = params
 
         await Promise.all(
-            consults.map((consult) => {
-                const { consultId, date, hours, relationId, year } = consult
+            consults.map(async (consult) => {
+                const { id, date, hours, relationId, year } = consult
+
+                if (!hours && !id) {
+                    return
+                }
+
+                if (!hours) {
+                    return await db.consult.delete({
+                        where: {
+                            id,
+                        },
+                    })
+                }
 
                 return db.consult.upsert({
                     where: {
-                        id: consultId,
+                        id,
                     },
                     update: {
                         date,
@@ -51,16 +63,6 @@ class ConsultService {
                 })
             })
         )
-    }
-
-    public async deleteConsults(ids: number[]): Promise<void> {
-        await db.consult.deleteMany({
-            where: {
-                id: {
-                    in: ids,
-                },
-            },
-        })
     }
 
     public async getAllConsults(params: GetAllConsultsParams): Promise<GetAllConsultsReturnValue[]> {
