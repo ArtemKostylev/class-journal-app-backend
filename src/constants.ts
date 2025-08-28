@@ -21,3 +21,5 @@ export const PROGRAMS_RU: Record<string, string> = {
   PP_8: '(8)ПП',
   OP: 'ОП',
 };
+
+export const DATE_FORMAT = 'yyyy-MM-dd'
