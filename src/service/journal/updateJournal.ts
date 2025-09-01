@@ -1,6 +1,8 @@
 import type { Period } from '@prisma/client'
 import { db } from '../../db'
 import { startOfDay } from 'date-fns'
+import { DATE_FORMAT } from '~/constants'
+import { parse } from 'date-fns'
 
 interface ChangedMarkDto {
     id: number
@@ -36,17 +38,22 @@ async function updateJournalEntry(mark: ChangedMarkDto): Promise<void> {
     }
 
     if (!mark.id) {
-        await db.journalEntry.create({
+        const journalEntry = await db.journalEntry.create({
             data: {
-                date: startOfDay(new Date(mark.date)),
+                date: startOfDay(parse(mark.date, DATE_FORMAT, new Date())),
                 mark: mark.mark,
                 relationId: mark.relationId,
             },
         })
+        console.log(journalEntry)
+    } else if (!mark.mark) {
+        await db.journalEntry.delete({
+            where: { id: mark.id },
+        })
     } else {
         await db.journalEntry.update({
             where: { id: mark.id },
-            data: { mark: mark.mark, date: startOfDay(new Date(mark.date)) },
+            data: { mark: mark.mark, date: startOfDay(parse(mark.date, DATE_FORMAT, new Date())) },
         })
     }
 }
@@ -64,6 +71,10 @@ async function updateQuarterMark(quarterMark: ChangedQuarterMarkDto): Promise<vo
                 year: quarterMark.year,
                 relationId: quarterMark.relationId,
             },
+        })
+    } else if (!quarterMark.mark) {
+        await db.quaterMark.delete({
+            where: { id: quarterMark.id },
         })
     } else {
         await db.quaterMark.update({

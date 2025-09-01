@@ -61,5 +61,35 @@ type GroupConsult {
     program: String!
 }
 
+type Teacher_Course_Student {
+    id: Int!
+    teacher: Teacher!
+    course: Course!
+    student: Student
+    subgroup: Int
+    journalEntry: [JournalEntry]
+    quaterMark: [QuaterMark]
+    consult: [Consult]
+    hours: Int
+    archived: Boolean
+    freezeVersion: FreezeVersion
+}
+
+type JournalEntry {
+    id: Int!
+    mark: String!
+    date: Date!
+    relation: Teacher_Course_Student
+    replacement: Replacement
+}
+
+type QuaterMark {
+    id: Int!
+    mark: String!
+    period: String!
+    relation: Teacher_Course_Student
+    year: Int
+}
+
 scalar Date
 scalar Upload

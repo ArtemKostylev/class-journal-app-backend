@@ -44,10 +44,11 @@ journalRouter.get('/group', async (req, res) => {
     res.json(journal)
 })
 
-journalRouter.post('/', async (req, _) => {
+journalRouter.post('/', async (req, res) => {
     const { marks, quarterMarks } = req.body
 
     await updateJournal({ marks, quarterMarks })
+    res.sendStatus(200)
 })
 
 export { journalRouter }

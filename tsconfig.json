@@ -10,12 +10,17 @@
     "moduleResolution": "NodeNext",
     "allowImportingTsExtensions": true,
     "allowSyntheticDefaultImports": true,
-    "outDir": "./dist"
+    "baseUrl": ".",
+    "paths": {
+      "~/*": [
+        "src/*"
+      ]
+    } 
   },
   "include": [
     "src"
   ],
   "exclude": [
     "./node_modules/**/*"
-  ]
+  ],
 }

@@ -25,7 +25,7 @@ async function updateRecords(freezeVersion: FreezeVersion, client: any, softDele
 const main = async (tx: Prisma.TransactionClient) => {
   const freezeVersion = await tx.freezeVersion.create({
     data: {
-      year: 2021
+      year: 2024
     }
   })
 

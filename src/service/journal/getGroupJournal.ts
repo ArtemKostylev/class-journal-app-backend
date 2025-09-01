@@ -1,13 +1,15 @@
-import { endOfMonth, format } from 'date-fns'
+import { compareAsc, endOfMonth, format, parse } from 'date-fns'
 import type { GroupJournalDto } from './models'
 import { freezeVersionService } from '../freezeVersion'
 import { db } from '../../db'
-import { ACADEMIC_PERIODS } from '../../const/academicPeriods'
+import { ACADEMIC_PERIODS, type AcademicPeriods } from '../../const/academicPeriods'
 import { MONTHS } from '../../const/months'
 import { PROGRAMS } from '../../const/programs'
 import type { Student } from '@prisma/client'
 import { convertJournalEntriesToDto, convertQuarterMarksToDto, convertStudentName } from './mappers'
 import { DATE_FORMAT } from '../../constants'
+import { da } from 'zod/v4/locales'
+import { academicYearToCalendarByPeriod } from '~/utils/academicDate'
 
 interface GetGroupJournalRequestDto {
     teacherId: number
@@ -32,8 +34,12 @@ export async function getGroupJournal(
     const startMonth = period === ACADEMIC_PERIODS.FIRST ? MONTHS.SEPTEMBER : MONTHS.JANUARY
     const endMonth = period === ACADEMIC_PERIODS.FIRST ? MONTHS.DECEMBER : MONTHS.MAY
 
-    const dateGte = new Date(year, Number(startMonth), 1)
-    const dateLte = endOfMonth(new Date(year, Number(endMonth), 1))
+    const calendarYear = academicYearToCalendarByPeriod(year, period as AcademicPeriods)
+
+    const dateGte = new Date(calendarYear, Number(startMonth), 1)
+    const dateLte = endOfMonth(new Date(calendarYear, Number(endMonth), 1))
+
+    console.log(dateGte, dateLte)
 
     const students = await db.teacher_Course_Student.findMany({
         where: {
@@ -59,7 +65,7 @@ export async function getGroupJournal(
 
     return await Promise.all(
         Object.entries(groups).map(async ([group, relations]) =>
-            getDataByGroup(group, relations, dateGte, dateLte, year)
+            getDataByGroup(group, relations, dateGte, dateLte, year, period)
         )
     )
 }
@@ -85,15 +91,21 @@ async function getDataByGroup(
     relations: number[],
     dateGte: Date,
     dateLte: Date,
-    year: number
+    year: number,
+    period: string
 ): Promise<GetGroupJournalResponseDto> {
-    const rows = await Promise.all(
+    const rowsArray = await Promise.all(
         relations.map(async (relation): Promise<GroupJournalDto> => {
             return getGroupJournalDto(relation, dateGte, dateLte, year)
         })
     )
 
-    const dates = await getDates(relations, dateGte, dateLte)
+    const rows = rowsArray.reduce((acc, curr) => {
+        acc[curr.relationId] = curr
+        return acc
+    }, {} as Record<number, GroupJournalDto>)
+
+    const dates = await getDates(relations, dateGte, dateLte, period)
 
     return {
         group,
@@ -149,7 +161,8 @@ async function getGroupJournalDto(
 async function getDates(
     relations: number[],
     dateGte: Date,
-    dateLte: Date
+    dateLte: Date,
+    period: string
 ): Promise<Record<string, string[]>> {
     const persistedDates = await db.teacher_Course_Student.findMany({
         where: {
@@ -180,9 +193,47 @@ async function getDates(
         return acc
     }, [] as Date[])
 
-    return dates.reduce((acc, date) => {
-        const month = format(date, 'MM')
-        acc[month] = [...(acc[month] || []), format(date, DATE_FORMAT)]
+    const groupedDates = dates.reduce((acc, date) => {
+        const month = String(date.getMonth()).padStart(2, '0')
+        const monthDates = new Set(acc[month] || [])
+        monthDates.add(format(date, DATE_FORMAT))
+        acc[month] = Array.from(monthDates)
+
         return acc
-    }, {} as Record<string, string[]>)
+    }, getBaseDatesObject(period))
+
+    Object.entries(groupedDates).forEach(([month, dates]) => {
+        groupedDates[month] = padEmptyDatesAndSort(dates, month)
+    })
+
+    return groupedDates
+}
+
+function getBaseDatesObject(period: string): Record<string, string[]> {
+    if (period === ACADEMIC_PERIODS.FIRST) {
+        return {
+            '08': [],
+            '09': [],
+            '10': [],
+            '11': [],
+        }
+    } else {
+        return {
+            '00': [],
+            '01': [],
+            '02': [],
+            '03': [],
+            '04': [],
+        }
+    }
+}
+
+function padEmptyDatesAndSort(dates: string[], month: string): string[] {
+    const dateLimit = month === '00' ? 4 : 5
+    while (dates.length < dateLimit) {
+        dates.push('')
+    }
+    return dates.sort((a, b) =>
+        compareAsc(parse(a, DATE_FORMAT, new Date()), parse(b, DATE_FORMAT, new Date()))
+    )
 }

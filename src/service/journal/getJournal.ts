@@ -4,6 +4,8 @@ import { db } from '../../db'
 import { endOfMonth } from 'date-fns'
 import { PROGRAMS } from '../../const/programs'
 import { convertJournalEntriesToDto, convertQuarterMarksToDto, convertStudentName } from './mappers'
+import { academicYearToCalendarByMonth } from '~/utils/academicDate'
+import type { Months } from '~/const/months'
 
 interface GetJournalRequestDto {
     teacherId: number
@@ -25,9 +27,12 @@ export async function getJournal(params: GetJournalRequestDto): Promise<GetJourn
     const { teacherId, courseId, year, month } = params
 
     const freezeVersion = await freezeVersionService.getByYear(year)
+    const calendarYear = academicYearToCalendarByMonth(year, String(month) as Months)
 
-    const dateGte = new Date(year, month, 1)
+    const dateGte = new Date(calendarYear, month, 1)
     const dateLte = endOfMonth(dateGte)
+
+    console.log(dateGte, dateLte)
 
     const journal = await db.teacher_Course_Student.findMany({
         where: {
