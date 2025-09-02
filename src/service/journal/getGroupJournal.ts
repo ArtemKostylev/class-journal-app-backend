@@ -39,8 +39,6 @@ export async function getGroupJournal(
     const dateGte = new Date(calendarYear, Number(startMonth), 1)
     const dateLte = endOfMonth(new Date(calendarYear, Number(endMonth), 1))
 
-    console.log(dateGte, dateLte)
-
     const students = await db.teacher_Course_Student.findMany({
         where: {
             teacherId,
@@ -83,7 +81,7 @@ function getStudentGroup(relation: RelationSelect): string | undefined {
         return undefined
     }
 
-    return `Класс: ${student.class}${PROGRAMS[student.program]}  Группа: ${subgroup}`
+    return `Класс: ${student.class}${PROGRAMS[student.program]} Группа: ${subgroup}`
 }
 
 async function getDataByGroup(

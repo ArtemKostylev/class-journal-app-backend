@@ -45,7 +45,6 @@ async function updateJournalEntry(mark: ChangedMarkDto): Promise<void> {
                 relationId: mark.relationId,
             },
         })
-        console.log(journalEntry)
     } else if (!mark.mark) {
         await db.journalEntry.delete({
             where: { id: mark.id },

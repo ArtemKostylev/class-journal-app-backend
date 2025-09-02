@@ -32,8 +32,6 @@ export async function getJournal(params: GetJournalRequestDto): Promise<GetJourn
     const dateGte = new Date(calendarYear, month, 1)
     const dateLte = endOfMonth(dateGte)
 
-    console.log(dateGte, dateLte)
-
     const journal = await db.teacher_Course_Student.findMany({
         where: {
             teacherId,

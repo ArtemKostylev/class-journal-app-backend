@@ -11,7 +11,6 @@ export const academicYearToCalendarByPeriod = (year: number, period: AcademicPer
 
 export const academicYearToCalendarByMonth = (year: number, month: Months): number => {
     const isFirstPeriod = FIRST_PERIOD_MONTHS.includes(month)
-    console.log(isFirstPeriod)
 
     if (isFirstPeriod) {
         return Number(year)
