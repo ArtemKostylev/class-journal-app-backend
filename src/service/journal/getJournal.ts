@@ -2,10 +2,10 @@ import { freezeVersionService } from '../freezeVersion'
 import { type MarkDto, type QuarterMarkDto } from './models'
 import { db } from '../../db'
 import { endOfMonth } from 'date-fns'
-import { PROGRAMS } from '../../const/programs'
-import { convertJournalEntriesToDto, convertQuarterMarksToDto, convertStudentName } from './mappers'
+import { convertJournalEntriesToDto, convertQuarterMarksToDto } from './mappers'
 import { academicYearToCalendarByMonth } from '~/utils/academicDate'
 import type { Months } from '~/const/months'
+import { convertStudentClass, convertStudentName } from '~/mappers/student'
 
 interface GetJournalRequestDto {
     teacherId: number
@@ -79,7 +79,7 @@ export async function getJournal(params: GetJournalRequestDto): Promise<GetJourn
     return journal.map((row) => ({
         relationId: row.id,
         studentName: convertStudentName(row.student),
-        class: `${row.student?.class} ${row.student?.program ? PROGRAMS[row.student?.program] : ''}`,
+        class: convertStudentClass(row.student),
         archived: row.archived,
         marks: convertJournalEntriesToDto(row.journalEntry),
         quarterMarks: convertQuarterMarksToDto(row.quaterMark),

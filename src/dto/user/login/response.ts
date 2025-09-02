@@ -12,6 +12,7 @@ export interface VersionCourseDto {
 export interface UserVersionDto {
     teacherId: number
     coursesById: Record<string, VersionCourseDto>
+    allCourses: VersionCourseDto[]
     courses: VersionCourseDto[]
     groupCourses: VersionCourseDto[]
 }

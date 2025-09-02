@@ -93,6 +93,7 @@ function convertTeacherToDto(teacher: TeacherSelection): UserVersionDto {
             acc[relation.course.id] = relation.course
             return acc
         }, {} as Record<string, VersionCourseDto>),
+        allCourses: teacher.relations.map((relation) => relation.course),
         courses: teacher.relations
             .filter((relation) => !relation.course.group)
             .map((relation) => relation.course),

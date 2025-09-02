@@ -1,4 +1,4 @@
-import type { JournalEntry, QuaterMark as QuarterMark, Student } from '@prisma/client'
+import type { JournalEntry, QuaterMark as QuarterMark } from '@prisma/client'
 import { format } from 'date-fns'
 import type { MarkDto, QuarterMarkDto } from './models'
 import { DATE_FORMAT } from '../../constants'
@@ -32,12 +32,3 @@ export function convertQuarterMarksToDto(
     }, {} as Record<string, QuarterMarkDto>)
 }
 
-type StudentSelected = Pick<Student, 'name' | 'surname' | 'class' | 'program'>
-
-export function convertStudentName(student: StudentSelected | null): string {
-    if (!student) {
-        return ''
-    }
-
-    return `${student.surname} ${student.name}`
-}
