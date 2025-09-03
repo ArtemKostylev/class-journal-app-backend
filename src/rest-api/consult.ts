@@ -1,25 +1,12 @@
 import { Router } from 'express'
-import { consultService } from '../service/consult'
+import { consultListRequestSchema } from '~/dto/consult/getConsultList/request'
+import { getConsultList, updateConsults } from '~/service/consult'
 
 const consultRouter = Router()
 
 consultRouter.get('/', async (req, res) => {
-    const { teacherId, courseId, year } = req.query
-
-    const teacherIdParam = Number(teacherId)
-    const courseIdParam = Number(courseId)
-    const yearParam = Number(year)
-
-    if (isNaN(teacherIdParam) || isNaN(courseIdParam) || isNaN(yearParam)) {
-        res.status(400).json({ error: 'Invalid parameters' })
-        return
-    }
-
-    const consults = await consultService.getAllConsults({
-        teacherId: teacherIdParam,
-        courseId: courseIdParam,
-        year: yearParam,
-    })
+    const query = consultListRequestSchema.parse(req.query)
+    const consults = await getConsultList(query)
 
     res.json(consults)
 })
@@ -27,7 +14,8 @@ consultRouter.get('/', async (req, res) => {
 consultRouter.post('/', async (req, res) => {
     const { consults } = req.body
 
-    await consultService.updateConsults({ consults })
+    await updateConsults({ consults })
+    res.status(200)
 })
 
 export { consultRouter }

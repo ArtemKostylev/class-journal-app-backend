@@ -16,6 +16,9 @@ import { consultRouter } from './rest-api/consult'
 import { groupConsultRouter } from './rest-api/groupConsult'
 import { journalRouter } from './rest-api/journal'
 import { userRouter } from './rest-api/user'
+import { midtermExamRouter } from './rest-api/midtermExam'
+import { replacementRouter } from './rest-api/replacement'
+import { midtermExamTypeRouter } from './rest-api/midtermExamType'
 
 declare module 'express-serve-static-core' {
     interface Request {
@@ -66,6 +69,9 @@ async function main() {
     app.use('/api/groupConsult', groupConsultRouter)
     app.use('/api/journal', journalRouter)
     app.use('/api/user', userRouter)
+    app.use('/api/midtermExam', midtermExamRouter)
+    app.use('/api/midtermExamType', midtermExamTypeRouter)
+    app.use('/api/replacement', replacementRouter)
     // TODO: add error handling
 
     // start http-server application
