@@ -1,5 +1,5 @@
 import path from 'path'
-import { mergeResolvers } from './utils'
+import { mergeResolvers } from './mergeResolvers'
 import { mergeTypeDefs } from '@graphql-tools/merge'
 import { loadFilesSync } from '@graphql-tools/load-files'
 

@@ -7,7 +7,7 @@ import { academicYearToCalendarByMonth } from '~/utils/academicDate'
 import { db } from '~/db'
 import { type JournalEntry, type Replacement, type Student, type Teacher_Course_Student } from '@prisma/client'
 import { convertStudentClass, convertStudentName } from '~/mappers/student'
-import { DATE_FORMAT } from '~/constants'
+import { DATE_FORMAT } from '~/const/dateFormat'
 
 export async function getReplacementList(params: GetReplacementListRequestDto): Promise<ReplacementListResponseDto> {
     const { year, month, teacherId, courseId } = params

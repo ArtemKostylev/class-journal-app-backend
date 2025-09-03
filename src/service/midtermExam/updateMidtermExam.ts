@@ -1,7 +1,7 @@
 import type { UpdateMidtermExamRequestDto } from '~/dto/midtermExam/updateMidtermExam/request'
 import { db } from '~/db'
 import { parse } from 'date-fns'
-import { DATE_FORMAT } from '~/constants'
+import { DATE_FORMAT } from '~/const/dateFormat'
 
 export async function updateMidtermExam(params: UpdateMidtermExamRequestDto): Promise<void> {
     await db.midtermExam.upsert({

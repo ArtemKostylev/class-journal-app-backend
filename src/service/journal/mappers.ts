@@ -1,7 +1,7 @@
 import type { JournalEntry, QuaterMark as QuarterMark } from '@prisma/client'
 import { format } from 'date-fns'
 import type { MarkDto, QuarterMarkDto } from './models'
-import { DATE_FORMAT } from '../../constants'
+import { DATE_FORMAT } from '~/const/dateFormat'
 
 type JournalEntrySelected = Pick<JournalEntry, 'id' | 'date' | 'mark'>
 

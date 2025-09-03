@@ -1,6 +1,6 @@
 import { db } from '~/db'
-import { DATE_FORMAT } from '~/constants'
 import { format } from 'date-fns'
+import { DATE_FORMAT } from '~/const/dateFormat'
 
 const clearDuplicateMarks = async () => {
     const entries = await db.journalEntry.findMany()

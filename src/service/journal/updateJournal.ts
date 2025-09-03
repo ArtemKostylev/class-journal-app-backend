@@ -1,7 +1,7 @@
 import type { Period } from '@prisma/client'
 import { db } from '../../db'
 import { startOfDay } from 'date-fns'
-import { DATE_FORMAT } from '~/constants'
+import { DATE_FORMAT } from '~/const/dateFormat'
 import { parse } from 'date-fns'
 
 interface ChangedMarkDto {
@@ -38,7 +38,7 @@ async function updateJournalEntry(mark: ChangedMarkDto): Promise<void> {
     }
 
     if (!mark.id) {
-        const journalEntry = await db.journalEntry.create({
+        await db.journalEntry.create({
             data: {
                 date: startOfDay(parse(mark.date, DATE_FORMAT, new Date())),
                 mark: mark.mark,

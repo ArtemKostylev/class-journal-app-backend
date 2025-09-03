@@ -6,7 +6,7 @@ import http from 'http'
 import cors from 'cors'
 import 'dotenv/config'
 
-import { createApolloServerProps } from './createApolloServerProps'
+import { createApolloServerProps } from './utils/createApolloServerProps'
 import { authentication } from './middleware/authentication'
 import { teacherRouter } from './rest-api/teacher'
 import { db } from './db'

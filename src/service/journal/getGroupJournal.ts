@@ -6,10 +6,10 @@ import { ACADEMIC_PERIODS, type AcademicPeriods } from '../../const/academicPeri
 import { MONTHS } from '../../const/months'
 import { PROGRAMS } from '../../const/programs'
 import type { Student } from '@prisma/client'
-import { convertJournalEntriesToDto, convertQuarterMarksToDto, convertStudentName } from './mappers'
-import { DATE_FORMAT } from '../../constants'
-import { da } from 'zod/v4/locales'
+import { convertJournalEntriesToDto, convertQuarterMarksToDto } from './mappers'
+import { DATE_FORMAT } from '~/const/dateFormat'
 import { academicYearToCalendarByPeriod } from '~/utils/academicDate'
+import { convertStudentName } from '~/mappers/student'
 
 interface GetGroupJournalRequestDto {
     teacherId: number

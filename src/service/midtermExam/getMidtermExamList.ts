@@ -6,7 +6,7 @@ import { AcademicPeriods, ACADEMIC_PERIODS } from '~/const/academicPeriods'
 import { MONTHS } from '~/const/months'
 import type { MidtermExam, MidtermExamType, Student } from '@prisma/client'
 import { format } from 'date-fns'
-import { DATE_FORMAT } from '~/constants'
+import { DATE_FORMAT } from '~/const/dateFormat'
 import { convertStudentName } from '~/mappers/student'
 import { convertStudentClass } from '~/mappers/student'
 
