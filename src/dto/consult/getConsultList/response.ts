@@ -1,7 +1,12 @@
-import type { Student, Consult } from '@prisma/client'
+export interface ConsultDto {
+    id: number
+    date: string
+    hours: number
+}
 
 export interface ConsultListResponseDto {
-    id: number
-    student: Student | null
-    consults: Consult[] | null
+    relationId: number
+    archived: boolean
+    studentName: string
+    consults: ConsultDto[]
 }

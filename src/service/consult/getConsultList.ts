@@ -2,6 +2,9 @@ import type { ConsultListRequestDto } from '~/dto/consult/getConsultList/request
 import { freezeVersionService } from '../freezeVersion'
 import type { ConsultListResponseDto } from '~/dto/consult/getConsultList/response'
 import { db } from '~/db'
+import { convertStudentName } from '~/mappers/student'
+import { format } from 'date-fns'
+import { DATE_FORMAT } from '~/const/dateFormat'
 
 export async function getConsultList(params: ConsultListRequestDto): Promise<ConsultListResponseDto[]> {
     const { teacherId, courseId, year } = params
@@ -17,6 +20,7 @@ export async function getConsultList(params: ConsultListRequestDto): Promise<Con
         },
         select: {
             id: true,
+            archived: true,
             consult: {
                 orderBy: { date: 'asc' },
                 where: { year },
@@ -26,8 +30,13 @@ export async function getConsultList(params: ConsultListRequestDto): Promise<Con
     })
 
     return consultRelations.map((item) => ({
-        id: item.id,
-        student: item.student,
-        consults: item.consult,
+        relationId: item.id,
+        studentName: convertStudentName(item.student),
+        archived: item.archived,
+        consults: item.consult.map((consult) => ({
+            id: consult.id,
+            date: consult.date ? format(consult.date, DATE_FORMAT) : '',
+            hours: consult.hours,
+        })),
     }))
 }
