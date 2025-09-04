@@ -3,52 +3,56 @@ import { getJournal, getGroupJournal, updateJournal } from '../service/journal'
 
 const journalRouter = Router()
 
-journalRouter.get('/', async (req, res) => {
-    const { teacherId, courseId, year, month } = req.query
+journalRouter.get('/', async (req, res, next) => {
+    try {
+        // TODO: add schema
+        const { teacherId, courseId, year, month } = req.query
 
-    const teacherIdParam = Number(teacherId)
-    const courseIdParam = Number(courseId)
-    const yearParam = Number(year)
-    const monthParam = Number(month)
+        const journal = await getJournal({
+            teacherId: Number(teacherId),
+            courseId: Number(courseId),
+            year: Number(year),
+            month: Number(month),
+        })
 
-    if (isNaN(teacherIdParam) || isNaN(courseIdParam) || isNaN(yearParam) || isNaN(monthParam)) {
-        res.status(400).json({ error: 'Invalid parameters' })
-        return
+        res.json(journal)
+    } catch (error) {
+        next(error)
     }
-
-    const journal = await getJournal({
-        teacherId: teacherIdParam,
-        courseId: courseIdParam,
-        year: yearParam,
-        month: monthParam,
-    })
-
-    res.json(journal)
 })
 
-journalRouter.get('/group', async (req, res) => {
-    const { teacherId, courseId, year, period } = req.query
+journalRouter.get('/group', async (req, res, next) => {
+    try {
+        // TODO: add schema
+        const { teacherId, courseId, year, period } = req.query
 
-    const teacherIdParam = Number(teacherId)
-    const courseIdParam = Number(courseId)
-    const yearParam = Number(year)
-    const periodParam = String(period)
+        const teacherIdParam = Number(teacherId)
+        const courseIdParam = Number(courseId)
+        const yearParam = Number(year)
+        const periodParam = String(period)
 
-    const journal = await getGroupJournal({
-        teacherId: teacherIdParam,
-        courseId: courseIdParam,
-        year: yearParam,
-        period: periodParam,
-    })
+        const journal = await getGroupJournal({
+            teacherId: teacherIdParam,
+            courseId: courseIdParam,
+            year: yearParam,
+            period: periodParam,
+        })
 
-    res.json(journal)
+        res.json(journal)
+    } catch (error) {
+        next(error)
+    }
 })
 
-journalRouter.post('/', async (req, res) => {
-    const { marks, quarterMarks } = req.body
+journalRouter.post('/', async (req, res, next) => {
+    try {
+        const { marks, quarterMarks } = req.body
 
-    await updateJournal({ marks, quarterMarks })
-    res.sendStatus(200)
+        await updateJournal({ marks, quarterMarks })
+        res.sendStatus(200)
+    } catch (error) {
+        next(error)
+    }
 })
 
 export { journalRouter }

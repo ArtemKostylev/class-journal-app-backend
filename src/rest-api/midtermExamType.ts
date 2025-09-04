@@ -4,21 +4,33 @@ import { deleteMidtermExamType, getMidtermExamTypeList, updateMidtermExamType } 
 
 const midtermExamTypeRouter = Router()
 
-midtermExamTypeRouter.get('/', async (req, res) => {
-    const midtermExamTypes = await getMidtermExamTypeList()
-    res.json(midtermExamTypes)
+midtermExamTypeRouter.get('/', async (req, res, next) => {
+    try {
+        const midtermExamTypes = await getMidtermExamTypeList()
+        res.json(midtermExamTypes)
+    } catch (error) {
+        next(error)
+    }
 })
 
-midtermExamTypeRouter.post('/', async (req, res) => {
-    const params = updateMidtermExamTypeRequestSchema.parse(req.body)
-    await updateMidtermExamType(params)
-    res.status(200)
+midtermExamTypeRouter.post('/', async (req, res, next) => {
+    try {
+        const params = updateMidtermExamTypeRequestSchema.parse(req.body)
+        await updateMidtermExamType(params)
+        res.status(200)
+    } catch (error) {
+        next(error)
+    }
 })
 
-midtermExamTypeRouter.delete('/:id', async (req, res) => {
-    const { id } = req.params
-    await deleteMidtermExamType(Number(id))
-    res.status(200)
+midtermExamTypeRouter.delete('/:id', async (req, res, next) => {
+    try {
+        const { id } = req.params
+        await deleteMidtermExamType(Number(id))
+        res.status(200)
+    } catch (error) {
+        next(error)
+    }
 })
 
 export { midtermExamTypeRouter }

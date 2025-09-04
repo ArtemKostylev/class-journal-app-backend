@@ -1,45 +1,58 @@
-const fs = require('fs');
-const htmlDocx = require('html-docx-js');
-const {buildHtml} = require('../../helpers/htmlBuilder');
-const {NOT_FREEZED} = require('../../queires');
-const {getFreezeVersion} = require('../../queryUtils/getFreezeVersion');
+const fs = require('fs')
+const htmlDocx = require('html-docx-js')
+const { buildHtml } = require('../../helpers/htmlBuilder')
 
 const fetchFullInfo = async (parent, args, context) => {
-    const {userId} = context;
-    const teachers = await context.prisma.teacher.findMany(NOT_FREEZED);
+    const { userId } = context
+    const teachers = await context.prisma.teacher.findMany({
+        where: {
+            freezeVersionId: null,
+        },
+    })
     const students = await context.prisma.student.findMany({
-        ...NOT_FREEZED,
+        where: {
+            freezeVersionId: null,
+        },
         include: {
             specialization: true,
         },
-    });
-    const courses = await context.prisma.course.findMany(NOT_FREEZED);
-    const specializations = await context.prisma.specialization.findMany(NOT_FREEZED);
+    })
+    const courses = await context.prisma.course.findMany({
+        where: {
+            freezeVersionId: null,
+        },
+    })
+    const specializations = await context.prisma.specialization.findMany({
+        where: {
+            freezeVersionId: null,
+        },
+    })
     const relations = await context.prisma.teacher_Course_Student.findMany({
-        ...NOT_FREEZED,
+        where: {
+            freezeVersionId: null,
+        },
         include: {
             teacher: true,
             student: true,
             course: true,
         },
-    });
+    })
     return {
         teachers,
         students,
         courses,
         relations,
         specializations,
-    };
-};
+    }
+}
 
 const fetchAnnualReport = async (parent, args, context) => {
-
-    const freezeVersion = await getFreezeVersion(args.year, context.prisma);
+    const freezeVersion = await getVersionByYear(args.year)
 
     const data = await context.prisma.teacher_Course_Student.findMany({
         where: {
             archived: false,
-            freezeVersionId: freezeVersion,
+            freezeVersionId: freezeVersion.id,
             course: {
                 excludeFromReport: false,
             },
@@ -57,65 +70,53 @@ const fetchAnnualReport = async (parent, args, context) => {
             },
             course: true,
         },
-    });
+    })
 
-    const mappedData = new Map();
+    const mappedData = new Map()
 
     data.forEach((item) => {
-        const key = `${item.student.class}/${
-            item.student.specialization?.name || null
-        }/${item.student.program === 'OP' ? 'OP' : 'PP'}`;
+        const key = `${item.student.class}/${item.student.specialization?.name || null}/${item.student.program === 'OP' ? 'OP' : 'PP'}`
 
-        mappedData.set(
-            key,
-            mappedData.get(key) ? [...mappedData.get(key), item] : [item]
-        );
-    });
+        mappedData.set(key, mappedData.get(key) ? [...mappedData.get(key), item] : [item])
+    })
 
     mappedData.forEach((value, key) => {
-        let courses = new Map();
+        let courses = new Map()
 
-        value.forEach((it) => courses.set(it.course.id, it.course.name));
+        value.forEach((it) => courses.set(it.course.id, it.course.name))
 
         courses = Array.from(courses, ([name, value]) => ({
             id: name,
             name: value,
-        }));
+        }))
 
-        const studentMarks = new Map();
+        const studentMarks = new Map()
 
         value.forEach((it) => {
-            const key = `${it.student.name} ${it.student.surname}`;
+            const key = `${it.student.name} ${it.student.surname}`
             studentMarks.set(
                 key,
                 studentMarks.get(key)
-                    ? [
-                        ...studentMarks.get(key),
-                        {courseId: it.course.id, marks: it.quaterMark},
-                    ]
-                    : [{courseId: it.course.id, marks: it.quaterMark}]
-            );
-        });
+                    ? [...studentMarks.get(key), { courseId: it.course.id, marks: it.quaterMark }]
+                    : [{ courseId: it.course.id, marks: it.quaterMark }]
+            )
+        })
 
-        mappedData.set(key, {courses, studentMarks});
-    });
+        mappedData.set(key, { courses, studentMarks })
+    })
 
-    const doc = buildHtml(mappedData);
+    const doc = buildHtml(mappedData)
 
-    const docx = htmlDocx.asBlob(doc, {orientation: 'landscape'});
+    const docx = htmlDocx.asBlob(doc, { orientation: 'landscape' })
 
-    fs.writeFile(
-        `/var/www/akostylev/files/vedomost_${args.year}.docx`,
-        docx,
-        function (err) {
-            if (err) throw err;
-        }
-    );
+    fs.writeFile(`/var/www/akostylev/files/vedomost_${args.year}.docx`, docx, function (err) {
+        if (err) throw err
+    })
 
-    return `https://akostylev.com/files/vedomost_${args.year}.docx`;
-};
+    return `https://akostylev.com/files/vedomost_${args.year}.docx`
+}
 
 module.exports = {
     fetchFullInfo,
     fetchAnnualReport,
-};
+}

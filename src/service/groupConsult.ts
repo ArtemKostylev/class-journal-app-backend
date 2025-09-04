@@ -1,6 +1,6 @@
 import { Program } from '@prisma/client'
 import { db } from '../db'
-import { freezeVersionService } from './freezeVersion'
+import { getVersionByYear } from './freezeVersion'
 
 interface GroupConsultDto {
     program: Program
@@ -91,7 +91,7 @@ export class GroupConsultService {
     ): Promise<GetAllGroupConsultsReturnValue[]> {
         const { teacherId, courseId, year } = params
 
-        const freezeVersion = await freezeVersionService.getByYear(year)
+        const freezeVersion = await getVersionByYear(year)
 
         const availableGroups = await db.teacher_Course_Student.findMany({
             where: {

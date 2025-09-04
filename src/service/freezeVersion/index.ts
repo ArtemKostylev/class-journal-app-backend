@@ -1,0 +1,1 @@
+export { getVersionByYear } from './getVersionByYear'

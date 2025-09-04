@@ -1,25 +1,33 @@
-import { Router, Request, Response } from "express";
-import { noteService } from "../service/note";
-import { StatusCodes } from "http-status-codes";
+import { Router } from 'express'
+import { noteService } from '../service/note'
+import { StatusCodes } from 'http-status-codes'
 
-const noteRouter = Router();
+const noteRouter = Router()
 
-noteRouter.get('/', async (req: Request, res: Response) => {
-    const {courseId, teacherId, year} = req.query;
+noteRouter.get('/', async (req, res, next) => {
+    try {
+        const { courseId, teacherId, year } = req.query
 
-    const note = await noteService.getNote({
-        courseId: Number(courseId), 
-        teacherId: Number(teacherId), 
-        year: Number(year)
-    })
+        const note = await noteService.getNote({
+            courseId: Number(courseId),
+            teacherId: Number(teacherId),
+            year: Number(year),
+        })
 
-    res.json(note);
+        res.json(note)
+    } catch (error) {
+        next(error)
+    }
 })
 
-noteRouter.post('/', async (req: Request, res: Response) => {
-    const body = req.body;
-    await noteService.updateNote(body);
-    res.send(StatusCodes.CREATED);
+noteRouter.post('/', async (req, res, next) => {
+    try {
+        const body = req.body
+        await noteService.updateNote(body)
+        res.send(StatusCodes.CREATED)
+    } catch (error) {
+        next(error)
+    }
 })
 
-export {noteRouter}
+export { noteRouter }

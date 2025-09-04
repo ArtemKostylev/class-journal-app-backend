@@ -1,15 +1,15 @@
 import type { ConsultListRequestDto } from '~/dto/consult/getConsultList/request'
-import { freezeVersionService } from '../freezeVersion'
 import type { ConsultListResponseDto } from '~/dto/consult/getConsultList/response'
 import { db } from '~/db'
 import { convertStudentName } from '~/mappers/student'
 import { format } from 'date-fns'
 import { DATE_FORMAT } from '~/const/dateFormat'
+import { getVersionByYear } from '../freezeVersion'
 
 export async function getConsultList(params: ConsultListRequestDto): Promise<ConsultListResponseDto[]> {
     const { teacherId, courseId, year } = params
 
-    const freezeVersion = await freezeVersionService.getByYear(year)
+    const freezeVersion = await getVersionByYear(year)
 
     const consultRelations = await db.teacher_Course_Student.findMany({
         where: {

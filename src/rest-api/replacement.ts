@@ -5,15 +5,23 @@ import { getReplacementList, updateReplacements } from '~/service/replacement'
 
 const replacementRouter = Router()
 
-replacementRouter.get('/', async (req, res) => {
-    const query = getReplacementListRequestSchema.parse(req.query)
-    const replacements = await getReplacementList(query)
-    res.json(replacements)
+replacementRouter.get('/', async (req, res, next) => {
+    try {
+        const query = getReplacementListRequestSchema.parse(req.query)
+        const replacements = await getReplacementList(query)
+        res.json(replacements)
+    } catch (error) {
+        next(error)
+    }
 })
-replacementRouter.post('/', async (req, res) => {
-    const replacements = updateReplacementsRequestSchema.parse(req.body)
-    await updateReplacements(replacements)
-    res.json(replacements)
+replacementRouter.post('/', async (req, res, next) => {
+    try {
+        const replacements = updateReplacementsRequestSchema.parse(req.body)
+        await updateReplacements(replacements)
+        res.json(replacements)
+    } catch (error) {
+        next(error)
+    }
 })
 
 export { replacementRouter }

@@ -1,6 +1,5 @@
 import { compareAsc, endOfMonth, format, parse } from 'date-fns'
 import type { GroupJournalDto } from './models'
-import { freezeVersionService } from '../freezeVersion'
 import { db } from '../../db'
 import { ACADEMIC_PERIODS, type AcademicPeriods } from '../../const/academicPeriods'
 import { MONTHS } from '../../const/months'
@@ -10,6 +9,7 @@ import { convertJournalEntriesToDto, convertQuarterMarksToDto } from './mappers'
 import { DATE_FORMAT } from '~/const/dateFormat'
 import { academicYearToCalendarByPeriod } from '~/utils/academicDate'
 import { convertStudentName } from '~/mappers/student'
+import { getVersionByYear } from '../freezeVersion'
 
 interface GetGroupJournalRequestDto {
     teacherId: number
@@ -29,7 +29,7 @@ export async function getGroupJournal(
 ): Promise<GetGroupJournalResponseDto[]> {
     const { teacherId, courseId, year, period } = params
 
-    const freezeVersion = await freezeVersionService.getByYear(year)
+    const freezeVersion = await getVersionByYear(year)
 
     const startMonth = period === ACADEMIC_PERIODS.FIRST ? MONTHS.SEPTEMBER : MONTHS.JANUARY
     const endMonth = period === ACADEMIC_PERIODS.FIRST ? MONTHS.DECEMBER : MONTHS.MAY

@@ -1,4 +1,3 @@
-import { freezeVersionService } from '../freezeVersion'
 import { type MarkDto, type QuarterMarkDto } from './models'
 import { db } from '../../db'
 import { endOfMonth } from 'date-fns'
@@ -6,6 +5,7 @@ import { convertJournalEntriesToDto, convertQuarterMarksToDto } from './mappers'
 import { academicYearToCalendarByMonth } from '~/utils/academicDate'
 import type { Months } from '~/const/months'
 import { convertStudentClass, convertStudentName } from '~/mappers/student'
+import { getVersionByYear } from '../freezeVersion'
 
 interface GetJournalRequestDto {
     teacherId: number
@@ -25,8 +25,7 @@ interface GetJournalResponseDto {
 
 export async function getJournal(params: GetJournalRequestDto): Promise<GetJournalResponseDto[]> {
     const { teacherId, courseId, year, month } = params
-
-    const freezeVersion = await freezeVersionService.getByYear(year)
+    const freezeVersion = await getVersionByYear(year)
     const calendarYear = academicYearToCalendarByMonth(year, String(month) as Months)
 
     const dateGte = new Date(calendarYear, month, 1)

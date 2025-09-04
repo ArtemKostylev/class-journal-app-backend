@@ -9,9 +9,12 @@ import { format } from 'date-fns'
 import { DATE_FORMAT } from '~/const/dateFormat'
 import { convertStudentName } from '~/mappers/student'
 import { convertStudentClass } from '~/mappers/student'
+import { getVersionByYear } from '../freezeVersion'
 
 export async function getMidtermExamList(params: GetMidtermExamListRequestDto): Promise<GetMidtermExamListResponseDto[]> {
     const { teacherId, year, typeId, period } = params
+
+    const freezeVersion = await getVersionByYear(year)
 
     const calendarYear = academicYearToCalendarByPeriod(year, period as AcademicPeriods)
     const startMonth = period === ACADEMIC_PERIODS.FIRST ? MONTHS.SEPTEMBER : MONTHS.JANUARY
@@ -23,6 +26,7 @@ export async function getMidtermExamList(params: GetMidtermExamListRequestDto): 
     const midtermExams = await db.midtermExam.findMany({
         where: {
             teacherId,
+            freezeVersionId: freezeVersion?.id,
             deleted: false,
             typeId,
             date: {

@@ -5,28 +5,40 @@ import { deleteMidtermExam, getMidtermExamList, updateMidtermExam } from '~/serv
 
 const midtermExamRouter = Router()
 
-midtermExamRouter.get('/', async (req, res) => {
-    const params = getMidtermExamListRequestSchema.parse(req.query)
+midtermExamRouter.get('/', async (req, res, next) => {
+    try {
+        const params = getMidtermExamListRequestSchema.parse(req.query)
 
-    const midtermExams = await getMidtermExamList(params)
+        const midtermExams = await getMidtermExamList(params)
 
-    res.json(midtermExams)
+        res.json(midtermExams)
+    } catch (error) {
+        next(error)
+    }
 })
 
-midtermExamRouter.post('/', async (req, res) => {
-    const params = updateMidtermExamRequestSchema.parse(req.body)
+midtermExamRouter.post('/', async (req, res, next) => {
+    try {
+        const params = updateMidtermExamRequestSchema.parse(req.body)
 
-    await updateMidtermExam(params)
+        await updateMidtermExam(params)
 
-    res.status(200)
+        res.status(200)
+    } catch (error) {
+        next(error)
+    }
 })
 
-midtermExamRouter.delete('/:id', async (req, res) => {
-    const { id } = req.params
+midtermExamRouter.delete('/:id', async (req, res, next) => {
+    try {
+        const { id } = req.params
 
-    await deleteMidtermExam({ id: Number(id) })
+        await deleteMidtermExam({ id: Number(id) })
 
-    res.status(200)
+        res.status(200)
+    } catch (error) {
+        next(error)
+    }
 })
 
 export { midtermExamRouter }

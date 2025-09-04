@@ -2,12 +2,12 @@ import { endOfMonth, format } from 'date-fns'
 import type { Months } from '~/const/months'
 import type { GetReplacementListRequestDto } from '~/dto/replacement/getReplacementList/request'
 import type { ReplacementDto, ReplacementListResponseDto, ReplacementRow } from '~/dto/replacement/getReplacementList/response'
-import { freezeVersionService } from '~/service/freezeVersion'
 import { academicYearToCalendarByMonth } from '~/utils/academicDate'
 import { db } from '~/db'
 import { type JournalEntry, type Replacement, type Student, type Teacher_Course_Student } from '@prisma/client'
 import { convertStudentClass, convertStudentName } from '~/mappers/student'
 import { DATE_FORMAT } from '~/const/dateFormat'
+import { getVersionByYear } from '../freezeVersion'
 
 export async function getReplacementList(params: GetReplacementListRequestDto): Promise<ReplacementListResponseDto> {
     const { year, month, teacherId, courseId } = params
@@ -16,7 +16,7 @@ export async function getReplacementList(params: GetReplacementListRequestDto): 
     const dateGte = new Date(calendarYear, month, 0)
     const dateLte = endOfMonth(dateGte)
 
-    const freezeVersion = await freezeVersionService.getByYear(params.year)
+    const freezeVersion = await getVersionByYear(params.year)
 
     const replacements = await db.teacher_Course_Student.findMany({
         where: {
