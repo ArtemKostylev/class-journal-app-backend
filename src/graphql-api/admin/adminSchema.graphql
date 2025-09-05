@@ -1,35 +1,26 @@
-# import 
+# import
 type FullInfo {
-  teachers: [Teacher]
-  students: [Student]
-  courses: [Course]
-  relations: [Teacher_Course_Student]
-  specializations: [Specialization]
+    teachers: [Teacher]
+    students: [Student]
+    courses: [Course]
+    relations: [Teacher_Course_Student]
 }
 
 extend type Query {
-  fetchFullInfo: FullInfo!
-  fetchAnnualReport(year: Int): String
+    fetchFullInfo: FullInfo!
 }
 
 extend type Mutation {
-  updateCourseRelations(
-    teacher: Int
-    courses: [CourseRelationInput]
-  ): [Boolean]
-  updateStudentRelations(
-    teacher: Int
-    course: Int
-    students: [StudentRelationInput]
-  ): [Boolean]
+    updateCourseRelations(teacher: Int, courses: [CourseRelationInput]): [Boolean]
+    updateStudentRelations(teacher: Int, course: Int, students: [StudentRelationInput]): [Boolean]
 }
 
 input CourseRelationInput {
-  id: Int
-  archived: Boolean
+    id: Int
+    archived: Boolean
 }
 
 input StudentRelationInput {
-  id: Int
-  archived: Boolean
+    id: Int
+    archived: Boolean
 }

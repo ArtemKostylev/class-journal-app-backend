@@ -20,6 +20,8 @@ import { midtermExamRouter } from './rest-api/midtermExam'
 import { replacementRouter } from './rest-api/replacement'
 import { midtermExamTypeRouter } from './rest-api/midtermExamType'
 import { errorMiddleware } from './middleware/error'
+import specializationRouter from './rest-api/specialization'
+import { reportsRouter } from './rest-api/reports'
 
 declare module 'express-serve-static-core' {
     interface Request {
@@ -73,6 +75,8 @@ async function main() {
     app.use('/api/midtermExam', midtermExamRouter)
     app.use('/api/midtermExamType', midtermExamTypeRouter)
     app.use('/api/replacement', replacementRouter)
+    app.use('/api/specialization', specializationRouter)
+    app.use('/api/reports', reportsRouter)
 
     app.use(errorMiddleware)
     // start http-server application

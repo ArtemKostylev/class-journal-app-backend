@@ -5,10 +5,9 @@ import { loadFilesSync } from '@graphql-tools/load-files'
 
 const adminResolvers = require('../graphql-api/admin')
 const courseResolvers = require('../graphql-api/course')
-const specializationResolvers = require('../graphql-api/specialization')
 const studentResolvers = require('../graphql-api/student')
 
-const resolvers = mergeResolvers([studentResolvers, courseResolvers, adminResolvers, specializationResolvers])
+const resolvers = mergeResolvers([studentResolvers, courseResolvers, adminResolvers])
 
 const typesArray = loadFilesSync(path.join(__dirname, '..'), {
     recursive: true,

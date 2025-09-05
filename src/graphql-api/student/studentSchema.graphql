@@ -6,7 +6,6 @@ type Student {
     program: String
     load: Int
     relations: [Teacher_Course_Student]
-    specialization: Specialization
     freezeVersion: FreezeVersion
 }
 
