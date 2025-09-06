@@ -1,12 +1,13 @@
 import { Router } from 'express'
-import { teacherService } from '../service/teacher'
 import { StatusCodes } from 'http-status-codes'
+import { updateTeacherRequestSchema } from '~/dto/teacher/updateTeacher/request'
+import { deleteTeacher, getTeacherList, updateTeacher } from '~/service/teacher'
 
 const teacherRouter = Router()
 
 teacherRouter.get('/', async (_, res, next) => {
     try {
-        const teachers = await teacherService.getAllTeachers()
+        const teachers = await getTeacherList()
         res.json(teachers)
     } catch (error) {
         next(error)
@@ -15,17 +16,9 @@ teacherRouter.get('/', async (_, res, next) => {
 
 teacherRouter.post('/', async (req, res, next) => {
     try {
-        const teacher = await teacherService.createTeacher(req.body)
-        res.json(teacher)
-    } catch (error) {
-        next(error)
-    }
-})
-
-teacherRouter.put('/:id', async (req, res, next) => {
-    try {
-        const teacher = await teacherService.updateTeacher(req.body)
-        res.json(teacher)
+        const body = updateTeacherRequestSchema.parse(req.body)
+        const teacher = await updateTeacher(body)
+        res.sendStatus(StatusCodes.OK)
     } catch (error) {
         next(error)
     }
@@ -33,7 +26,7 @@ teacherRouter.put('/:id', async (req, res, next) => {
 
 teacherRouter.delete('/:id', async (req, res, next) => {
     try {
-        await teacherService.deleteTeacher(parseInt(req.params.id))
+        await deleteTeacher(parseInt(req.params.id))
         res.sendStatus(StatusCodes.NO_CONTENT)
     } catch (error) {
         next(error)

@@ -1,26 +1,15 @@
 import { Router } from 'express'
-import { groupConsultService } from '../service/groupConsult'
+import { StatusCodes } from 'http-status-codes'
+import { getGroupConsultListRequestSchema } from '~/dto/groupConsult/getGroupConsultList/request'
+import { getGroupConsultList, updateGroupConsult } from '../service/groupConsult'
+import { updateGroupConsultRequestSchema } from '~/dto/groupConsult/updateGroupConsult/request'
 
 const groupConsultRouter = Router()
 
 groupConsultRouter.get('/', async (req, res, next) => {
     try {
-        const { teacherId, courseId, year } = req.query
-
-        const teacherIdParam = Number(teacherId)
-        const courseIdParam = Number(courseId)
-        const yearParam = Number(year)
-
-        if (isNaN(teacherIdParam) || isNaN(courseIdParam) || isNaN(yearParam)) {
-            res.status(400).json({ error: 'Invalid parameters' })
-            return
-        }
-
-        const groupConsults = await groupConsultService.getAllGroupConsults({
-            teacherId: teacherIdParam,
-            courseId: courseIdParam,
-            year: yearParam,
-        })
+        const params = getGroupConsultListRequestSchema.parse(req.query)
+        const groupConsults = await getGroupConsultList(params)
 
         res.json(groupConsults)
     } catch (error) {
@@ -30,21 +19,9 @@ groupConsultRouter.get('/', async (req, res, next) => {
 
 groupConsultRouter.post('/', async (req, res, next) => {
     try {
-        const { consults, teacher, course } = req.body
-
-        await groupConsultService.updateGroupConsults({ consults, teacher, course })
-        res.status(200)
-    } catch (error) {
-        next(error)
-    }
-})
-
-groupConsultRouter.delete('/', async (req, res, next) => {
-    try {
-        const { ids } = req.body
-
-        await groupConsultService.deleteGroupConsults(ids)
-        res.status(200)
+        const body = updateGroupConsultRequestSchema.parse(req.body)
+        await updateGroupConsult(body)
+        res.sendStatus(StatusCodes.OK)
     } catch (error) {
         next(error)
     }

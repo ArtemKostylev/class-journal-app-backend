@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import { getJournal, getGroupJournal, updateJournal } from '../service/journal'
+import { StatusCodes } from 'http-status-codes'
 
 const journalRouter = Router()
 
@@ -49,7 +50,7 @@ journalRouter.post('/', async (req, res, next) => {
         const { marks, quarterMarks } = req.body
 
         await updateJournal({ marks, quarterMarks })
-        res.sendStatus(200)
+        res.sendStatus(StatusCodes.OK)
     } catch (error) {
         next(error)
     }

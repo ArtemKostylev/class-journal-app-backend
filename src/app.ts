@@ -22,6 +22,8 @@ import { midtermExamTypeRouter } from './rest-api/midtermExamType'
 import { errorMiddleware } from './middleware/error'
 import specializationRouter from './rest-api/specialization'
 import { reportsRouter } from './rest-api/reports'
+import { courseRouter } from './rest-api/course'
+import { studentRouter } from './rest-api/student'
 
 declare module 'express-serve-static-core' {
     interface Request {
@@ -77,8 +79,11 @@ async function main() {
     app.use('/api/replacement', replacementRouter)
     app.use('/api/specialization', specializationRouter)
     app.use('/api/reports', reportsRouter)
+    app.use('/api/course', courseRouter)
+    app.use('/api/student', studentRouter)
 
     app.use(errorMiddleware)
+
     // start http-server application
     await new Promise((resolve) => app.listen({ port: PORT }, resolve as () => void))
     console.log(`🚀 Server ready at http://localhost:4000${GRAPHQL_PATH}`)

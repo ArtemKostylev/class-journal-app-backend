@@ -24,7 +24,7 @@ noteRouter.post('/', async (req, res, next) => {
     try {
         const body = req.body
         await noteService.updateNote(body)
-        res.send(StatusCodes.CREATED)
+        res.send(StatusCodes.OK)
     } catch (error) {
         next(error)
     }

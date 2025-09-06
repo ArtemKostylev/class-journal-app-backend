@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { StatusCodes } from 'http-status-codes'
 import { getReplacementListRequestSchema } from '~/dto/replacement/getReplacementList/request'
 import { updateReplacementsRequestSchema } from '~/dto/replacement/updateReplacements/request'
 import { getReplacementList, updateReplacements } from '~/service/replacement'
@@ -18,7 +19,7 @@ replacementRouter.post('/', async (req, res, next) => {
     try {
         const replacements = updateReplacementsRequestSchema.parse(req.body)
         await updateReplacements(replacements)
-        res.json(replacements)
+        res.sendStatus(StatusCodes.OK)  
     } catch (error) {
         next(error)
     }

@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { StatusCodes } from 'http-status-codes'
 import { consultListRequestSchema } from '~/dto/consult/getConsultList/request'
 import { getConsultList, updateConsults } from '~/service/consult'
 
@@ -20,7 +21,7 @@ consultRouter.post('/', async (req, res, next) => {
         const { consults } = req.body
 
         await updateConsults({ consults })
-        res.status(200)
+        res.sendStatus(StatusCodes.OK)
     } catch (error) {
         next(error)
     }

@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { StatusCodes } from 'http-status-codes'
 import { getMidtermExamListRequestSchema } from '~/dto/midtermExam/getMidtermExamList/request'
 import { updateMidtermExamRequestSchema } from '~/dto/midtermExam/updateMidtermExam/request'
 import { deleteMidtermExam, getMidtermExamList, updateMidtermExam } from '~/service/midtermExam'
@@ -23,7 +24,7 @@ midtermExamRouter.post('/', async (req, res, next) => {
 
         await updateMidtermExam(params)
 
-        res.status(200)
+        res.sendStatus(StatusCodes.OK)
     } catch (error) {
         next(error)
     }
@@ -35,7 +36,7 @@ midtermExamRouter.delete('/:id', async (req, res, next) => {
 
         await deleteMidtermExam({ id: Number(id) })
 
-        res.status(200)
+        res.sendStatus(StatusCodes.OK)
     } catch (error) {
         next(error)
     }

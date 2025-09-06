@@ -21,6 +21,29 @@ type Teacher {
     freezeVersion: FreezeVersion
 }
 
+type Course {
+    id: Int!
+    name: String!
+    relations: [Teacher_Course_Student]
+    group: Boolean
+    excludeFromReport: Boolean
+    onlyGroups: Boolean
+    onlyHours: Boolean
+    parentId: Int
+    freezeVersion: FreezeVersion
+}
+
+type Student {
+    id: Int!
+    name: String
+    surname: String
+    class: Int
+    program: String
+    load: Int
+    relations: [Teacher_Course_Student]
+    freezeVersion: FreezeVersion
+}
+
 type Subgroup {
     course: Course!
     student: Student!

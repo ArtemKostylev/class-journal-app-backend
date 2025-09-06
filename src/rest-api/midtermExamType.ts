@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { StatusCodes } from 'http-status-codes'
 import { updateMidtermExamTypeRequestSchema } from '~/dto/midtermExamType/updateMidtermExamType/request'
 import { deleteMidtermExamType, getMidtermExamTypeList, updateMidtermExamType } from '~/service/midtermExamType'
 
@@ -17,7 +18,7 @@ midtermExamTypeRouter.post('/', async (req, res, next) => {
     try {
         const params = updateMidtermExamTypeRequestSchema.parse(req.body)
         await updateMidtermExamType(params)
-        res.status(200)
+        res.sendStatus(StatusCodes.OK)
     } catch (error) {
         next(error)
     }
@@ -27,7 +28,7 @@ midtermExamTypeRouter.delete('/:id', async (req, res, next) => {
     try {
         const { id } = req.params
         await deleteMidtermExamType(Number(id))
-        res.status(200)
+        res.sendStatus(StatusCodes.OK)
     } catch (error) {
         next(error)
     }
