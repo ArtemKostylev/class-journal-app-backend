@@ -1,3 +1,5 @@
+import { parse } from 'date-fns'
+import { DATE_FORMAT } from '~/const/dateFormat'
 import { db } from '~/db'
 import type { UpdateConsultRequestDto } from '~/dto/consult/updateConsult/request'
 
@@ -25,11 +27,11 @@ export async function updateConsults(params: UpdateConsultRequestDto): Promise<v
                     id,
                 },
                 update: {
-                    date,
+                    date: parse(date, DATE_FORMAT, new Date()),
                     hours,
                 },
                 create: {
-                    date,
+                    date: parse(date, DATE_FORMAT, new Date()),
                     hours,
                     relationId,
                     year,

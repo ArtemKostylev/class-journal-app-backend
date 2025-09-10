@@ -74,10 +74,12 @@ export async function getGroupConsultList(params: GetGroupConsultListRequestDto)
     return Array.from(availableGroupsSet).map((group) => {
         const consults = consultsByGroups.get(group)
         if (!consults) {
+            const [classPart, programPart, subgroupPart] = group.split(' ')
             return {
                 group,
-                program: Program.OP,
-                class: 0,
+                program: programPart as Program,
+                class: parseInt(classPart),
+                subgroup: parseInt(subgroupPart),
                 consults: [],
             }
         }

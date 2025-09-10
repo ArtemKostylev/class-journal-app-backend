@@ -1,4 +1,4 @@
-import { endOfMonth, format } from 'date-fns'
+import { endOfMonth, format, startOfMonth } from 'date-fns'
 import type { Months } from '~/const/months'
 import type { GetReplacementListRequestDto } from '~/dto/replacement/getReplacementList/request'
 import type { ReplacementDto, ReplacementListResponseDto, ReplacementRow } from '~/dto/replacement/getReplacementList/response'
@@ -13,7 +13,7 @@ export async function getReplacementList(params: GetReplacementListRequestDto): 
     const { year, month, teacherId, courseId } = params
 
     const calendarYear = academicYearToCalendarByMonth(year, String(month) as Months)
-    const dateGte = new Date(calendarYear, month, 0)
+    const dateGte = startOfMonth(new Date(calendarYear, month, 1))
     const dateLte = endOfMonth(dateGte)
 
     const freezeVersion = await getVersionByYear(params.year)
@@ -62,6 +62,8 @@ export async function getReplacementList(params: GetReplacementListRequestDto): 
             },
         },
     })
+
+    console.log(replacements)
 
     return {
         rows: replacements.map(convertReplacementToDto),

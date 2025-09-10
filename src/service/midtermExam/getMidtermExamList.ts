@@ -5,28 +5,24 @@ import { academicYearToCalendarByPeriod } from '~/utils/academicDate'
 import { AcademicPeriods, ACADEMIC_PERIODS } from '~/const/academicPeriods'
 import { MONTHS } from '~/const/months'
 import type { MidtermExam, MidtermExamType, Student } from '@prisma/client'
-import { format } from 'date-fns'
+import { endOfMonth, format, startOfMonth } from 'date-fns'
 import { DATE_FORMAT } from '~/const/dateFormat'
 import { convertStudentName } from '~/mappers/student'
 import { convertStudentClass } from '~/mappers/student'
-import { getVersionByYear } from '../freezeVersion'
 
 export async function getMidtermExamList(params: GetMidtermExamListRequestDto): Promise<GetMidtermExamListResponseDto[]> {
     const { teacherId, year, typeId, period } = params
-
-    const freezeVersion = await getVersionByYear(year)
 
     const calendarYear = academicYearToCalendarByPeriod(year, period as AcademicPeriods)
     const startMonth = period === ACADEMIC_PERIODS.FIRST ? MONTHS.SEPTEMBER : MONTHS.JANUARY
     const endMonth = period === ACADEMIC_PERIODS.FIRST ? MONTHS.DECEMBER : MONTHS.MAY
 
-    const dateGte = new Date(calendarYear, Number(startMonth), 1)
-    const dateLte = new Date(calendarYear, Number(endMonth), 31)
+    const dateGte = startOfMonth(new Date(calendarYear, Number(startMonth), 1))
+    const dateLte = endOfMonth(new Date(calendarYear, Number(endMonth), 31))
 
     const midtermExams = await db.midtermExam.findMany({
         where: {
             teacherId,
-            freezeVersionId: freezeVersion?.id,
             deleted: false,
             typeId,
             date: {

@@ -1,7 +1,8 @@
 import { Router } from 'express'
 import { StatusCodes } from 'http-status-codes'
+import { getStudentListForTeacherRequestSchema } from '~/dto/student/getStudentListForTeacher/request'
 import { updateStudentRequestSchema } from '~/dto/student/updateStudent/request'
-import { deleteStudent, getStudentList, updateStudent } from '~/service/student'
+import { deleteStudent, getStudentList, getStudentListForTeacher, updateStudent } from '~/service/student'
 
 const studentRouter = Router()
 
@@ -9,6 +10,16 @@ studentRouter.get('/', async (_, res, next) => {
     try {
         const students = getStudentList()
         res.json(students)
+    } catch (error) {
+        next(error)
+    }
+})
+
+studentRouter.get('/forTeacher', async (req, res, next) => {
+    try {
+        const params = getStudentListForTeacherRequestSchema.parse(req.query)
+        const student = await getStudentListForTeacher(params.teacherId)
+        res.json(student)
     } catch (error) {
         next(error)
     }

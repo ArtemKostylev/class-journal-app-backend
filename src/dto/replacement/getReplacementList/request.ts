@@ -1,10 +1,10 @@
 import z from 'zod'
 
 export const getReplacementListRequestSchema = z.object({
-    year: z.number(),
-    month: z.number(),
-    teacherId: z.number(),
-    courseId: z.number(),
+    year: z.coerce.number(),
+    month: z.coerce.number(),
+    teacherId: z.coerce.number(),
+    courseId: z.coerce.number(),
 })
 
 export type GetReplacementListRequestDto = z.infer<typeof getReplacementListRequestSchema>

@@ -5,6 +5,8 @@ import { LoginRequestDto } from '~/dto/user/login/request'
 import { LoginResponseDto, type UserVersionDto, type VersionCourseDto } from '~/dto/user/login/response'
 import type { Course, FreezeVersion, Teacher } from '@prisma/client'
 import { getCurrentAcademicYear } from '~/utils/academicDate'
+import { ExpectedError } from '~/errors/ExpectedError'
+import { ErrorCodes } from '~/errors/ErrorCodes'
 
 export async function login(params: LoginRequestDto): Promise<[string, LoginResponseDto]> {
     const { login, password } = params
@@ -21,13 +23,13 @@ export async function login(params: LoginRequestDto): Promise<[string, LoginResp
     })
 
     if (!user) {
-        throw new Error('Invalid credentials')
+        throw new ExpectedError(ErrorCodes.INVALID_CREDENTIALS, 'User with this login not found')
     }
 
     const isPasswordValid = bcrypt.compareSync(password, user.password)
 
     if (!isPasswordValid) {
-        throw new Error('Invalid credentials')
+        throw new ExpectedError(ErrorCodes.INVALID_CREDENTIALS, 'Password is incorrect')
     }
 
     const token = jwt.sign({ id: user.id }, secret)
@@ -94,11 +96,7 @@ function convertTeacherToDto(teacher: TeacherSelection): UserVersionDto {
             return acc
         }, {} as Record<string, VersionCourseDto>),
         allCourses: teacher.relations.map((relation) => relation.course),
-        courses: teacher.relations
-            .filter((relation) => !relation.course.group)
-            .map((relation) => relation.course),
-        groupCourses: teacher.relations
-            .filter((relation) => relation.course.group)
-            .map((relation) => relation.course),
+        courses: teacher.relations.filter((relation) => !relation.course.group).map((relation) => relation.course),
+        groupCourses: teacher.relations.filter((relation) => relation.course.group).map((relation) => relation.course),
     }
 }

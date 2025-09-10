@@ -1,7 +1,7 @@
 import { db } from '~/db'
 import type { GetRelationsDataResponseDto } from '~/dto/relations/getRelationsData/response'
 
-export async function getRelationsData(): Promise<GetRelationsDataResponseDto[]> {
+export async function getRelationsData(): Promise<Record<string,GetRelationsDataResponseDto[]>> {
     const relations = await db.teacher_Course_Student.findMany({
         where: {
             freezeVersionId: null,
@@ -13,5 +13,9 @@ export async function getRelationsData(): Promise<GetRelationsDataResponseDto[]>
             courseId: true,
         },
     })
-    return relations
+
+    return relations.reduce((acc, relation) => {
+        acc[relation.teacherId] = acc[relation.teacherId] || []
+        return acc
+    }, {} as Record<string,GetRelationsDataResponseDto[]>)
 }

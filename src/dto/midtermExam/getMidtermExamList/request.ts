@@ -1,9 +1,9 @@
 import z from 'zod'
 
 export const getMidtermExamListRequestSchema = z.object({
-    teacherId: z.number(),
-    year: z.number(),
-    typeId: z.number(),
+    teacherId: z.coerce.number(),
+    year: z.coerce.number(),
+    typeId: z.coerce.number(),
     period: z.string(),
 })
 

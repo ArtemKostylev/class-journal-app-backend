@@ -1,3 +1,5 @@
+import { parse } from 'date-fns'
+import { DATE_FORMAT } from '~/const/dateFormat'
 import { db } from '~/db'
 import type { UpdateReplacementsRequestDto } from '~/dto/replacement/updateReplacements/request'
 
@@ -9,10 +11,10 @@ export async function updateReplacements(replacements: UpdateReplacementsRequest
                     id: replacement.id,
                 },
                 update: {
-                    date: replacement.date,
+                    date: parse(replacement.date, DATE_FORMAT, new Date()),
                 },
                 create: {
-                    date: replacement.date,
+                    date: parse(replacement.date, DATE_FORMAT, new Date()),
                     entryId: replacement.journalEntryId,
                 },
             })
