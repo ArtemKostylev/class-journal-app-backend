@@ -3,22 +3,25 @@ import cors from 'cors'
 import 'dotenv/config'
 
 import { authentication } from './middleware/authentication'
-import { teacherRouter } from './rest-api/teacher'
-import subgroupRouter from './rest-api/subgroup'
-import { noteRouter } from './rest-api/note'
-import { consultRouter } from './rest-api/consult'
-import { groupConsultRouter } from './rest-api/groupConsult'
-import { journalRouter } from './rest-api/journal'
-import { userRouter } from './rest-api/user'
-import { midtermExamRouter } from './rest-api/midtermExam'
-import { replacementRouter } from './rest-api/replacement'
-import { midtermExamTypeRouter } from './rest-api/midtermExamType'
+import { teacherRouter } from './routers/teacher'
+import subgroupRouter from './routers/subgroup'
+import { noteRouter } from './routers/note'
+import { consultRouter } from './routers/consult'
+import { groupConsultRouter } from './routers/groupConsult'
+import { journalRouter } from './routers/journal'
+import { userRouter } from './routers/user'
+import { midtermExamRouter } from './routers/midtermExam'
+import { replacementRouter } from './routers/replacement'
+import { midtermExamTypeRouter } from './routers/midtermExamType'
 import { errorMiddleware } from './middleware/error'
-import specializationRouter from './rest-api/specialization'
-import { reportsRouter } from './rest-api/reports'
-import { courseRouter } from './rest-api/course'
-import { studentRouter } from './rest-api/student'
-import { relationsRouter } from './rest-api/realtions'
+import specializationRouter from './routers/specialization'
+import { reportsRouter } from './routers/reports'
+import { courseRouter } from './routers/course'
+import { studentRouter } from './routers/student'
+import { relationsRouter } from './routers/realtions'
+import { requestLog } from './middleware/requestLog'
+import { cookieParser } from './middleware/cookieParser'
+import { logger } from './utils/logger'
 
 declare module 'express-serve-static-core' {
     interface Request {
@@ -30,8 +33,15 @@ async function main() {
     const PORT = process.env.PORT || 4000
     const app = express()
 
-    app.use(cors<cors.CorsRequest>())
+    app.use(
+        cors<cors.CorsRequest>({
+            origin: process.env.NODE_ENV === 'production' ? 'https://akostylev.com' : 'http://localhost:3000',
+            credentials: true,
+        })
+    )
     app.use(express.json())
+    app.use(cookieParser)
+    app.use(requestLog)
     app.use(authentication)
 
     app.use('/api/teacher', teacherRouter)
@@ -53,7 +63,11 @@ async function main() {
     app.use(errorMiddleware)
 
     await new Promise((resolve) => app.listen({ port: PORT }, resolve as () => void))
-    console.log(`🚀 Server ready at http://localhost:4000`)
+    if (process.env.NODE_ENV !== 'production') {
+        console.log(`🚀 Server ready at http://localhost:4000`)
+    } else {
+        logger.info(`SERVER STARTED`)
+    }
 }
 
 main()

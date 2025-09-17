@@ -1,5 +1,5 @@
 import { Router, type CookieOptions } from 'express'
-import { login, register } from '~/service/user'
+import { getUserData, login, register } from '~/service/user'
 import { StatusCodes } from 'http-status-codes'
 
 const userRouter = Router()
@@ -11,6 +11,7 @@ userRouter.post('/login', async (req, res, next) => {
 
         const cookieOptions: CookieOptions = {
             httpOnly: true,
+            sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
             secure: process.env.NODE_ENV === 'production',
             maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
         }
@@ -35,6 +36,16 @@ userRouter.post('/logout', async (req, res, next) => {
     try {
         res.clearCookie('Auth')
         res.sendStatus(StatusCodes.OK)
+    } catch (error) {
+        next(error)
+    }
+})
+
+userRouter.get('/data', async (req, res, next) => {
+    try {
+        const { userId } = req
+        const data = await getUserData(userId)
+        res.send(data)
     } catch (error) {
         next(error)
     }

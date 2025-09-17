@@ -6,7 +6,6 @@ export const updateCourseRequestSchema = z.object({
     group: z.boolean(),
     excludeFromReport: z.boolean(),
     onlyHours: z.boolean(),
-    onlyGroups: z.boolean(),
 })
 
 export type UpdateCourseRequestDto = z.infer<typeof updateCourseRequestSchema>

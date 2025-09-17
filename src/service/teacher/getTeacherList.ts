@@ -5,6 +5,7 @@ export async function getTeacherList(): Promise<GetTeacherListResponseDto[]> {
     const teachers = await db.teacher.findMany({
         where: {
             freezeVersionId: null,
+            deleted: false,
         },
         select: {
             id: true,

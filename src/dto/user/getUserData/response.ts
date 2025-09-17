@@ -17,7 +17,7 @@ export interface UserVersionDto {
     groupCourses: VersionCourseDto[]
 }
 
-export interface LoginResponseDto {
+export interface UserDataResponseDto {
     role: number
     versions: Record<string, UserVersionDto>
 }

@@ -1,4 +1,4 @@
-export interface GetStudentListResponseDto {
+export interface StudentListItem {
     id: number
     name: string | null
     surname: string | null

@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes'
 import { ErrorCodes } from '~/errors/ErrorCodes'
 import { ERROR_MESSAGES } from '~/errors/ErrorMessages'
 import { ExpectedError } from '~/errors/ExpectedError'
+import { logger } from '~/utils/logger'
 
 export const errorMiddleware = (
     err: Error,
@@ -11,7 +12,7 @@ export const errorMiddleware = (
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     next: NextFunction
 ) => {
-    console.error(err.message)
+    logger.error(err.message)
 
     if (err instanceof ExpectedError) {
         res.status(StatusCodes.BAD_REQUEST)

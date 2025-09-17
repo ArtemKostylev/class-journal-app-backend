@@ -6,7 +6,7 @@ interface JwtPayload {
     id: number
 }
 
-const EXCLUDED_PATHS: string[] = []
+const EXCLUDED_PATHS: string[] = ['/api/user/login']
 
 export function authentication(req: Request, res: Response, next: NextFunction) {
     const secret = process.env.JWT_SECRET
@@ -19,14 +19,11 @@ export function authentication(req: Request, res: Response, next: NextFunction) 
         return
     }
 
-    const headers = req.headers
-    const authHeader: string | undefined = headers?.['authorization']
+    const cookies = req.cookies
+    const signature: string | undefined = cookies?.['Auth']
 
-    const signature = authHeader?.replace('Bearer ', '')
-
-    // TODO: throw unauthorized error
     if (!signature) {
-        next()
+        res.sendStatus(StatusCodes.UNAUTHORIZED)
         return
     }
 
@@ -36,6 +33,6 @@ export function authentication(req: Request, res: Response, next: NextFunction) 
         next()
     } catch (err: unknown) {
         console.log(err)
-        res.status(StatusCodes.UNAUTHORIZED).send()
+        res.sendStatus(StatusCodes.UNAUTHORIZED)
     }
 }

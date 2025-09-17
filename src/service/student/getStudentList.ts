@@ -1,8 +1,12 @@
 import { db } from '~/db'
-import type { GetStudentListResponseDto } from '~/dto/student/getStudentList/response'
+import type { StudentListItem } from '~/dto/student/getStudentList/response'
 
-export async function getStudentList(): Promise<GetStudentListResponseDto[]> {
+export async function getStudentList(): Promise<StudentListItem[]> {
     const students = await db.student.findMany({
+        where: {
+            deleted: false,
+            freezeVersionId: null,
+        },
         select: {
             id: true,
             name: true,

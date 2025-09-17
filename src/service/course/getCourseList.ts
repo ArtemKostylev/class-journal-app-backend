@@ -5,6 +5,7 @@ export async function getCourseList(): Promise<GetCourseListResponseDto[]> {
     const courses = await db.course.findMany({
         where: {
             freezeVersionId: null,
+            deleted: false,
         },
     })
     return courses.map((course) => ({
