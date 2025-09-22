@@ -4,7 +4,7 @@ export const updateStudentRequestSchema = z.object({
     id: z.number(),
     name: z.string(),
     surname: z.string(),
-    class: z.number(),
+    class: z.coerce.number(),
     program: z.string(),
     specializationId: z.number(),
 })

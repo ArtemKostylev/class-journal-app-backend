@@ -1,37 +1,47 @@
 import { db } from '~/db'
+import type { OffsetResponse } from '~/dto/shared/offsetResponse'
+import type { GetTeacherListRequestDto } from '~/dto/teacher/getTeacherList/request'
 import type { GetTeacherListResponseDto } from '~/dto/teacher/getTeacherList/response'
 
-export async function getTeacherList(): Promise<GetTeacherListResponseDto[]> {
+export async function getTeacherList(params: GetTeacherListRequestDto): Promise<OffsetResponse<GetTeacherListResponseDto>> {
+    const { offset, limit } = params
+
     const teachers = await db.teacher.findMany({
         where: {
             freezeVersionId: null,
             deleted: false,
         },
+        orderBy: {
+            id: 'asc',
+        },
+        skip: offset,
+        take: limit,
         select: {
             id: true,
             name: true,
             surname: true,
             parent: true,
-            relations: {
-                distinct: ['courseId'],
-                select: {
-                    course: {
-                        select: {
-                            id: true,
-                        },
-                    },
-                },
-            },
+            user: true,
         },
     })
 
-    return teachers.map((teacher) => {
+    const rows = teachers.map((teacher) => {
         return {
             id: teacher.id,
             name: teacher.name,
             surname: teacher.surname,
             parent: teacher.parent,
-            courses: teacher.relations.map((relation) => relation.course.id),
+            user: teacher.user
+                ? {
+                      value: String(teacher.user.id),
+                      text: teacher.user.login,
+                  }
+                : undefined,
         }
     })
+
+    return {
+        rows,
+        nextOffset: teachers.length === limit ? offset + limit : undefined,
+    }
 }

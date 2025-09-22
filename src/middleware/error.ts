@@ -13,6 +13,9 @@ export const errorMiddleware = (
     next: NextFunction
 ) => {
     logger.error(err.message)
+    if (process.env.NODE_ENV === 'development') {
+        console.log(err)
+    }
 
     if (err instanceof ExpectedError) {
         res.status(StatusCodes.BAD_REQUEST)

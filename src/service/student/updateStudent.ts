@@ -12,12 +12,14 @@ export async function updateStudent(params: UpdateStudentRequestDto): Promise<vo
             surname: params.surname,
             program: params.program as Program,
             class: params.class,
+            specializationId: params.specializationId,
         },
         update: {
             name: params.name,
             surname: params.surname,
             program: params.program as Program,
             class: params.class,
+            specializationId: params.specializationId,
         },
     })
 }

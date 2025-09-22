@@ -1,13 +1,14 @@
 import { Router } from 'express'
 import { StatusCodes } from 'http-status-codes'
+import { offsetRequestSchema } from '~/dto/shared/offsetRequest'
 import { updateCourseRequestSchema } from '~/dto/course/updateCourse/request'
 import { deleteCourse, getCourseList, getCourseListForRelations, updateCourse } from '~/service/course'
 
 const courseRouter = Router()
 
-courseRouter.get('/', async (_, res, next) => {
+courseRouter.get('/list', async (req, res, next) => {
     try {
-        const courses = await getCourseList()
+        const courses = await getCourseList(offsetRequestSchema.parse(req.query))
         res.json(courses)
     } catch (error) {
         next(error)

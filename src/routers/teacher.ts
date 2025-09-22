@@ -2,12 +2,14 @@ import { Router } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { updateTeacherRequestSchema } from '~/dto/teacher/updateTeacher/request'
 import { deleteTeacher, getTeacherList, getTeacherListForRelations, updateTeacher } from '~/service/teacher'
+import { getTeacherListRequestSchema } from '~/dto/teacher/getTeacherList/request'
 
 const teacherRouter = Router()
 
-teacherRouter.get('/', async (_, res, next) => {
+teacherRouter.get('/list', async (req, res, next) => {
     try {
-        const teachers = await getTeacherList()
+        const query = getTeacherListRequestSchema.parse(req.query)
+        const teachers = await getTeacherList(query)
         res.json(teachers)
     } catch (error) {
         next(error)
