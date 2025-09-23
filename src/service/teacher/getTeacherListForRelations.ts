@@ -14,7 +14,7 @@ export async function getTeacherListForRelations(): Promise<GetTeacherListForRel
             parent: true,
         },
         orderBy: {
-            id: 'asc',
+            surname: 'asc',
         },
     })
 

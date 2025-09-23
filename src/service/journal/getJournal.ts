@@ -36,6 +36,7 @@ export async function getJournal(params: GetJournalRequestDto): Promise<GetJourn
             teacherId,
             courseId,
             freezeVersionId: freezeVersion?.id,
+            archived: false,
         },
         select: {
             id: true,

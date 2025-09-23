@@ -24,9 +24,7 @@ interface GetGroupJournalResponseDto {
     rows: Record<number, GroupJournalDto>
 }
 
-export async function getGroupJournal(
-    params: GetGroupJournalRequestDto
-): Promise<GetGroupJournalResponseDto[]> {
+export async function getGroupJournal(params: GetGroupJournalRequestDto): Promise<GetGroupJournalResponseDto[]> {
     const { teacherId, courseId, year, period } = params
 
     const freezeVersion = await getVersionByYear(year)
@@ -44,6 +42,7 @@ export async function getGroupJournal(
             teacherId,
             courseId,
             freezeVersionId: freezeVersion?.id,
+            archived: false,
         },
         select: {
             id: true,
@@ -62,9 +61,7 @@ export async function getGroupJournal(
     })
 
     return await Promise.all(
-        Object.entries(groups).map(async ([group, relations]) =>
-            getDataByGroup(group, relations, dateGte, dateLte, year, period)
-        )
+        Object.entries(groups).map(async ([group, relations]) => getDataByGroup(group, relations, dateGte, dateLte, year, period))
     )
 }
 
@@ -112,12 +109,7 @@ async function getDataByGroup(
     }
 }
 
-async function getGroupJournalDto(
-    relation: number,
-    dateGte: Date,
-    dateLte: Date,
-    year: number
-): Promise<GroupJournalDto> {
+async function getGroupJournalDto(relation: number, dateGte: Date, dateLte: Date, year: number): Promise<GroupJournalDto> {
     const rowData = await db.teacher_Course_Student.findFirstOrThrow({
         where: {
             id: relation,
@@ -156,12 +148,7 @@ async function getGroupJournalDto(
     }
 }
 
-async function getDates(
-    relations: number[],
-    dateGte: Date,
-    dateLte: Date,
-    period: string
-): Promise<Record<string, string[]>> {
+async function getDates(relations: number[], dateGte: Date, dateLte: Date, period: string): Promise<Record<string, string[]>> {
     const persistedDates = await db.teacher_Course_Student.findMany({
         where: {
             id: {
@@ -231,7 +218,5 @@ function padEmptyDatesAndSort(dates: string[], month: string): string[] {
     while (dates.length < dateLimit) {
         dates.push('')
     }
-    return dates.sort((a, b) =>
-        compareAsc(parse(a, DATE_FORMAT, new Date()), parse(b, DATE_FORMAT, new Date()))
-    )
+    return dates.sort((a, b) => compareAsc(parse(a, DATE_FORMAT, new Date()), parse(b, DATE_FORMAT, new Date())))
 }
