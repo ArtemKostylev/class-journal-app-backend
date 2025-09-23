@@ -4,8 +4,7 @@
     "description": "Backend application for Art School 43 class journal system",
     "main": "src/app.ts",
     "scripts": {
-        "dev": "npx tsx watch ./src/app.ts",
-        "build": "tsc && copyfiles \"**/*.graphql\" dist/"
+        "dev": "npx tsx watch ./src/app.ts"
     },
     "author": "Artem Kostylev",
     "license": "ISC",
