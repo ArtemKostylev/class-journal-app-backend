@@ -1,3 +1,3 @@
 export { getRelationsData } from './getRelationsData'
-export { updateTeacherCourses } from './updateTeacherCourses'
-export { updateCourseStudents } from './updateCourseStudents'
+export { updateCourseRelations } from './updateCourseRelations'
+export { updateStudentRelations } from './updateStudentRelations'

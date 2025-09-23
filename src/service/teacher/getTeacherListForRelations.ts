@@ -13,6 +13,9 @@ export async function getTeacherListForRelations(): Promise<GetTeacherListForRel
             surname: true,
             parent: true,
         },
+        orderBy: {
+            id: 'asc',
+        },
     })
 
     return teachers.map((teacher) => ({

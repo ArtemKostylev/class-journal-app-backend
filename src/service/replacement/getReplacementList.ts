@@ -63,8 +63,6 @@ export async function getReplacementList(params: GetReplacementListRequestDto): 
         },
     })
 
-    console.log(replacements)
-
     return {
         rows: replacements.map(convertReplacementToDto),
     }

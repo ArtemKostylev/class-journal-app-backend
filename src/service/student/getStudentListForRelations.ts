@@ -14,6 +14,14 @@ export async function getStudentListForRelations(): Promise<GetStudentListForRel
             class: true,
             program: true,
         },
+        orderBy: [
+            {
+                class: 'asc',
+            },
+            {
+                program: 'asc',
+            },
+        ],
     })
 
     const result = students.reduce((acc, student) => {
@@ -23,7 +31,7 @@ export async function getStudentListForRelations(): Promise<GetStudentListForRel
         }
         acc[key].push({
             id: student.id,
-            studentName: `${student.surname} ${student.name}`,
+            name: `${student.surname} ${student.name}`,
         })
         return acc
     }, {} as Record<string, StudentListForRelationsItem[]>)

@@ -5,5 +5,5 @@ export interface GetStudentListForRelationsResponseDto {
 
 export interface StudentListForRelationsItem {
     id: number
-    studentName: string
+    name: string
 }

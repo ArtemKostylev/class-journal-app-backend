@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import jwt from 'jsonwebtoken'
+import { logger } from '~/utils/logger'
 
 interface JwtPayload {
     id: number
@@ -32,7 +33,7 @@ export function authentication(req: Request, res: Response, next: NextFunction) 
         req.userId = token.id
         next()
     } catch (err: unknown) {
-        console.log(err)
+        logger.error(err)
         res.sendStatus(StatusCodes.UNAUTHORIZED)
     }
 }

@@ -1,7 +1,7 @@
-import type { GetCourseListForRelationsResponseDto } from '~/dto/course/getCourseListForRelations/response'
+import type { CourseForRelationsItem, GetCourseForRelationsResponseDto } from '~/dto/course/getCourseListForRelations/response'
 import { db } from '~/db'
 
-export async function getCourseListForRelations(): Promise<GetCourseListForRelationsResponseDto[]> {
+export async function getCourseListForRelations(): Promise<GetCourseForRelationsResponseDto> {
     const courses = await db.course.findMany({
         select: {
             id: true,
@@ -11,10 +11,21 @@ export async function getCourseListForRelations(): Promise<GetCourseListForRelat
             deleted: false,
             freezeVersionId: null,
         },
+        orderBy: {
+            id: 'asc',
+        },
     })
 
-    return courses.map((course) => ({
-        id: course.id,
-        courseName: course.name ?? '',
-    }))
+    const data = courses.reduce((acc, course) => {
+        acc[course.id] = {
+            id: course.id,
+            courseName: course.name ?? '',
+        }
+        return acc
+    }, {} as Record<number, CourseForRelationsItem>)
+
+    return {
+        ids: courses.map((course) => course.id),
+        data,
+    }
 }

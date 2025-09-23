@@ -1,8 +1,7 @@
 import { Router } from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { updateCourseStudentsRequestSchema } from '~/dto/relations/updateCourseStudents/request'
-import { updateTeacherCoursesRequestSchema } from '~/dto/relations/updateTeacherCourses/request'
-import { getRelationsData, updateCourseStudents, updateTeacherCourses } from '~/service/relations'
+import { updateRelationsRequestSchema } from '~/dto/relations/updateRelations/request'
+import { getRelationsData, updateCourseRelations, updateStudentRelations } from '~/service/relations'
 
 const relationsRouter = Router()
 
@@ -15,20 +14,20 @@ relationsRouter.get('/', async (_, res, next) => {
     }
 })
 
-relationsRouter.post('/updateCourseStudents', async (req, res, next) => {
+relationsRouter.post('/updateCourseRelations', async (req, res, next) => {
     try {
-        const body = updateCourseStudentsRequestSchema.parse(req.body)
-        await updateCourseStudents(body)
+        const body = updateRelationsRequestSchema.parse(req.body)
+        await updateCourseRelations(body)
         res.sendStatus(StatusCodes.OK)
     } catch (error) {
         next(error)
     }
 })
 
-relationsRouter.post('/updateTeacherCourses', async (req, res, next) => {
+relationsRouter.post('/updateStudentRelations', async (req, res, next) => {
     try {
-        const body = updateTeacherCoursesRequestSchema.parse(req.body)
-        await updateTeacherCourses(body)
+        const body = updateRelationsRequestSchema.parse(req.body)
+        await updateStudentRelations(body)
         res.sendStatus(StatusCodes.OK)
     } catch (error) {
         next(error)
