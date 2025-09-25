@@ -45,7 +45,10 @@ export async function getRelationsData(): Promise<Record<string, GetRelationsDat
 
         const courseRecord = teacherRecord.coursesById[relation.courseId] || createCourseRecord(relation.courseId)
 
-        courseRecord.archived = courseRecord.archived && relation.archived
+        const courseArchived = courseRecord.archived && relation.archived
+        courseRecord.archived = courseArchived
+        teacherRecord.courses.find((course) => course.id === relation.courseId)!.archived = courseArchived
+
         if (relation.studentId) {
             courseRecord.students.push({
                 id: relation.studentId,
