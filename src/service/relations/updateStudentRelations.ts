@@ -29,11 +29,11 @@ export async function updateStudentRelations(updatedRelations: UpdateRelationsRe
                 },
             })
 
-            if (!existingRelation?.archived && relation.checked) {
+            if (existingRelation && !existingRelation?.archived && relation.checked) {
                 return
             }
 
-            if (existingRelation?.archived && !relation.checked) {
+            if (existingRelation && existingRelation?.archived && !relation.checked) {
                 return
             }
 

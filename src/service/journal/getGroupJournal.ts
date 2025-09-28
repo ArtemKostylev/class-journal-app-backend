@@ -49,6 +49,18 @@ export async function getGroupJournal(params: GetGroupJournalRequestDto): Promis
             student: true,
             subgroup: true,
         },
+        orderBy: [
+            {
+                student: {
+                    class: 'asc',
+                },
+            },
+            {
+                student: {
+                    program: 'asc',
+                },
+            },
+        ],
     })
 
     const groups = {} as Record<string, number[]>

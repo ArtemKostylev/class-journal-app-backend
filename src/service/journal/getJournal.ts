@@ -38,6 +38,18 @@ export async function getJournal(params: GetJournalRequestDto): Promise<GetJourn
             freezeVersionId: freezeVersion?.id,
             archived: false,
         },
+        orderBy: [
+            {
+                student: {
+                    class: 'asc',
+                },
+            },
+            {
+                student: {
+                    program: 'asc',
+                },
+            },
+        ],
         select: {
             id: true,
             archived: true,
