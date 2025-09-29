@@ -12,7 +12,7 @@ export async function deleteStudent(id: number): Promise<void> {
 
     await db.teacher_Course_Student.updateMany({
         where: {
-            courseId: id,
+            studentId: id,
         },
         data: {
             archived: true,
