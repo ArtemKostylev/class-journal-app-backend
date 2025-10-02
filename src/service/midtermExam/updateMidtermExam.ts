@@ -4,17 +4,19 @@ import { parse } from 'date-fns'
 import { DATE_FORMAT } from '~/const/dateFormat'
 
 export async function updateMidtermExam(params: UpdateMidtermExamRequestDto): Promise<void> {
+    const { id, ...rest } = params;
+
     await db.midtermExam.upsert({
         where: {
-            id: params.id,
+            id,
         },
         update: {
-            ...params,
-            date: params.date ? parse(params.date, DATE_FORMAT, new Date()) : undefined,
+            ...rest,
+            date: rest.date ? parse(rest.date, DATE_FORMAT, new Date()) : undefined,
         },
         create: {
-            ...params,
-            date: params.date ? parse(params.date, DATE_FORMAT, new Date()) : undefined,
+            ...rest,
+            date: rest.date ? parse(rest.date, DATE_FORMAT, new Date()) : undefined,
         },
     })
 }
