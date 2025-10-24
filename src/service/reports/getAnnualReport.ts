@@ -2,8 +2,8 @@ import type { Course, QuaterMark, Specialization, Student } from '@prisma/client
 import { db } from '~/db'
 import { getCurrentAcademicYear } from '~/utils/academicDate'
 import { buildHtml } from './htmlBuilder'
-const htmlDocx = require('html-docx-js')
-const fs = require('fs')
+import fs from 'fs'
+import htmlDocx from 'html-docx-js'
 
 type ReportSelection = {
     quaterMark: QuaterMark[]
@@ -91,13 +91,11 @@ export async function getAnnualReport() {
         reportMap.set(key, { courses, studentMarks })
     })
 
-    const doc = buildHtml(mappedData)
+    const htmlDoc = buildHtml(mappedData)
 
-    const docx = htmlDocx.asBlob(doc, { orientation: 'landscape' })
+    const docxDocument = (htmlDocx as any).asBlob(htmlDoc, { orientation: 'landscape' })
 
-    fs.writeFile(`/var/www/akostylev/files/vedomost_${year}.docx`, docx, function (err: any) {
-        if (err) throw err
-    })
+    fs.writeFileSync(`/var/www/akostylev/html/new/files/vedomost_${year}.docx`, docxDocument)
 
-    return `https://akostylev.com/files/vedomost_${year}.docx`
+    return `https://akostylev.com/new/files/vedomost_${year}.docx`
 }
