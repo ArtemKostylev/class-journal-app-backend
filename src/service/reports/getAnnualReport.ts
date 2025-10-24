@@ -3,7 +3,7 @@ import { db } from '~/db'
 import { getCurrentAcademicYear } from '~/utils/academicDate'
 import { buildHtml } from './htmlBuilder'
 import fs from 'fs'
-import htmlDocx from 'html-docx-js'
+const htmlDocx = require('html-docx-js')
 
 type ReportSelection = {
     quaterMark: QuaterMark[]
