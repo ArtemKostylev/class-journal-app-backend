@@ -7,21 +7,21 @@ import type { UpdateGroupConsultRequestDto } from '~/dto/groupConsult/updateGrou
 export async function updateGroupConsult(params: UpdateGroupConsultRequestDto): Promise<void> {
     const { consults, teacher, course } = params
 
-    await Promise.all(
+    const result = await Promise.all(
         consults.map(async (consult) => {
             if (!consult?.hours && !consult?.consultId) {
                 return
             }
 
             if (!consult.hours) {
-                return await db.groupConsult.delete({
+                return db.groupConsult.delete({
                     where: {
                         id: consult.consultId,
                     },
                 })
             }
 
-            db.groupConsult.upsert({
+            return db.groupConsult.upsert({
                 where: {
                     id: consult.consultId,
                 },
@@ -42,4 +42,5 @@ export async function updateGroupConsult(params: UpdateGroupConsultRequestDto): 
             })
         })
     )
+    console.log(result)
 }
