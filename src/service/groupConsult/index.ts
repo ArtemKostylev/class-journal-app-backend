@@ -1,2 +1,2 @@
-export {getGroupConsultList} from './getGroupConstultList';
+export {getGroupConsultList} from './getGroupConsultList';
 export {updateGroupConsult} from './updateGroupConsult';

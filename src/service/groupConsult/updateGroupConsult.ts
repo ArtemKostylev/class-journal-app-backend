@@ -7,7 +7,7 @@ import type { UpdateGroupConsultRequestDto } from '~/dto/groupConsult/updateGrou
 export async function updateGroupConsult(params: UpdateGroupConsultRequestDto): Promise<void> {
     const { consults, teacher, course } = params
 
-    const result = await Promise.all(
+    await Promise.all(
         consults.map(async (consult) => {
             if (!consult?.hours && !consult?.consultId) {
                 return
@@ -42,5 +42,4 @@ export async function updateGroupConsult(params: UpdateGroupConsultRequestDto): 
             })
         })
     )
-    console.log(result)
 }
