@@ -1,15 +1,32 @@
-version: "3.3"
 services:
   postgres:
     image: postgres:10.3
     restart: always
     environment:
-      - POSTGRES_USER=shkri
-      - POSTGRES_PASSWORD=derek123
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - postgres:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    networks:
+      - class_journal
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      network: host
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    networks:
+      - class_journal
 
 volumes:
   postgres:
+
+networks:
+  class_journal:
+    driver: bridge

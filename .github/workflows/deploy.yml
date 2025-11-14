@@ -1,0 +1,89 @@
+name: Deploy to Production
+
+on: 
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to deploy"
+        required: true
+        default: "latest"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      wwwwwwwwwww
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}
+      
+      - name: Add server to known hosts
+        run: |
+          ssh-keyscan -p ${{ secrets.SERVER_SSH_PORT || 22 }} ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+      
+      - name: Deploy to server
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          REPO_NAME: ${{ github.repository }}
+        run: |
+          ssh -p ${{ secrets.SERVER_SSH_PORT || 22 }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'ENDSSH'
+            set -e
+            
+            # Navigate to project directory
+            # UPDATE THIS PATH to match your server's project directory!
+            cd /opt/class-journal-app || exit 1
+            
+            # Login to GitHub Container Registry
+            echo "$GITHUB_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+            
+            # Pull the latest image
+            docker pull ghcr.io/$REPO_NAME:latest
+            
+            # Restart services using docker-compose
+            docker-compose pull backend
+            docker-compose up -d backend
+            
+            # Optional: Run database migrations
+            # Uncomment the next line if you want to run migrations automatically
+            # docker-compose exec -T backend npx prisma migrate deploy || true
+            
+            # Clean up old images to save space
+            docker image prune -f
+            
+            echo "✅ Deployment completed successfully!"
+          ENDSSH

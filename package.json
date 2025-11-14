@@ -1,10 +1,11 @@
 {
     "name": "cj-backend",
-    "version": "2.0.0",
-    "description": "Backend application for Art School 43 class journal system",
+    "version": "2.1.0",
+    "description": "Backend application for Arts School class journal system",
     "main": "src/app.ts",
     "scripts": {
-        "dev": "npx tsx watch ./src/app.ts"
+        "dev": "npx tsx watch ./src/app.ts",
+        "prod": "npx tsx ./src/app.ts"
     },
     "author": "Artem Kostylev",
     "license": "ISC",
@@ -20,9 +21,7 @@
     },
     "dependencies": {
         "@prisma/client": "6.13.0",
-        "@types/moment": "2.11.29",
         "bcrypt": "6.0.0",
-        "copyfiles": "2.4.1",
         "cors": "2.8.5",
         "date-fns": "4.1.0",
         "dotenv": "17.2.1",
