@@ -40,25 +40,25 @@ const addTitle = (text: string) => {
 
 const styles = `
     <style>
-        .base: {
+        .base {
             display: flex;
             flex-direction: column;
             width: 100%;
             margin: 50px !important;
         }
 
-        table {
+        .table {
             margin-bottom: 20px;
             border-collapse: collapse;
             max-width: 100%;
         }
-        header {
+        .header {
             font-weight: normal;
             border-top: none;
             border: 1px solid black;
             border-collapse: collapse;
         }
-        mark {
+        .mark {
             border-top: none;
             border: 1px solid black;
             border-collapse: collapse;
@@ -105,7 +105,6 @@ const createHeader = (courses: { id: number; name: string }[]) => {
         addRow([
             addTallHeader('№', 'header'),
             addTallHeader('Фамилия, имя учащегося', 'header'),
-            ...courses.map((it) => addLongHeader(it.name, 'header')),
             ...courses.map((it) => addLongHeader(it.name, 'header')),
         ]),
         addRow([...courses.map(() => periods.map((period: string) => addHeader(PERIOD_MAP[period], 'header'))).flat()]),

@@ -8,10 +8,10 @@ const htmlDocx = require('html-docx-js')
 type ReportSelection = {
     quaterMark: QuaterMark[]
     student:
-        | (Student & {
-              specialization: Specialization | null
-          })
-        | null
+    | (Student & {
+        specialization: Specialization | null
+    })
+    | null
     course: Course
 }
 
@@ -91,11 +91,9 @@ export async function getAnnualReport() {
         reportMap.set(key, { courses, studentMarks })
     })
 
-    const htmlDoc = buildHtml(mappedData)
+    const htmlDoc = buildHtml(reportMap)
 
-    const docxDocument = (htmlDocx as any).asBlob(htmlDoc, { orientation: 'landscape' })
-
-    fs.writeFileSync(`/var/www/akostylev/html/new/files/vedomost_${year}.docx`, docxDocument)
+    fs.writeFileSync(`vedomost_${year}.html`, htmlDoc)
 
     return `https://akostylev.com/new/files/vedomost_${year}.docx`
 }
