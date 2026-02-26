@@ -1,23 +1,13 @@
 import { Period, Program, type QuaterMark, type Specialization, type Student } from '@prisma/client';
 import { db } from '~/db';
 import { getCurrentAcademicYear } from '~/utils/academicDate';
-import type { ReportTable, ReportTableRow } from './types';
+import type { ReportTable } from './types';
+import { getAnnualReportPdf } from './pdfBuilder';
 
 type ReportSelection = {
     quaterMark: QuaterMark[];
     student: (Student & { specialization: Specialization | null }) | null;
     courseId: number;
-};
-
-const EMPTY_TABLE: ReportTable = {
-    tableName: '',
-    tableHeaders: [],
-    tableRows: {},
-};
-
-const EMPTY_ROW: ReportTableRow = {
-    studentName: '',
-    marks: [],
 };
 
 function getTableName(record: ReportSelection) {
@@ -93,7 +83,11 @@ export async function getAnnualReport() {
         let table = tables[tableName];
 
         if (!table) {
-            table = { ...EMPTY_TABLE };
+            table = {
+                tableName: '',
+                tableHeaders: [],
+                tableRows: {},
+            };
             table.tableName = tableName;
             tables[tableName] = table;
         }
@@ -110,7 +104,10 @@ export async function getAnnualReport() {
         let tableRow = table.tableRows[studentName];
 
         if (!tableRow) {
-            tableRow = { ...EMPTY_ROW };
+            tableRow = {
+                studentName: '',
+                marks: [],
+            };
             tableRow.studentName = studentName;
             table.tableRows[studentName] = tableRow;
         }
@@ -122,6 +119,7 @@ export async function getAnnualReport() {
         });
     });
 
+    getAnnualReportPdf(Object.values(tables));
 
     return `https://akostylev.com/new/files/vedomost_${year}.docx`;
 }
