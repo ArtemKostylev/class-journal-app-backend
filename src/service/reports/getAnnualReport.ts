@@ -2,7 +2,7 @@ import { Period, Program, type QuaterMark, type Specialization, type Student } f
 import { db } from '~/db';
 import { getCurrentAcademicYear } from '~/utils/academicDate';
 import type { ReportTable } from './types';
-import { getAnnualReportPdf } from './pdfBuilder';
+import { buildAnnualReportHtml } from './htmlBuilder';
 
 type ReportSelection = {
     quaterMark: QuaterMark[];
@@ -43,7 +43,7 @@ function getPeriodNum(period: Period) {
     }
 }
 
-export async function getAnnualReport() {
+export async function getAnnualReport(): Promise<string> {
     const year = getCurrentAcademicYear();
 
     const allCourses = await db.course.findMany({
@@ -119,7 +119,5 @@ export async function getAnnualReport() {
         });
     });
 
-    getAnnualReportPdf(Object.values(tables));
-
-    return `https://akostylev.com/new/files/vedomost_${year}.docx`;
+    return buildAnnualReportHtml(Object.values(tables));
 }

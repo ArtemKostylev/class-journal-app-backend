@@ -19,7 +19,7 @@ function addMarkCells(length: number, marks: string[]) {
     return result;
 }
 
-function buildAnnualReportHtml(data: ReportTable[]) {
+export function buildAnnualReportHtml(data: ReportTable[]) {
     return `
     <!DOCTYPE html>
     <html>
@@ -107,18 +107,4 @@ function buildAnnualReportHtml(data: ReportTable[]) {
         </body>
     </html>
     `;
-}
-
-export function getAnnualReportPdf(data: ReportTable[]) {
-    const html = buildAnnualReportHtml(data);
-
-    const pdf = new jsPDF({
-        orientation: 'landsape',
-    });
-
-    pdf.html(html, {
-        callback: (doc: any) => {
-            doc.save('./test.pdf');
-        },
-    });
 }
