@@ -84,9 +84,9 @@ interface RelationSelect {
 }
 
 function getStudentGroup(relation: RelationSelect): string | undefined {
-    const { student, subgroup } = relation
+    const { student, subgroup = "Без группы"} = relation
 
-    if (!student?.class || !student?.program || !subgroup) {
+    if (!student?.class || !student?.program) {
         return undefined
     }
 
