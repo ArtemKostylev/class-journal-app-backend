@@ -4,7 +4,6 @@ import { GetStudentListForTeacherResponseDto } from '~/dto/student/getStudentLis
 export async function getStudentListForTeacher(teacherId: number): Promise<GetStudentListForTeacherResponseDto[]> {
     const relations = await db.teacher_Course_Student.findMany({
         where: {
-            freezeVersionId: null,
             teacherId: {
                 equals: teacherId,
             },

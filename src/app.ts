@@ -33,6 +33,7 @@ async function main() {
     const PORT = process.env.PORT || 4000
     const app = express()
 
+    // TODO: move hardcoded host to env file
     app.use(
         cors<cors.CorsRequest>({
             origin: process.env.NODE_ENV === 'production' ? 'https://akostylev.com' : 'http://localhost:3000',

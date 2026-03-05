@@ -1,5 +1,4 @@
 import type { ReportTable } from './types';
-const { jsPDF } = require('jspdf');
 
 const PERIOD_HEADERS_HTML = `
     <th>I</th>
@@ -30,6 +29,7 @@ export function buildAnnualReportHtml(data: ReportTable[]) {
                     flex-direction: column;
                     width: 100%;
                     margin: 50px;
+                    font-weight: normal;
                 }
 
                 table {
